@@ -38,16 +38,17 @@ import {
 } from "@/components/ui/popover";
 import { mockStaff, mockProperties, mockClients, mockUsers } from "@/lib/data";
 import { Calendar as CalendarIcon, Trash2 } from "lucide-react";
-import { format } from "date-fns";
+import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Shift } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { Switch } from "@/components/ui/switch";
 
 interface CreateShiftDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   shift: Shift | null;
-  onSave: (shift: Shift) => void;
+  onSave: (shifts: Shift[]) => void;
   onDelete: (shiftId: string) => void;
 }
 
@@ -57,6 +58,8 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }
   const { toast } = useToast();
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();
+  const [isRepeating, setIsRepeating] = useState(false);
+  const [repeatCount, setRepeatCount] = useState(7);
 
   const isEditMode = !!shift?.id;
 
@@ -65,9 +68,12 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }
         if (shift) {
           setStartDateTime(shift.start);
           setEndDateTime(shift.end);
+          setIsRepeating(false);
         } else {
           setStartDateTime(undefined);
           setEndDateTime(undefined);
+          setIsRepeating(false);
+          setRepeatCount(7);
         }
     }
   }, [shift, isOpen]);
@@ -96,18 +102,37 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }
         return;
     }
 
-    const shiftToSave: Shift = {
-        id: shift?.id || `shift-${Date.now()}`,
+    const baseShift: Omit<Shift, 'id' | 'start' | 'end'> = {
         title,
         propertyId,
         staffId: staffIdValue === 'open' ? undefined : staffIdValue,
         clientId: clientIdValue === 'none' ? undefined : clientIdValue,
-        start: startDateTime,
-        end: endDateTime,
         status: staffIdValue === 'open' ? 'Open' : (shift?.status === 'In Progress' ? 'In Progress' : 'Assigned'),
     };
     
-    onSave(shiftToSave);
+    if (!isEditMode && isRepeating && repeatCount > 0) {
+        const shiftsToCreate: Shift[] = [];
+        for (let i = 0; i < repeatCount; i++) {
+            const newStart = addDays(startDateTime, i);
+            const newEnd = addDays(endDateTime, i);
+            shiftsToCreate.push({
+                ...baseShift,
+                id: `shift-${Date.now()}-${i}`,
+                start: newStart,
+                end: newEnd,
+            });
+        }
+        onSave(shiftsToCreate);
+    } else {
+        const shiftToSave: Shift = {
+            ...baseShift,
+            id: shift?.id || `shift-${Date.now()}`,
+            start: startDateTime,
+            end: endDateTime,
+        };
+        onSave([shiftToSave]);
+    }
+    
     setIsOpen(false);
   };
   
@@ -333,6 +358,33 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }
                   </PopoverContent>
               </Popover>
             </div>
+            
+            {!isEditMode && (
+                <div className="grid grid-cols-4 items-center gap-4">
+                    <Label className="text-right">Repeat</Label>
+                    <div className="col-span-3 flex items-center space-x-4">
+                        <Switch
+                            id="isRepeating"
+                            checked={isRepeating}
+                            onCheckedChange={setIsRepeating}
+                        />
+                        {isRepeating && (
+                            <div className="flex items-center gap-2">
+                                <Label htmlFor="repeatCount">for the next</Label>
+                                <Input
+                                    id="repeatCount"
+                                    type="number"
+                                    value={repeatCount}
+                                    onChange={(e) => setRepeatCount(Math.max(1, parseInt(e.target.value) || 1))}
+                                    className="w-20"
+                                    min="1"
+                                />
+                                <span>days</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
           </div>
           <DialogFooter className="justify-between sm:justify-between">

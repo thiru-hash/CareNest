@@ -137,19 +137,24 @@ export function ScheduleCalendar() {
   };
 
 
-  const handleSaveShift = (savedShift: Shift) => {
-    const shiftExists = shifts.some(s => s.id === savedShift.id);
-
-    if (shiftExists) {
-      setShifts(prevShifts => prevShifts.map(s => s.id === savedShift.id ? savedShift : s));
-      toast({ title: "Shift Updated", description: "The shift has been successfully updated."});
+  const handleSaveShift = (savedShifts: Shift[]) => {
+    if (savedShifts.length === 1 && shifts.some(s => s.id === savedShifts[0].id)) {
+        // This is an update of a single shift
+        const shiftToUpdate = savedShifts[0];
+        setShifts(prevShifts => prevShifts.map(s => s.id === shiftToUpdate.id ? shiftToUpdate : s));
+        toast({ title: "Shift Updated", description: "The shift has been successfully updated." });
     } else {
-      setShifts(prevShifts => [...prevShifts, { ...savedShift, id: `shift-${Date.now()}` }]);
-      toast({ title: "Shift Created", description: "The new shift has been added to the roster."});
+        // This is a creation of one or more shifts
+        const newShiftsWithIds = savedShifts.map((s, i) => ({
+            ...s,
+            id: s.id || `shift-${Date.now()}-${i}`
+        }));
+        setShifts(prevShifts => [...prevShifts, ...newShiftsWithIds]);
+        toast({ title: `${newShiftsWithIds.length} Shift(s) Created`, description: "The new shifts have been added to the roster." });
     }
 
-    if (!savedShift.staffId) {
-      console.log(`[Notification] An open shift "${savedShift.title}" has been created/updated. Notifying available staff.`);
+    if (savedShifts.some(s => !s.staffId)) {
+      console.log(`[Notification] An open shift has been created/updated. Notifying available staff.`);
       toast({
           title: "Open Shift Action",
           description: "Notification simulated for available staff.",
