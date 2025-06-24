@@ -6,18 +6,39 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal } from "lucide-react";
-import { mockStaff } from "@/lib/data";
+import { MoreHorizontal, UserPlus } from "lucide-react";
+import { mockStaff, mockUsers } from "@/lib/data";
+import type { Staff, User } from "@/lib/types";
+
+// In a real app, this would come from an authentication context/session.
+// To test the non-admin view, you could change this to a staff member, e.g., `mockStaff[0]`.
+const currentUser: User | Staff = mockUsers['user-1'];
 
 export function StaffTable() {
+
+  const staffToDisplay = currentUser.role === 'Admin'
+    ? mockStaff
+    : mockStaff.filter(staff => staff.id === currentUser.id);
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>All Staff</CardTitle>
+        <div className="flex justify-between items-start">
+            <div>
+                <CardTitle>Staff Members</CardTitle>
+                <CardDescription>View, manage, and add staff members to the system.</CardDescription>
+            </div>
+            {currentUser.role === 'Admin' && (
+                <Button>
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Add Staff
+                </Button>
+            )}
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -30,7 +51,7 @@ export function StaffTable() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {mockStaff.map((staff) => (
+            {staffToDisplay.length > 0 ? staffToDisplay.map((staff) => (
               <TableRow key={staff.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-3">
@@ -61,7 +82,13 @@ export function StaffTable() {
                   </DropdownMenu>
                 </TableCell>
               </TableRow>
-            ))}
+            )) : (
+                <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                        No staff records to display.
+                    </TableCell>
+                </TableRow>
+            )}
           </TableBody>
         </Table>
       </CardContent>
