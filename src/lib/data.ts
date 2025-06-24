@@ -21,7 +21,7 @@ export const mockProperties: Property[] = [
 export const mockStaff: Staff[] = [
   { id: 'staff-1', name: 'Jane Doe', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'jane.d@carenest.com', phone: '555-1234', groupIds: ['group-workers'] },
   { id: 'staff-2', name: 'John Smith', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'john.s@carenest.com', phone: '555-5678', groupIds: ['group-workers'] },
-  { id: 'staff-3', name: 'Alice Johnson', avatarUrl: 'https://placehold.co/100x100.png', role: 'Manager', email: 'alice.j@carenest.com', phone: '555-8765', groupIds: ['group-managers'] },
+  { id: 'staff-3', name: 'Alice Johnson', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Manager', email: 'alice.j@carenest.com', phone: '555-8765', groupIds: ['group-managers'] },
 ];
 
 export const mockGroups: Group[] = [

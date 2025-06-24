@@ -1,4 +1,4 @@
-export type UserRole = 'Admin' | 'Support Manager' | 'Support Worker' | 'Roster Team';
+export type UserRole = 'Admin' | 'Support Manager' | 'Support Worker' | 'Roster Team' | 'Coordinator';
 
 export interface User {
   id: string;
@@ -28,7 +28,7 @@ export interface Staff {
   id: string;
   name: string;
   avatarUrl: string;
-  role: 'Support Worker' | 'Manager' | 'Coordinator';
+  role: UserRole;
   email: string;
   phone: string;
   groupIds?: string[];
