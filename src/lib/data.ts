@@ -1,5 +1,5 @@
 import type { User, Client, Staff, Property, Shift, ComplianceItem, Group } from './types';
-import { addDays, addHours, subDays } from 'date-fns';
+import { addDays, addHours, subDays, subHours } from 'date-fns';
 
 const now = new Date();
 
@@ -57,7 +57,7 @@ export const mockClients: Client[] = [
 ];
 
 export const mockShifts: Shift[] = [
-  { id: 'shift-1', title: 'Morning Shift', start: addHours(now, 2), end: addHours(now, 8), staffId: 'staff-1', propertyId: 'prop-1', status: 'Assigned' },
+  { id: 'shift-1', title: 'Morning Shift', start: subHours(now, 2), end: addHours(now, 4), staffId: 'staff-1', propertyId: 'prop-1', status: 'In Progress' },
   { id: 'shift-2', title: 'Afternoon Shift', start: addHours(now, 3), end: addHours(now, 9), staffId: 'staff-2', propertyId: 'prop-1', status: 'Assigned' },
   { id: 'shift-3', title: 'Night Shift', start: addHours(now, 8), end: addHours(now, 16), propertyId: 'prop-2', status: 'Open' },
   { id: 'shift-4', title: 'Morning Cover', start: addDays(now, 1), end: addHours(addDays(now, 1), 8), propertyId: 'prop-2', status: 'Open' },

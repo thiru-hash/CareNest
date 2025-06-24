@@ -1,11 +1,20 @@
 import { notFound } from "next/navigation";
-import { mockClients, mockProperties } from "@/lib/data";
+import { mockClients, mockProperties, mockUsers } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { LogSummary } from "@/components/people/LogSummary";
 import { Building2, User } from "lucide-react";
+import { canAccessClient } from "@/lib/access-control";
 
-export default function ClientProfilePage({ params }: { params: { id: string } }) {
+// In a real app, this would come from an authentication context/session
+const currentUser = mockUsers['user-1'];
+
+export default async function ClientProfilePage({ params }: { params: { id: string } }) {
+  const hasAccess = await canAccessClient(currentUser.id, params.id);
+  if (!hasAccess) {
+    notFound();
+  }
+  
   const client = mockClients.find((c) => c.id === params.id);
 
   if (!client) {
