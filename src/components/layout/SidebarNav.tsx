@@ -34,7 +34,7 @@ const navItems: { [key in UserRole]: { href: string; icon: React.ElementType; la
     { href: "/people", icon: Users, label: "People We Support" },
     { href: "/staff", icon: UsersRound, label: "Staff" },
     { href: "/locations", icon: Building2, label: "Locations" },
-    { href: "/settings", icon: Settings, label: "Settings" },
+    { href: "/settings", icon: Settings, label: "System Settings" },
   ],
   "Support Manager": [],
   "Support Worker": [],
@@ -78,10 +78,10 @@ export function SidebarNav() {
       <SidebarFooter className="group-data-[collapsible=icon]:-ml-1">
         <SidebarMenu>
             <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: 'Settings'}}>
+                <SidebarMenuButton asChild tooltip={{children: 'System Settings'}}>
                     <Link href="/settings">
                         <Settings/>
-                        <span>Settings</span>
+                        <span>System Settings</span>
                     </Link>
                 </SidebarMenuButton>
             </SidebarMenuItem>
