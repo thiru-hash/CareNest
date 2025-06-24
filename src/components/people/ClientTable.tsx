@@ -20,7 +20,7 @@ import { User } from "@/lib/types";
 const currentUser: User = mockUsers['user-1'];
 
 export async function ClientTable() {
-  const accessibleClients = getAccessibleClients(currentUser.id);
+  const accessibleClients = await getAccessibleClients(currentUser.id);
 
   return (
     <Card>

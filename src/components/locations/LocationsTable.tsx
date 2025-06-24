@@ -19,7 +19,7 @@ import type { User } from "@/lib/types";
 const currentUser: User = mockUsers['user-1'];
 
 export async function LocationsTable() {
-  const accessiblePropertyIds = getAccessiblePropertyIds(currentUser.id);
+  const accessiblePropertyIds = await getAccessiblePropertyIds(currentUser.id);
   const accessibleProperties = mockProperties.filter(p => accessiblePropertyIds.includes(p.id));
 
   return (

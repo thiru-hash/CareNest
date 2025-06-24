@@ -1,7 +1,7 @@
 
 'use server';
 
-import { mockShifts, mockClients, mockUsers, mockProperties } from './data';
+import { mockShifts, mockClients, mockUsers, mockProperties, mockStaff } from './data';
 import { User, Client } from './types';
 import { isWithinInterval } from 'date-fns';
 
@@ -37,7 +37,7 @@ function getActiveShifts(userId: string) {
  * @param userId The ID of the user.
  * @returns A unique array of property IDs the user can currently access.
  */
-export function getAccessiblePropertyIds(userId: string): string[] {
+export async function getAccessiblePropertyIds(userId: string): Promise<string[]> {
     const role = getUserRole(userId);
     if (role === 'Admin') {
         // Admins can access all properties
@@ -54,14 +54,14 @@ export function getAccessiblePropertyIds(userId: string): string[] {
  * @param userId The ID of the user.
  * @returns An array of Client objects the user can currently access.
  */
-export function getAccessibleClients(userId: string): Client[] {
+export async function getAccessibleClients(userId: string): Promise<Client[]> {
     const role = getUserRole(userId);
     if (role === 'Admin') {
         // Admins can access all clients
         return mockClients;
     }
     
-    const accessiblePropertyIds = getAccessiblePropertyIds(userId);
+    const accessiblePropertyIds = await getAccessiblePropertyIds(userId);
     if (accessiblePropertyIds.length === 0) {
         return [];
     }
@@ -89,6 +89,6 @@ export async function canAccessClient(userId: string, clientId: string): Promise
         return false; // Client doesn't exist
     }
 
-    const accessiblePropertyIds = getAccessiblePropertyIds(userId);
+    const accessiblePropertyIds = await getAccessiblePropertyIds(userId);
     return accessiblePropertyIds.includes(client.propertyId);
 }
