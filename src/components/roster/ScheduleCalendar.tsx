@@ -6,10 +6,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { mockShifts, mockStaff, mockProperties } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
+import { CreateShiftDialog } from "./CreateShiftDialog";
 
 export function ScheduleCalendar() {
   const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
@@ -24,8 +25,12 @@ export function ScheduleCalendar() {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Weekly Roster</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <div>
+          <CardTitle>Weekly Roster</CardTitle>
+          <CardDescription>View and manage the upcoming shift schedule.</CardDescription>
+        </div>
+        <CreateShiftDialog />
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
