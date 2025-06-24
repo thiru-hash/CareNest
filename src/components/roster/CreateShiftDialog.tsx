@@ -42,31 +42,54 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift }: CreateShiftDialo
   const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
+  const [startTime, setStartTime] = useState<string>("");
+  const [endTime, setEndTime] = useState<string>("");
 
   const isEditMode = !!shift;
 
   useEffect(() => {
-    if (isEditMode && shift) {
-      setStartDate(shift.start);
-      setEndDate(shift.end);
-    } else {
-      setStartDate(undefined);
-      setEndDate(undefined);
+    if (isOpen) {
+        if (isEditMode && shift) {
+          setStartDate(shift.start);
+          setEndDate(shift.end);
+          setStartTime(format(shift.start, "HH:mm"));
+          setEndTime(format(shift.end, "HH:mm"));
+        } else {
+          // Reset form for new entry
+          setStartDate(undefined);
+          setEndDate(undefined);
+          setStartTime("");
+          setEndTime("");
+        }
     }
-  }, [shift, isEditMode]);
+  }, [shift, isEditMode, isOpen]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
+    
+    if (!startDate || !endDate || !startTime || !endTime) {
+        toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all date and time fields.' });
+        return;
+    }
+
+    const finalStartDate = new Date(startDate);
+    const [startHours, startMinutes] = startTime.split(':').map(Number);
+    finalStartDate.setHours(startHours, startMinutes, 0, 0);
+
+    const finalEndDate = new Date(endDate);
+    const [endHours, endMinutes] = endTime.split(':').map(Number);
+    finalEndDate.setHours(endHours, endMinutes, 0, 0);
+
     const data = {
       title: formData.get('title'),
       propertyId: formData.get('propertyId'),
       staffId: formData.get('staffId'),
-      start: startDate,
-      end: endDate,
+      start: finalStartDate,
+      end: finalEndDate,
     };
     
-    if (!data.title || !data.propertyId || !data.start || !data.end) {
+    if (!data.title || !data.propertyId) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all required fields.' });
         return;
     }
@@ -88,17 +111,9 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift }: CreateShiftDialo
     setIsOpen(false);
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      setStartDate(undefined);
-      setEndDate(undefined);
-    }
-    setIsOpen(open);
-  }
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="sm:max-w-[540px]">
         <DialogHeader>
           <DialogTitle>{isEditMode ? 'Edit Shift' : 'Create New Shift'}</DialogTitle>
           <DialogDescription>
@@ -152,55 +167,73 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift }: CreateShiftDialo
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Start Time</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "col-span-3 justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label className="text-right">Start</Label>
+              <div className="col-span-3 flex gap-2">
+                <Popover>
+                    <PopoverTrigger asChild>
+                    <Button
+                        variant={"outline"}
+                        className={cn(
+                        "flex-1 justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                    <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={setStartDate}
+                        initialFocus
+                    />
+                    </PopoverContent>
+                </Popover>
+                <Input 
+                    type="time" 
+                    className="w-[120px]" 
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    required 
+                />
+              </div>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">End Time</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "col-span-3 justify-start text-left font-normal",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Label className="text-right">End</Label>
+              <div className="col-span-3 flex gap-2">
+                <Popover>
+                    <PopoverTrigger asChild>
+                    <Button
+                        variant={"outline"}
+                        className={cn(
+                        "flex-1 justify-start text-left font-normal",
+                        !endDate && "text-muted-foreground"
+                        )}
+                    >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                    <Calendar
+                        mode="single"
+                        selected={endDate}
+                        onSelect={setEndDate}
+                        initialFocus
+                    />
+                    </PopoverContent>
+                </Popover>
+                 <Input 
+                    type="time" 
+                    className="w-[120px]" 
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    required
+                />
+              </div>
             </div>
           </div>
           <DialogFooter>
