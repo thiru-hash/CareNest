@@ -41,26 +41,20 @@ interface CreateShiftDialogProps {
 
 export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateShiftDialogProps) {
   const { toast } = useToast();
-  const [startDate, setStartDate] = useState<Date | undefined>();
-  const [endDate, setEndDate] = useState<Date | undefined>();
-  const [startTime, setStartTime] = useState<string>("");
-  const [endTime, setEndTime] = useState<string>("");
+  const [startDateTime, setStartDateTime] = useState<Date | undefined>();
+  const [endDateTime, setEndDateTime] = useState<Date | undefined>();
 
   const isEditMode = !!shift;
 
   useEffect(() => {
     if (isOpen) {
         if (isEditMode && shift) {
-          setStartDate(shift.start);
-          setEndDate(shift.end);
-          setStartTime(format(shift.start, "HH:mm"));
-          setEndTime(format(shift.end, "HH:mm"));
+          setStartDateTime(shift.start);
+          setEndDateTime(shift.end);
         } else {
           // Reset form for new entry
-          setStartDate(undefined);
-          setEndDate(undefined);
-          setStartTime("");
-          setEndTime("");
+          setStartDateTime(undefined);
+          setEndDateTime(undefined);
         }
     }
   }, [shift, isEditMode, isOpen]);
@@ -69,18 +63,15 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     
-    if (!startDate || !endDate || !startTime || !endTime) {
+    if (!startDateTime || !endDateTime) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all date and time fields.' });
         return;
     }
 
-    const finalStartDate = new Date(startDate);
-    const [startHours, startMinutes] = startTime.split(':').map(Number);
-    finalStartDate.setHours(startHours, startMinutes, 0, 0);
-
-    const finalEndDate = new Date(endDate);
-    const [endHours, endMinutes] = endTime.split(':').map(Number);
-    finalEndDate.setHours(endHours, endMinutes, 0, 0);
+    if (endDateTime < startDateTime) {
+        toast({ variant: 'destructive', title: 'Error', description: 'End time cannot be earlier than start time.' });
+        return;
+    }
 
     const title = formData.get('title') as string;
     const propertyId = formData.get('propertyId') as string;
@@ -96,14 +87,18 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
         title,
         propertyId,
         staffId: staffIdValue === 'open' ? undefined : staffIdValue,
-        start: finalStartDate,
-        end: finalEndDate,
+        start: startDateTime,
+        end: endDateTime,
         status: staffIdValue === 'open' ? 'Open' : (shift?.status === 'In Progress' ? 'In Progress' : 'Assigned'),
     };
     
     onSave(shiftToSave);
     setIsOpen(false);
   };
+  
+  const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
+  const minutes = ['00', '15', '30', '45'];
+
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -161,74 +156,143 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
             </div>
 
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">Start</Label>
-              <div className="col-span-3 flex gap-2">
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {startDate ? format(startDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={startDate}
-                        onSelect={setStartDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
-                <Input 
-                    type="time" 
-                    className="w-[120px]" 
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    required 
-                />
-              </div>
+              <Label htmlFor="startDateTime" className="text-right">
+                Start
+              </Label>
+              <Popover>
+                  <PopoverTrigger asChild>
+                      <Button
+                          id="startDateTime"
+                          variant={"outline"}
+                          className={cn(
+                              "col-span-3 justify-start text-left font-normal",
+                              !startDateTime && "text-muted-foreground"
+                          )}
+                      >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {startDateTime ? format(startDateTime, "PPP p") : <span>Pick a date and time</span>}
+                      </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                      <Calendar
+                          mode="single"
+                          selected={startDateTime}
+                          onSelect={(date) => {
+                              if (!date) return;
+                              const newDateTime = startDateTime ? new Date(startDateTime) : new Date();
+                              newDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+                              setStartDateTime(newDateTime);
+                          }}
+                          initialFocus
+                      />
+                      <div className="p-3 border-t border-border">
+                          <div className="flex items-center justify-center gap-2">
+                              <Select
+                                  value={startDateTime ? format(startDateTime, 'HH') : undefined}
+                                  onValueChange={(hour) => {
+                                      const newDateTime = startDateTime ? new Date(startDateTime) : new Date();
+                                      newDateTime.setHours(parseInt(hour, 10));
+                                      setStartDateTime(newDateTime);
+                                  }}
+                              >
+                                  <SelectTrigger className="w-[80px]">
+                                      <SelectValue placeholder="Hour" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      {hours.map(h => <SelectItem key={`start-hour-${h}`} value={h}>{h}</SelectItem>)}
+                                  </SelectContent>
+                              </Select>
+                              :
+                              <Select
+                                  value={startDateTime ? format(startDateTime, 'mm') : undefined}
+                                  onValueChange={(minute) => {
+                                      const newDateTime = startDateTime ? new Date(startDateTime) : new Date();
+                                      newDateTime.setMinutes(parseInt(minute, 10));
+                                      setStartDateTime(newDateTime);
+                                  }}
+                              >
+                                  <SelectTrigger className="w-[80px]">
+                                      <SelectValue placeholder="Min" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                       {minutes.map(m => <SelectItem key={`start-min-${m}`} value={m}>{m}</SelectItem>)}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                      </div>
+                  </PopoverContent>
+              </Popover>
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label className="text-right">End</Label>
-              <div className="col-span-3 flex gap-2">
-                <Popover>
-                    <PopoverTrigger asChild>
-                    <Button
-                        variant={"outline"}
-                        className={cn(
-                        "flex-1 justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
-                        )}
-                    >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {endDate ? format(endDate, "PPP") : <span>Pick a date</span>}
-                    </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0">
-                    <Calendar
-                        mode="single"
-                        selected={endDate}
-                        onSelect={setEndDate}
-                        initialFocus
-                    />
-                    </PopoverContent>
-                </Popover>
-                 <Input 
-                    type="time" 
-                    className="w-[120px]" 
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    required
-                />
-              </div>
+              <Label htmlFor="endDateTime" className="text-right">
+                End
+              </Label>
+              <Popover>
+                  <PopoverTrigger asChild>
+                      <Button
+                          id="endDateTime"
+                          variant={"outline"}
+                          className={cn(
+                              "col-span-3 justify-start text-left font-normal",
+                              !endDateTime && "text-muted-foreground"
+                          )}
+                      >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {endDateTime ? format(endDateTime, "PPP p") : <span>Pick a date and time</span>}
+                      </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                      <Calendar
+                          mode="single"
+                          selected={endDateTime}
+                          onSelect={(date) => {
+                              if (!date) return;
+                              const newDateTime = endDateTime ? new Date(endDateTime) : new Date();
+                              newDateTime.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
+                              setEndDateTime(newDateTime);
+                          }}
+                          initialFocus
+                      />
+                      <div className="p-3 border-t border-border">
+                          <div className="flex items-center justify-center gap-2">
+                              <Select
+                                  value={endDateTime ? format(endDateTime, 'HH') : undefined}
+                                  onValueChange={(hour) => {
+                                      const newDateTime = endDateTime ? new Date(endDateTime) : new Date();
+                                      newDateTime.setHours(parseInt(hour, 10));
+                                      setEndDateTime(newDateTime);
+                                  }}
+                              >
+                                  <SelectTrigger className="w-[80px]">
+                                      <SelectValue placeholder="Hour" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                      {hours.map(h => <SelectItem key={`end-hour-${h}`} value={h}>{h}</SelectItem>)}
+                                  </SelectContent>
+                              </Select>
+                              :
+                              <Select
+                                  value={endDateTime ? format(endDateTime, 'mm') : undefined}
+                                  onValueChange={(minute) => {
+                                      const newDateTime = endDateTime ? new Date(endDateTime) : new Date();
+                                      newDateTime.setMinutes(parseInt(minute, 10));
+                                      setEndDateTime(newDateTime);
+                                  }}
+                              >
+                                  <SelectTrigger className="w-[80px]">
+                                      <SelectValue placeholder="Min" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                       {minutes.map(m => <SelectItem key={`end-min-${m}`} value={m}>{m}</SelectItem>)}
+                                  </SelectContent>
+                              </Select>
+                          </div>
+                      </div>
+                  </PopoverContent>
+              </Popover>
             </div>
+
           </div>
           <DialogFooter>
               <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
