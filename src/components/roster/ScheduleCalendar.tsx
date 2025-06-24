@@ -24,6 +24,7 @@ const currentUser: User = mockUsers['user-1'];
 
 export function ScheduleCalendar() {
   const { toast } = useToast();
+  const [shifts, setShifts] = useState<Shift[]>(mockShifts);
   const [filters, setFilters] = useState({ staffId: 'all', propertyId: 'all' });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
@@ -38,7 +39,7 @@ export function ScheduleCalendar() {
     setFilters(prev => ({ ...prev, [filterType]: value }));
   };
 
-  const filteredShifts = mockShifts.filter(shift => {
+  const filteredShifts = shifts.filter(shift => {
     const staffMatch = filters.staffId === 'all' 
         || (filters.staffId === 'open' && !shift.staffId)
         || shift.staffId === filters.staffId;
@@ -75,6 +76,27 @@ export function ScheduleCalendar() {
         });
     }
   };
+
+  const handleSaveShift = (savedShift: Shift) => {
+    const shiftExists = shifts.some(s => s.id === savedShift.id);
+
+    if (shiftExists) {
+      setShifts(prevShifts => prevShifts.map(s => s.id === savedShift.id ? savedShift : s));
+      toast({ title: "Shift Updated", description: "The shift has been successfully updated."});
+    } else {
+      setShifts(prevShifts => [...prevShifts, savedShift]);
+      toast({ title: "Shift Created", description: "The new shift has been added to the roster."});
+    }
+
+    if (!savedShift.staffId) {
+      console.log(`[Notification] An open shift "${savedShift.title}" has been created/updated. Notifying available staff.`);
+      toast({
+          title: "Open Shift Action",
+          description: "Notification simulated for available staff.",
+      });
+    }
+  };
+
 
   return (
     <>
@@ -162,6 +184,7 @@ export function ScheduleCalendar() {
         isOpen={isDialogOpen} 
         setIsOpen={setIsDialogOpen} 
         shift={editingShift}
+        onSave={handleSaveShift}
       />
     </>
   );

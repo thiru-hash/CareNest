@@ -36,9 +36,10 @@ interface CreateShiftDialogProps {
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
   shift: Shift | null;
+  onSave: (shift: Shift) => void;
 }
 
-export function CreateShiftDialog({ isOpen, setIsOpen, shift }: CreateShiftDialogProps) {
+export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateShiftDialogProps) {
   const { toast } = useToast();
   const [startDate, setStartDate] = useState<Date | undefined>();
   const [endDate, setEndDate] = useState<Date | undefined>();
@@ -81,33 +82,26 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift }: CreateShiftDialo
     const [endHours, endMinutes] = endTime.split(':').map(Number);
     finalEndDate.setHours(endHours, endMinutes, 0, 0);
 
-    const data = {
-      title: formData.get('title'),
-      propertyId: formData.get('propertyId'),
-      staffId: formData.get('staffId'),
-      start: finalStartDate,
-      end: finalEndDate,
-    };
-    
-    if (!data.title || !data.propertyId) {
+    const title = formData.get('title') as string;
+    const propertyId = formData.get('propertyId') as string;
+    const staffIdValue = formData.get('staffId') as string;
+
+    if (!title || !propertyId) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all required fields.' });
         return;
     }
 
-    if (isEditMode) {
-      console.log("Updating shift:", shift?.id, "with data:", data);
-    } else {
-      console.log("Creating new shift with data:", data);
-    }
-
-    if (data.staffId === 'open') {
-        console.log(`[Notification] An open shift "${data.title}" has been created/updated. Notifying available staff.`);
-        toast({
-            title: "Open Shift Action",
-            description: "Notification simulated for available staff.",
-        });
-    }
+    const shiftToSave: Shift = {
+        id: shift?.id || `shift-${Date.now()}`,
+        title,
+        propertyId,
+        staffId: staffIdValue === 'open' ? undefined : staffIdValue,
+        start: finalStartDate,
+        end: finalEndDate,
+        status: staffIdValue === 'open' ? 'Open' : (shift?.status === 'In Progress' ? 'In Progress' : 'Assigned'),
+    };
     
+    onSave(shiftToSave);
     setIsOpen(false);
   };
 
