@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { mockShifts, mockStaff, mockProperties, mockUsers } from "@/lib/data";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
 import { CreateShiftDialog } from "./CreateShiftDialog";
@@ -29,8 +30,13 @@ export function ScheduleCalendar() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
 
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+  const startOfWeek = new Date(today.setDate(today.getDate() + diffToMonday));
+
   const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
-    const day = new Date();
+    const day = new Date(startOfWeek);
     day.setDate(day.getDate() + i);
     return day;
   });
@@ -38,18 +44,6 @@ export function ScheduleCalendar() {
   const handleFilterChange = (filterType: 'staffId' | 'propertyId') => (value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }));
   };
-
-  const filteredShifts = shifts.filter(shift => {
-    const staffMatch = filters.staffId === 'all' 
-        || (filters.staffId === 'open' && !shift.staffId)
-        || shift.staffId === filters.staffId;
-    const propertyMatch = filters.propertyId === 'all' || shift.propertyId === filters.propertyId;
-    return staffMatch && propertyMatch;
-  });
-
-  const shiftsByDay = daysOfWeek.map(day => 
-    filteredShifts.filter(shift => format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'))
-  );
 
   const handleShiftClick = (shift: Shift) => {
     if (currentUser.role === 'Admin' || currentUser.role === 'Roster Team') {
@@ -97,6 +91,20 @@ export function ScheduleCalendar() {
     }
   };
 
+  // Filter staff resources based on selection
+  const allStaffResources = mockStaff.map(s => ({...s, type: 'staff'}));
+  const filteredStaffResources = filters.staffId === 'all'
+    ? allStaffResources
+    : filters.staffId === 'open'
+      ? [] // 'open' is handled separately
+      : allStaffResources.filter(s => s.id === filters.staffId);
+      
+  const showOpenShifts = filters.staffId === 'all' || filters.staffId === 'open';
+
+  // Filter all shifts based on the property filter first
+  const propertyFilteredShifts = shifts.filter(shift => {
+    return filters.propertyId === 'all' || shift.propertyId === filters.propertyId;
+  });
 
   return (
     <>
@@ -105,7 +113,7 @@ export function ScheduleCalendar() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <div>
                 <CardTitle>Weekly Roster</CardTitle>
-                <CardDescription>View and manage the upcoming shift schedule.</CardDescription>
+                <CardDescription>View and manage the upcoming shift schedule for the week.</CardDescription>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                     <Select value={filters.staffId} onValueChange={handleFilterChange('staffId')}>
@@ -135,12 +143,13 @@ export function ScheduleCalendar() {
             </div>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto border rounded-lg">
             <Table className="min-w-full">
               <TableHeader>
-                <TableRow>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="w-[200px] sticky left-0 bg-muted/50 z-10">Staff</TableHead>
                   {daysOfWeek.map((day) => (
-                    <TableHead key={day.toISOString()} className="text-center">
+                    <TableHead key={day.toISOString()} className="text-center border-l min-w-[150px]">
                       <div className="font-semibold">{format(day, 'EEE')}</div>
                       <div className="text-muted-foreground text-sm">{format(day, 'd MMM')}</div>
                     </TableHead>
@@ -148,33 +157,82 @@ export function ScheduleCalendar() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  {shiftsByDay.map((dayShifts, index) => (
-                    <TableCell key={index} className="align-top p-2 h-96 w-[14.28%]">
-                      <div className="space-y-2">
-                      {dayShifts.map((shift) => {
-                        const staff = mockStaff.find(s => s.id === shift.staffId);
-                        const property = mockProperties.find(p => p.id === shift.propertyId);
-                        const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
+                {filteredStaffResources.map((staff) => {
+                  const staffShifts = propertyFilteredShifts.filter(s => s.staffId === staff.id);
+                  return (
+                    <TableRow key={staff.id} className="h-full">
+                      <TableCell className="font-medium border-r p-2 align-top sticky left-0 bg-background z-10">
+                        <div className="flex items-center gap-2">
+                           <Avatar className="h-8 w-8">
+                                <AvatarImage src={staff.avatarUrl} alt={staff.name} />
+                                <AvatarFallback>{staff.name.charAt(0)}</AvatarFallback>
+                           </Avatar>
+                           <div>
+                            <p className="font-semibold">{staff.name}</p>
+                            <p className="text-xs text-muted-foreground">{staff.role}</p>
+                           </div>
+                        </div>
+                      </TableCell>
+                      {daysOfWeek.map((day) => {
+                        const dayShifts = staffShifts.filter(shift => format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
                         return (
-                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-2 rounded-lg bg-accent/50 border border-accent ${canEdit ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
-                            <p className="font-bold text-primary">{shift.title}</p>
-                            <p className="text-xs text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
-                            <p className="text-xs mt-1">{property?.name}</p>
-                            <div className="mt-2">
-                              {staff ? (
-                                  <Badge variant="secondary">{staff.name}</Badge>
-                              ) : (
-                                  <Badge variant="destructive">{shift.status}</Badge>
-                              )}
+                          <TableCell key={day.toISOString()} className="align-top p-1 border-l">
+                            <div className="space-y-1">
+                              {dayShifts.map(shift => {
+                                const property = mockProperties.find(p => p.id === shift.propertyId);
+                                const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
+                                return (
+                                  <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
+                                    <p className="font-bold text-primary truncate">{shift.title}</p>
+                                    <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                                    <p className="truncate mt-1">{property?.name}</p>
+                                  </div>
+                                );
+                              })}
                             </div>
-                          </div>
-                        )
+                          </TableCell>
+                        );
                       })}
-                      </div>
+                    </TableRow>
+                  );
+                })}
+                {showOpenShifts && (
+                  <TableRow>
+                    <TableCell className="font-medium border-r p-2 align-top bg-amber-50 sticky left-0 z-10">
+                      <p className="font-semibold text-amber-800">Open Shifts</p>
+                      <p className="text-xs text-amber-700">Unassigned</p>
                     </TableCell>
-                  ))}
-                </TableRow>
+                    {daysOfWeek.map((day) => {
+                      const openShifts = propertyFilteredShifts.filter(shift => !shift.staffId && format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
+                      return (
+                        <TableCell key={day.toISOString()} className="align-top p-1 border-l bg-amber-50/50">
+                           <div className="space-y-1">
+                              {openShifts.map(shift => {
+                                const property = mockProperties.find(p => p.id === shift.propertyId);
+                                const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
+                                return (
+                                  <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-destructive/10 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-destructive/20 hover:border-destructive/50' : 'cursor-default'}`}>
+                                    <p className="font-bold text-destructive truncate">{shift.title}</p>
+                                    <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                                    <p className="truncate mt-1">{property?.name}</p>
+                                    <Badge variant="destructive" className="mt-1">{shift.status}</Badge>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                )}
+
+                 {filteredStaffResources.length === 0 && !showOpenShifts && (
+                    <TableRow>
+                        <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
+                            No staff members match the current filter.
+                        </TableCell>
+                    </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>
