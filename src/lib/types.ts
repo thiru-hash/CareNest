@@ -8,6 +8,13 @@ export interface User {
   role: UserRole;
 }
 
+export interface Group {
+  id: string;
+  name: string;
+  description: string;
+  userIds: string[];
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -24,6 +31,7 @@ export interface Staff {
   role: 'Support Worker' | 'Manager' | 'Coordinator';
   email: string;
   phone: string;
+  groupIds?: string[];
 }
 
 export interface Property {

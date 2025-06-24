@@ -25,6 +25,7 @@ const pageTitles: { [key: string]: string } = {
   "/people": "People We Support",
   "/staff": "Staff",
   "/locations": "Locations",
+  "/settings": "Settings",
 };
 
 export function Header() {
@@ -60,7 +61,7 @@ export function Header() {
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link href="#">
+              <Link href="/settings">
                 <Settings className="mr-2" />
                 <span>Settings</span>
               </Link>

@@ -34,6 +34,7 @@ const navItems: { [key in UserRole]: { href: string; icon: React.ElementType; la
     { href: "/people", icon: Users, label: "People We Support" },
     { href: "/staff", icon: UsersRound, label: "Staff" },
     { href: "/locations", icon: Building2, label: "Locations" },
+    { href: "/settings", icon: Settings, label: "Settings" },
   ],
   "Support Manager": [],
   "Support Worker": [],
@@ -78,7 +79,7 @@ export function SidebarNav() {
         <SidebarMenu>
             <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={{children: 'Settings'}}>
-                    <Link href="#">
+                    <Link href="/settings">
                         <Settings/>
                         <span>Settings</span>
                     </Link>
