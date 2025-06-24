@@ -44,20 +44,20 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();
 
-  const isEditMode = !!shift;
+  const isEditMode = !!shift?.id;
 
   useEffect(() => {
     if (isOpen) {
-        if (isEditMode && shift) {
+        if (shift) {
           setStartDateTime(shift.start);
           setEndDateTime(shift.end);
         } else {
-          // Reset form for new entry
+          // Reset form for new entry from scratch
           setStartDateTime(undefined);
           setEndDateTime(undefined);
         }
     }
-  }, [shift, isEditMode, isOpen]);
+  }, [shift, isOpen]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -18,7 +18,7 @@ import { CreateShiftDialog } from "./CreateShiftDialog";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { Shift, User } from "@/lib/types";
+import type { Shift, User, Staff } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
 const currentUser: User = mockUsers['user-1'];
@@ -71,6 +71,66 @@ export function ScheduleCalendar() {
     }
   };
 
+  const handleCellCreateClick = (staff: Staff, day: Date) => {
+    if (currentUser.role !== 'Admin' && currentUser.role !== 'Roster Team') {
+      toast({
+        variant: 'destructive',
+        title: "Permission Denied",
+        description: "You are not authorized to create shifts.",
+      });
+      return;
+    }
+
+    const start = new Date(day);
+    start.setHours(9, 0, 0, 0);
+
+    const end = new Date(day);
+    end.setHours(17, 0, 0, 0);
+
+    const newShiftTemplate: Shift = {
+      id: '',
+      title: '',
+      staffId: staff.id,
+      propertyId: '',
+      start,
+      end,
+      status: 'Assigned',
+    };
+
+    setEditingShift(newShiftTemplate);
+    setIsDialogOpen(true);
+  };
+  
+  const handleOpenShiftCellClick = (day: Date) => {
+    if (currentUser.role !== 'Admin' && currentUser.role !== 'Roster Team') {
+      toast({
+        variant: 'destructive',
+        title: 'Permission Denied',
+        description: 'You are not authorized to create shifts.',
+      });
+      return;
+    }
+
+    const start = new Date(day);
+    start.setHours(9, 0, 0, 0);
+    const end = new Date(day);
+    end.setHours(17, 0, 0, 0);
+
+    const newShiftTemplate: Shift = {
+      id: '',
+      title: '',
+      staffId: undefined,
+      propertyId: '',
+      start,
+      end,
+      status: 'Open',
+    };
+
+    setEditingShift(newShiftTemplate);
+    setIsDialogOpen(true);
+  };
+
+
   const handleSaveShift = (savedShift: Shift) => {
     const shiftExists = shifts.some(s => s.id === savedShift.id);
 
@@ -91,17 +151,15 @@ export function ScheduleCalendar() {
     }
   };
 
-  // Filter staff resources based on selection
   const allStaffResources = mockStaff.map(s => ({...s, type: 'staff'}));
   const filteredStaffResources = filters.staffId === 'all'
     ? allStaffResources
     : filters.staffId === 'open'
-      ? [] // 'open' is handled separately
+      ? []
       : allStaffResources.filter(s => s.id === filters.staffId);
       
   const showOpenShifts = filters.staffId === 'all' || filters.staffId === 'open';
 
-  // Filter all shifts based on the property filter first
   const propertyFilteredShifts = shifts.filter(shift => {
     return filters.propertyId === 'all' || shift.propertyId === filters.propertyId;
   });
@@ -175,21 +233,38 @@ export function ScheduleCalendar() {
                       </TableCell>
                       {daysOfWeek.map((day) => {
                         const dayShifts = staffShifts.filter(shift => format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
+                        const canCreate = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
                         return (
-                          <TableCell key={day.toISOString()} className="align-top p-1 border-l">
-                            <div className="space-y-1">
-                              {dayShifts.map(shift => {
-                                const property = mockProperties.find(p => p.id === shift.propertyId);
-                                const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
-                                return (
-                                  <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
-                                    <p className="font-bold text-primary truncate">{shift.title}</p>
-                                    <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
-                                    <p className="truncate mt-1">{property?.name}</p>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                          <TableCell key={day.toISOString()} className="align-top p-1 border-l h-24 group/cell relative">
+                            {dayShifts.length > 0 ? (
+                              <div className="space-y-1">
+                                {dayShifts.map(shift => {
+                                  const property = mockProperties.find(p => p.id === shift.propertyId);
+                                  const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
+                                  return (
+                                    <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
+                                      <p className="font-bold text-primary truncate">{shift.title}</p>
+                                      <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                                      <p className="truncate mt-1">{property?.name}</p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                                canCreate && (
+                                    <div className="flex items-center justify-center h-full">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 opacity-0 group-hover/cell:opacity-100 focus:opacity-100 transition-opacity"
+                                            onClick={() => handleCellCreateClick(staff, day)}
+                                        >
+                                            <PlusCircle className="h-4 w-4" />
+                                            <span className="sr-only">Add shift</span>
+                                        </Button>
+                                    </div>
+                                )
+                            )}
                           </TableCell>
                         );
                       })}
@@ -204,22 +279,39 @@ export function ScheduleCalendar() {
                     </TableCell>
                     {daysOfWeek.map((day) => {
                       const openShifts = propertyFilteredShifts.filter(shift => !shift.staffId && format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
+                      const canCreate = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
                       return (
-                        <TableCell key={day.toISOString()} className="align-top p-1 border-l bg-amber-50/50">
-                           <div className="space-y-1">
-                              {openShifts.map(shift => {
-                                const property = mockProperties.find(p => p.id === shift.propertyId);
-                                const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
-                                return (
-                                  <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-destructive/10 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-destructive/20 hover:border-destructive/50' : 'cursor-default'}`}>
-                                    <p className="font-bold text-destructive truncate">{shift.title}</p>
-                                    <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
-                                    <p className="truncate mt-1">{property?.name}</p>
-                                    <Badge variant="destructive" className="mt-1">{shift.status}</Badge>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                        <TableCell key={day.toISOString()} className="align-top p-1 border-l bg-amber-50/50 h-24 group/cell relative">
+                           {openShifts.length > 0 ? (
+                            <div className="space-y-1">
+                                {openShifts.map(shift => {
+                                  const property = mockProperties.find(p => p.id === shift.propertyId);
+                                  const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
+                                  return (
+                                    <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-destructive/10 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-destructive/20 hover:border-destructive/50' : 'cursor-default'}`}>
+                                      <p className="font-bold text-destructive truncate">{shift.title}</p>
+                                      <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                                      <p className="truncate mt-1">{property?.name}</p>
+                                      <Badge variant="destructive" className="mt-1">{shift.status}</Badge>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                           ) : (
+                                canCreate && (
+                                    <div className="flex items-center justify-center h-full">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-6 w-6 opacity-0 group-hover/cell:opacity-100 focus:opacity-100 transition-opacity"
+                                            onClick={() => handleOpenShiftCellClick(day)}
+                                        >
+                                            <PlusCircle className="h-4 w-4" />
+                                            <span className="sr-only">Add open shift</span>
+                                        </Button>
+                                    </div>
+                                )
+                           )}
                         </TableCell>
                       );
                     })}
