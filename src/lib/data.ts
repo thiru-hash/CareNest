@@ -1,6 +1,6 @@
 import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
-import { LayoutDashboard, Calendar, Users, UsersRound, Building2, ShieldAlert } from "lucide-react";
+import { LayoutDashboard, Calendar, Users, UsersRound, Building2, ShieldAlert, Settings } from "lucide-react";
 
 const now = new Date();
 
