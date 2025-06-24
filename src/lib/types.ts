@@ -48,6 +48,7 @@ export interface Shift {
   start: Date;
   end: Date;
   staffId?: string;
+  clientId?: string;
   propertyId: string;
   status: 'Open' | 'Assigned' | 'Completed' | 'In Progress';
 }

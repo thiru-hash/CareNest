@@ -9,6 +9,17 @@ import {
   DialogTitle,
   DialogFooter
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,8 +36,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { mockStaff, mockProperties } from "@/lib/data";
-import { Calendar as CalendarIcon } from "lucide-react";
+import { mockStaff, mockProperties, mockClients, mockUsers } from "@/lib/data";
+import { Calendar as CalendarIcon, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import type { Shift } from "@/lib/types";
@@ -37,9 +48,12 @@ interface CreateShiftDialogProps {
   setIsOpen: (open: boolean) => void;
   shift: Shift | null;
   onSave: (shift: Shift) => void;
+  onDelete: (shiftId: string) => void;
 }
 
-export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateShiftDialogProps) {
+const currentUser = mockUsers['user-1'];
+
+export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }: CreateShiftDialogProps) {
   const { toast } = useToast();
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();
@@ -52,7 +66,6 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
           setStartDateTime(shift.start);
           setEndDateTime(shift.end);
         } else {
-          // Reset form for new entry from scratch
           setStartDateTime(undefined);
           setEndDateTime(undefined);
         }
@@ -76,6 +89,7 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
     const title = formData.get('title') as string;
     const propertyId = formData.get('propertyId') as string;
     const staffIdValue = formData.get('staffId') as string;
+    const clientIdValue = formData.get('clientId') as string;
 
     if (!title || !propertyId) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all required fields.' });
@@ -87,6 +101,7 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
         title,
         propertyId,
         staffId: staffIdValue === 'open' ? undefined : staffIdValue,
+        clientId: clientIdValue === 'none' ? undefined : clientIdValue,
         start: startDateTime,
         end: endDateTime,
         status: staffIdValue === 'open' ? 'Open' : (shift?.status === 'In Progress' ? 'In Progress' : 'Assigned'),
@@ -96,6 +111,13 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
     setIsOpen(false);
   };
   
+  const handleDelete = () => {
+    if (shift?.id) {
+        onDelete(shift.id);
+        setIsOpen(false);
+    }
+  }
+
   const hours = Array.from({ length: 24 }, (_, i) => i.toString().padStart(2, '0'));
   const minutes = ['00', '15', '30', '45'];
 
@@ -149,6 +171,25 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
                   {mockStaff.map((staff) => (
                     <SelectItem key={staff.id} value={staff.id}>
                       {staff.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="clientId" className="text-right">
+                Client
+              </Label>
+              <Select name="clientId" defaultValue={shift?.clientId || 'none'}>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select a client" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No specific client</SelectItem>
+                  {mockClients.map((client) => (
+                    <SelectItem key={client.id} value={client.id}>
+                      {client.name}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -294,9 +335,34 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave }: CreateSh
             </div>
 
           </div>
-          <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-            <Button type="submit">{isEditMode ? 'Save Changes' : 'Save Shift'}</Button>
+          <DialogFooter className="justify-between sm:justify-between">
+            <div>
+            {isEditMode && currentUser.role === 'Admin' && (
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button type="button" variant="destructive">
+                            <Trash2 className="mr-2 h-4 w-4" /> Delete Shift
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the shift.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
+            </div>
+            <div className="flex gap-2">
+                <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+                <Button type="submit">{isEditMode ? 'Save Changes' : 'Save Shift'}</Button>
+            </div>
           </DialogFooter>
         </form>
       </DialogContent>
