@@ -1,5 +1,6 @@
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
+import { LayoutDashboard, Calendar, Users, UsersRound, Building2, ShieldAlert } from "lucide-react";
 
 const now = new Date();
 
@@ -69,4 +70,20 @@ export const mockComplianceItems: ComplianceItem[] = [
   { id: 'comp-2', title: 'Drivers License', staffId: 'staff-2', renewalDate: addDays(now, 12), status: 'Expiring Soon' },
   { id: 'comp-3', title: 'Background Check', staffId: 'staff-1', renewalDate: subDays(now, 5), status: 'Overdue' },
   { id: 'comp-4', title: 'CPR Certification', staffId: 'staff-3', renewalDate: addDays(now, 90), status: 'Compliant' },
+];
+
+export const mockSections: AppSection[] = [
+  { id: 'sec-dash', name: 'Dashboard', icon: LayoutDashboard, order: 1, status: 'Active' },
+  { id: 'sec-roster', name: 'Roster Schedule', icon: Calendar, order: 2, status: 'Active' },
+  { id: 'sec-people', name: 'People We Support', icon: Users, order: 3, status: 'Active' },
+  { id: 'sec-staff', name: 'Staff', icon: UsersRound, order: 4, status: 'Active' },
+  { id: 'sec-loc', name: 'Locations', icon: Building2, order: 5, status: 'Active' },
+  { id: 'sec-inc', name: 'Incident Reports', icon: ShieldAlert, order: 6, status: 'Inactive' },
+  { id: 'sec-settings', name: 'System Settings', icon: Settings, order: 7, status: 'Active' },
+];
+
+export const mockForms: CustomForm[] = [
+    { id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', fieldCount: 12, status: 'Active' },
+    { id: 'form-2', name: 'Incident Report Form', linkedSectionId: 'sec-inc', fieldCount: 25, status: 'Inactive' },
+    { id: 'form-3', name: 'Vehicle Check', linkedSectionId: 'sec-loc', fieldCount: 8, status: 'Active' },
 ];

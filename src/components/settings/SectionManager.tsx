@@ -1,6 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { PanelLeftOpen, PlusCircle } from "lucide-react";
+import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
+import { mockSections } from "@/lib/data";
+import { Badge } from "../ui/badge";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+
 
 export function SectionManager() {
     return (
@@ -9,7 +15,7 @@ export function SectionManager() {
                 <div className="flex justify-between items-start">
                     <div>
                         <CardTitle>Section Manager</CardTitle>
-                        <CardDescription>Create, configure, and manage custom sidebar sections.</CardDescription>
+                        <CardDescription>Create and manage the main navigation sections of the application.</CardDescription>
                     </div>
                     <Button>
                         <PlusCircle className="mr-2 h-4 w-4" />
@@ -17,12 +23,51 @@ export function SectionManager() {
                     </Button>
                 </div>
             </CardHeader>
-            <CardContent className="flex flex-col items-center justify-center text-center p-12">
-                <PanelLeftOpen className="h-16 w-16 text-muted-foreground mb-4" />
-                <h3 className="text-xl font-semibold">Dynamic Sidebar Sections</h3>
-                <p className="text-muted-foreground mt-2">
-                    Create new navigation items that will appear in the main sidebar for authorized users.
-                </p>
+            <CardContent>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Section Name</TableHead>
+                            <TableHead>Icon</TableHead>
+                            <TableHead>Order</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead><span className="sr-only">Actions</span></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {mockSections.sort((a,b) => a.order - b.order).map((section) => {
+                            const Icon = section.icon;
+                            const statusVariant = section.status === 'Active' ? 'default' : 'secondary';
+                            const statusClass = section.status === 'Active' 
+                                ? "bg-green-500/20 text-green-700 border-green-500/30 hover:bg-green-500/30"
+                                : "bg-gray-500/20 text-gray-700 border-gray-500/30 hover:bg-gray-500/30";
+
+                            return (
+                                <TableRow key={section.id}>
+                                    <TableCell className="font-medium">{section.name}</TableCell>
+                                    <TableCell><Icon className="h-5 w-5 text-muted-foreground" /></TableCell>
+                                    <TableCell>{section.order}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={statusVariant} className={cn(statusClass)}>{section.status}</Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="ghost" size="icon">
+                                                    <MoreHorizontal className="h-4 w-4" />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem>Edit Section</DropdownMenuItem>
+                                                <DropdownMenuItem>Manage Rights</DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                </Table>
             </CardContent>
         </Card>
     );

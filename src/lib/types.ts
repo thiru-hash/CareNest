@@ -60,3 +60,19 @@ export interface ComplianceItem {
   renewalDate: Date;
   status: 'Compliant' | 'Expiring Soon' | 'Overdue';
 }
+
+export interface AppSection {
+    id: string;
+    name: string;
+    icon: React.ElementType;
+    order: number;
+    status: 'Active' | 'Inactive';
+}
+
+export interface CustomForm {
+    id: string;
+    name: string;
+    linkedSectionId: string;
+    fieldCount: number;
+    status: 'Active' | 'Inactive';
+}
