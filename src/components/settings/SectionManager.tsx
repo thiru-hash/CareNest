@@ -1,14 +1,34 @@
+"use client";
+
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { MoreHorizontal, PlusCircle, LayoutDashboard } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { mockSections } from "@/lib/data";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-
+import type { AppSection } from "@/lib/types";
 
 export function SectionManager() {
+    const [sections, setSections] = useState<AppSection[]>(mockSections.sort((a,b) => a.order - b.order));
+
+    const handleCreateSection = () => {
+        const newSection: AppSection = {
+            id: `sec-${Date.now()}`,
+            name: "New Section",
+            icon: LayoutDashboard,
+            order: Math.max(...sections.map(s => s.order)) + 1,
+            status: "Inactive",
+        };
+        setSections(prev => [...prev, newSection].sort((a,b) => a.order - b.order));
+    };
+
+    const handleDeleteSection = (sectionId: string) => {
+        setSections(prev => prev.filter(s => s.id !== sectionId));
+    };
+
     return (
         <Card>
             <CardHeader>
@@ -17,7 +37,7 @@ export function SectionManager() {
                         <CardTitle>Section Manager</CardTitle>
                         <CardDescription>Create and manage the main navigation sections of the application.</CardDescription>
                     </div>
-                    <Button>
+                    <Button onClick={handleCreateSection}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Section
                     </Button>
@@ -35,7 +55,7 @@ export function SectionManager() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockSections.sort((a,b) => a.order - b.order).map((section) => {
+                        {sections.map((section) => {
                             const Icon = section.icon;
                             const statusVariant = section.status === 'Active' ? 'default' : 'secondary';
                             const statusClass = section.status === 'Active' 
@@ -60,6 +80,7 @@ export function SectionManager() {
                                             <DropdownMenuContent align="end">
                                                 <DropdownMenuItem>Edit Section</DropdownMenuItem>
                                                 <DropdownMenuItem>Manage Rights</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteSection(section.id)}>Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

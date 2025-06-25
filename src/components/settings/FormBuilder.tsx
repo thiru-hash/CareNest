@@ -1,13 +1,34 @@
+"use client";
+
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "../ui/button";
-import { FileText, MoreHorizontal, PlusCircle } from "lucide-react";
+import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { mockForms, mockSections } from "@/lib/data";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import type { CustomForm } from "@/lib/types";
 
 export function FormBuilder() {
+    const [forms, setForms] = useState<CustomForm[]>(mockForms);
+
+    const handleCreateForm = () => {
+        const newForm: CustomForm = {
+            id: `form-${Date.now()}`,
+            name: "New Custom Form",
+            linkedSectionId: mockSections[0].id,
+            fieldCount: 0,
+            status: 'Inactive',
+        };
+        setForms(prev => [...prev, newForm]);
+    };
+    
+    const handleDeleteForm = (formId: string) => {
+        setForms(prev => prev.filter(form => form.id !== formId));
+    }
+
     return (
         <Card>
             <CardHeader>
@@ -16,7 +37,7 @@ export function FormBuilder() {
                         <CardTitle>Form Builder</CardTitle>
                         <CardDescription>Design and manage custom forms to link with your sections.</CardDescription>
                     </div>
-                    <Button>
+                    <Button onClick={handleCreateForm}>
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Form
                     </Button>
@@ -34,7 +55,7 @@ export function FormBuilder() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {mockForms.map((form) => {
+                        {forms.map((form) => {
                             const section = mockSections.find(s => s.id === form.linkedSectionId);
                             const statusVariant = form.status === 'Active' ? 'default' : 'secondary';
                              const statusClass = form.status === 'Active' 
@@ -60,6 +81,7 @@ export function FormBuilder() {
                                                 <DropdownMenuItem>Edit Form</DropdownMenuItem>
                                                 <DropdownMenuItem>Manage Fields</DropdownMenuItem>
                                                 <DropdownMenuItem>Permissions</DropdownMenuItem>
+                                                <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteForm(form.id)}>Delete</DropdownMenuItem>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </TableCell>

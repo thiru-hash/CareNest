@@ -11,7 +11,6 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   LayoutDashboard,
   Calendar,
@@ -27,23 +26,21 @@ import { UserRole } from "@/lib/types";
 
 const user = mockUsers["user-1"];
 
-const navItems: { [key in UserRole]: { href: string; icon: React.ElementType; label: string }[] } = {
-  Admin: [
+const navItems: { href: string; icon: React.ElementType; label: string }[] = [
     { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
     { href: "/roster", icon: Calendar, label: "Roster Schedule" },
     { href: "/people", icon: Users, label: "People We Support" },
     { href: "/staff", icon: UsersRound, label: "Staff" },
     { href: "/locations", icon: Building2, label: "Locations" },
     { href: "/settings", icon: Settings, label: "System Settings" },
-  ],
-  "Support Manager": [],
-  "Support Worker": [],
-  "Roster Team": [],
-};
+];
+
+const adminRoles: UserRole[] = ["Admin"];
 
 export function SidebarNav() {
   const pathname = usePathname();
-  const userNavItems = navItems[user.role] || [];
+  // For now, we assume admin has all nav items. This can be expanded with the rights system.
+  const userNavItems = adminRoles.includes(user.role) ? navItems : [];
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
@@ -77,14 +74,6 @@ export function SidebarNav() {
       </SidebarContent>
       <SidebarFooter className="group-data-[collapsible=icon]:-ml-1">
         <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: 'System Settings'}}>
-                    <Link href="/settings">
-                        <Settings/>
-                        <span>System Settings</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
             <SidebarMenuItem>
                 <SidebarMenuButton asChild tooltip={{children: 'Logout'}}>
                     <Link href="/">
