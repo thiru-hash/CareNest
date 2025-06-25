@@ -69,7 +69,7 @@ export function CreateEditFormDialog({
       name,
       linkedSectionId,
       status,
-      fieldCount: form?.fieldCount || 0, // Preserve field count
+      fields: form?.fields || [], // Preserve fields
     };
     onSave(newFormData);
     setIsOpen(false);

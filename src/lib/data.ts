@@ -1,5 +1,31 @@
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
+import {
+  CaseSensitive,
+  Textarea,
+  Square,
+  Pilcrow,
+  ChevronDownSquare,
+  ListChecks,
+  ArrowRightLeft,
+  CalendarDays,
+  Cake,
+  RadioTower,
+  Clock,
+  CheckSquare,
+  Hash,
+  Binary,
+  DollarSign,
+  Package,
+  Upload,
+  Heading1,
+  Heading2,
+  PenSquare,
+  Info,
+  RectangleHorizontal,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
+
 
 const now = new Date();
 
@@ -82,7 +108,51 @@ export const mockSections: AppSection[] = [
 ];
 
 export const mockForms: CustomForm[] = [
-    { id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', fieldCount: 12, status: 'Active' },
-    { id: 'form-2', name: 'Incident Report Form', linkedSectionId: 'sec-inc', fieldCount: 25, status: 'Inactive' },
-    { id: 'form-3', name: 'Vehicle Check', linkedSectionId: 'sec-loc', fieldCount: 8, status: 'Active' },
+    { 
+      id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-1-1', name: 'First Name', type: 'text', order: 1 },
+        { id: 'field-1-2', name: 'Last Name', type: 'text', order: 2 },
+        { id: 'field-1-3', name: 'Date of Birth', type: 'dob', order: 3 },
+      ]
+    },
+    { 
+      id: 'form-2', name: 'Incident Report Form', linkedSectionId: 'sec-inc', status: 'Inactive',
+      fields: [
+        { id: 'field-2-1', name: 'Incident Date', type: 'date', order: 1 },
+        { id: 'field-2-2', name: 'Incident Time', type: 'time', order: 2 },
+        { id: 'field-2-3', name: 'Detailed Description', type: 'richtext', order: 3 },
+      ]
+    },
+    { 
+      id: 'form-3', name: 'Vehicle Check', linkedSectionId: 'sec-loc', status: 'Active',
+      fields: []
+    },
+];
+
+
+export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon }[] = [
+    { value: 'text', label: 'Text', icon: CaseSensitive },
+    { value: 'textbox', label: 'Text Box', icon: Textarea },
+    { value: 'textbox-full', label: 'Text Box (full width)', icon: Square },
+    { value: 'richtext', label: 'Rich Text', icon: Pilcrow },
+    { value: 'dropdown', label: 'Dropdown List', icon: ChevronDownSquare },
+    { value: 'multi-select-dropdown', label: 'Multi-Select Dropdown', icon: ListChecks },
+    { value: 'dual-select', label: 'Dual-Select List Boxes', icon: ArrowRightLeft },
+    { value: 'date', label: 'Date', icon: CalendarDays },
+    { value: 'dob', label: 'Date of Birth', icon: Cake },
+    { value: 'radio', label: 'Radio List', icon: RadioTower },
+    { value: 'time', label: 'Time', icon: Clock },
+    { value: 'checkbox', label: 'Checkbox (single)', icon: CheckSquare },
+    { value: 'number-whole', label: 'Number (whole)', icon: Hash },
+    { value: 'number-decimal', label: 'Number (decimal)', icon: Binary },
+    { value: 'currency', label: 'Currency', icon: DollarSign },
+    { value: 'service-item', label: 'Service Item', icon: Package },
+    { value: 'file-upload', label: 'File Upload', icon: Upload },
+    { value: 'headline', label: 'Headline', icon: Heading1 },
+    { value: 'sub-headline', label: 'Sub-Headline', icon: Heading2 },
+    { value: 'signature', label: 'On-screen Signature', icon: PenSquare },
+    { value: 'infobox', label: 'Info Box', icon: Info },
+    { value: 'infobox-full', label: 'Info Box (full width)', icon: Info },
+    { value: 'spacer', label: 'Single Space', icon: RectangleHorizontal },
 ];

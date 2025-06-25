@@ -2,6 +2,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
@@ -39,7 +40,7 @@ export function FormBuilder() {
             setForms(prev => prev.map(f => f.id === savedForm.id ? savedForm : f));
         } else {
             // Create new
-            setForms(prev => [...prev, savedForm]);
+            setForms(prev => [...prev, { ...savedForm, fields: [] }]);
         }
     };
 
@@ -81,7 +82,7 @@ export function FormBuilder() {
                                     <TableRow key={form.id}>
                                         <TableCell className="font-medium">{form.name}</TableCell>
                                         <TableCell>{section?.name || 'N/A'}</TableCell>
-                                        <TableCell>{form.fieldCount}</TableCell>
+                                        <TableCell>{form.fields.length}</TableCell>
                                         <TableCell>
                                             <Badge variant={statusVariant} className={cn(statusClass)}>{form.status}</Badge>
                                         </TableCell>
@@ -94,7 +95,9 @@ export function FormBuilder() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem onClick={() => handleEditForm(form)}>Edit Form</DropdownMenuItem>
-                                                    <DropdownMenuItem disabled>Manage Fields</DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/settings/forms/${form.id}`}>Manage Fields</Link>
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem disabled>Permissions</DropdownMenuItem>
                                                     <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteForm(form.id)}>Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>

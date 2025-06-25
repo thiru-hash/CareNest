@@ -71,10 +71,26 @@ export interface AppSection {
     linkedFormId?: string;
 }
 
+export type FormFieldType = 
+    | 'text' | 'textbox' | 'textbox-full' | 'richtext' 
+    | 'dropdown' | 'multi-select-dropdown' | 'dual-select'
+    | 'date' | 'dob' | 'radio' | 'time' | 'checkbox'
+    | 'number-whole' | 'number-decimal' | 'currency'
+    | 'service-item' | 'file-upload' | 'headline' | 'sub-headline'
+    | 'signature' | 'infobox' | 'infobox-full' | 'spacer';
+
+export interface FormField {
+    id: string;
+    name: string;
+    type: FormFieldType;
+    order: number;
+    // Add more properties from the reference here later
+}
+
 export interface CustomForm {
     id: string;
     name: string;
     linkedSectionId: string;
-    fieldCount: number;
+    fields: FormField[];
     status: 'Active' | 'Inactive';
 }
