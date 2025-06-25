@@ -83,6 +83,7 @@ export const mockClients: Client[] = [
 ];
 
 export const mockShifts: Shift[] = [
+  { id: 'shift-today-test', title: 'Mid-day Shift', start: new Date(new Date(now).setHours(11, 0, 0, 0)), end: new Date(new Date(now).setHours(14, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned' },
   { id: 'shift-1', title: 'Morning Shift', start: subHours(now, 2), end: addHours(now, 4), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'In Progress' },
   { id: 'shift-2', title: 'Afternoon Shift', start: addHours(now, 3), end: addHours(now, 9), staffId: 'staff-2', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
   { id: 'shift-3', title: 'Night Shift', start: addHours(now, 8), end: addHours(now, 16), propertyId: 'prop-2', status: 'Open' },
@@ -168,14 +169,14 @@ export const mockForms: CustomForm[] = [
       fields: []
     },
     { 
-      id: 'form-4', name: 'Progress Note Form', linkedSectionId: 'sec-people', status: 'Inactive',
+      id: 'form-4', name: 'Progress Note Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
         { id: 'field-4-1', name: 'Date', type: 'date', order: 10, required: true },
         { id: 'field-4-2', name: 'Note', type: 'richtext', order: 20, required: true },
       ]
     },
     { 
-      id: 'form-5', name: 'Medication Chart Form', linkedSectionId: 'sec-people', status: 'Inactive',
+      id: 'form-5', name: 'Medication Chart Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
           { id: 'field-5-1', name: 'Medication Name', type: 'text', order: 10, required: true },
           { id: 'field-5-2', name: 'Dosage', type: 'text', order: 20, required: true },
@@ -335,3 +336,4 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
+
