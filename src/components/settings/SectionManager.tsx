@@ -23,8 +23,9 @@ export function SectionManager() {
         setCurrentSection({
             id: '', // Empty ID signifies a new section
             name: "New Section",
+            path: "/new-section",
             iconName: "LayoutDashboard",
-            order: maxOrder + 1,
+            order: maxOrder + 10,
             status: "Inactive",
         });
         setIsDialogOpen(true);
@@ -36,6 +37,11 @@ export function SectionManager() {
     };
 
     const handleDeleteSection = (sectionId: string) => {
+        // Prevent deleting core sections for demo purposes
+        if (['sec-dash', 'sec-settings'].includes(sectionId)) {
+            alert("This is a core section and cannot be deleted.");
+            return;
+        }
         setSections(prev => prev.filter(s => s.id !== sectionId));
     };
 

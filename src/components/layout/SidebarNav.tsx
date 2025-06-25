@@ -10,35 +10,30 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import {
-  LayoutDashboard,
-  Calendar,
-  Users,
-  UsersRound,
-  Building2,
-  Settings,
-  Waves,
-} from "lucide-react";
-import { mockUsers } from "@/lib/data";
+import { Waves, MoreHorizontal } from "lucide-react";
+import { mockUsers, mockSections } from "@/lib/data";
+import { iconMap } from "@/lib/icon-map";
 import { UserRole } from "@/lib/types";
+import { useMemo } from "react";
 
 const user = mockUsers["user-1"];
-
-const navItems: { href: string; icon: React.ElementType; label: string }[] = [
-    { href: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
-    { href: "/roster", icon: Calendar, label: "Roster Schedule" },
-    { href: "/people", icon: Users, label: "People We Support" },
-    { href: "/staff", icon: UsersRound, label: "Staff" },
-    { href: "/locations", icon: Building2, label: "Locations" },
-    { href: "/settings", icon: Settings, label: "System Settings" },
-];
 
 const adminRoles: UserRole[] = ["Admin"];
 
 export function SidebarNav() {
   const pathname = usePathname();
-  // For now, we assume admin has all nav items. This can be expanded with the rights system.
-  const userNavItems = adminRoles.includes(user.role) ? navItems : [];
+  
+  const userNavItems = useMemo(() => {
+    // In a real app, this data would likely be fetched or come from a context.
+    // For now, we filter and sort the mock data.
+    if (adminRoles.includes(user.role)) {
+      return mockSections
+        .filter(section => section.status === 'Active')
+        .sort((a, b) => a.order - b.order);
+    }
+    // Add logic here for non-admin roles if needed
+    return [];
+  }, []);
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">
@@ -54,20 +49,23 @@ export function SidebarNav() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
-          {userNavItems.map((item) => (
-            <SidebarMenuItem key={item.href}>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith(item.href)}
-                tooltip={{ children: item.label }}
-              >
-                <Link href={item.href}>
-                  <item.icon />
-                  <span>{item.label}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {userNavItems.map((item) => {
+            const Icon = iconMap[item.iconName] || MoreHorizontal;
+            return (
+              <SidebarMenuItem key={item.id}>
+                <SidebarMenuButton
+                  asChild
+                  isActive={pathname.startsWith(item.path)}
+                  tooltip={{ children: item.name }}
+                >
+                  <Link href={item.path}>
+                    <Icon />
+                    <span>{item.name}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            );
+          })}
         </SidebarMenu>
       </SidebarContent>
     </Sidebar>

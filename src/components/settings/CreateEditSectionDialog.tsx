@@ -23,6 +23,7 @@ import {
 import type { AppSection } from "@/lib/types";
 import { iconMap, iconNames } from "@/lib/icon-map";
 import { mockForms } from "@/lib/data";
+import { ScrollArea } from "../ui/scroll-area";
 
 interface CreateEditSectionDialogProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export function CreateEditSectionDialog({
   onSave,
 }: CreateEditSectionDialogProps) {
   const [name, setName] = useState("");
+  const [path, setPath] = useState("");
   const [iconName, setIconName] = useState("LayoutDashboard");
   const [order, setOrder] = useState(0);
   const [status, setStatus] = useState<"Active" | "Inactive">("Active");
@@ -48,6 +50,7 @@ export function CreateEditSectionDialog({
   useEffect(() => {
     if (section) {
       setName(section.name);
+      setPath(section.path);
       setIconName(section.iconName || "LayoutDashboard");
       setOrder(section.order);
       setStatus(section.status);
@@ -55,6 +58,7 @@ export function CreateEditSectionDialog({
     } else {
         // Reset for new section
         setName("");
+        setPath("");
         setIconName("LayoutDashboard");
         setOrder(0);
         setStatus("Inactive");
@@ -63,9 +67,15 @@ export function CreateEditSectionDialog({
   }, [section, isOpen]);
 
   const handleSave = () => {
+    // Basic validation
+    if (!name || !path) {
+        alert("Section Name and Path are required.");
+        return;
+    }
     const newSectionData: AppSection = {
       id: section?.id || `sec-${Date.now()}`,
       name,
+      path,
       iconName,
       order,
       status,
@@ -96,6 +106,19 @@ export function CreateEditSectionDialog({
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="col-span-3"
+              placeholder="e.g. Dashboard"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor="path" className="text-right">
+              Path
+            </Label>
+            <Input
+              id="path"
+              value={path}
+              onChange={(e) => setPath(e.target.value)}
+              className="col-span-3"
+              placeholder="e.g. /dashboard"
             />
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
@@ -112,17 +135,19 @@ export function CreateEditSectionDialog({
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                {iconNames.map((name) => {
-                  const Icon = iconMap[name];
-                  return (
-                    <SelectItem key={name} value={name}>
-                      <div className="flex items-center gap-2">
-                        <Icon />
-                        <span>{name}</span>
-                      </div>
-                    </SelectItem>
-                  );
-                })}
+                <ScrollArea className="h-72">
+                    {iconNames.map((name) => {
+                    const Icon = iconMap[name];
+                    return (
+                        <SelectItem key={name} value={name}>
+                        <div className="flex items-center gap-2">
+                            <Icon />
+                            <span>{name}</span>
+                        </div>
+                        </SelectItem>
+                    );
+                    })}
+                </ScrollArea>
               </SelectContent>
             </Select>
           </div>

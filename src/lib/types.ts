@@ -64,6 +64,7 @@ export interface ComplianceItem {
 export interface AppSection {
     id: string;
     name: string;
+    path: string;
     iconName: string;
     order: number;
     status: 'Active' | 'Inactive';
