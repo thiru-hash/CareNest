@@ -102,3 +102,13 @@ export interface CustomForm {
     fields: FormField[];
     status: 'Active' | 'Inactive';
 }
+
+export interface Timesheet {
+  id: string;
+  staffId: string;
+  propertyId: string;
+  startTime: Date;
+  endTime: Date;
+  breakDuration: number; // in minutes
+  status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+}

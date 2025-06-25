@@ -1,4 +1,4 @@
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
@@ -294,3 +294,5 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
     { value: 'infobox-full', label: 'Info Box (full width)', icon: Info },
     { value: 'spacer', label: 'Single Space', icon: RectangleHorizontal },
 ];
+
+export const mockTimesheets: Timesheet[] = [];

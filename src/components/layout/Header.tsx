@@ -25,6 +25,7 @@ const pageTitles: { [key: string]: string } = {
   "/people": "People We Support",
   "/staff": "Staff",
   "/locations": "Locations",
+  "/profile": "My Profile",
   "/settings": "System Settings",
 };
 
@@ -55,7 +56,7 @@ export function Header() {
             <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="#">
+              <Link href="/profile">
                 <User className="mr-2" />
                 <span>Profile</span>
               </Link>
