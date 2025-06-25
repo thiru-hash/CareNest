@@ -24,8 +24,7 @@ import {
 import type { AppSection, CustomForm } from "@/lib/types";
 import { iconMap, iconNames } from "@/lib/icon-map";
 import { mockForms } from "@/lib/data";
-import { ScrollArea } from "../ui/scroll-area";
-import { Combobox } from "../ui/combobox";
+import { Combobox, type ComboboxOption } from "../ui/combobox";
 
 interface CreateEditSectionDialogProps {
   isOpen: boolean;
@@ -89,18 +88,26 @@ export function CreateEditSectionDialog({
     setIsOpen(false);
   };
   
-  const iconOptions = useMemo(() => iconNames.map(name => {
-    const Icon = iconMap[name];
-    return {
+  const iconOptions = useMemo(() => {
+    if (!iconNames) {
+      return [];
+    }
+    return iconNames.map(name => {
+      const Icon = iconMap[name as keyof typeof iconMap];
+      if (typeof Icon !== 'function') {
+        return null;
+      }
+      return {
         value: name,
         label: (
-            <div className="flex items-center gap-2">
-                <Icon className="h-5 w-5" />
-                <span>{name}</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <Icon className="h-5 w-5" />
+            <span>{name}</span>
+          </div>
         )
-    }
-  }), []);
+      };
+    }).filter(Boolean) as ComboboxOption[];
+  }, []);
 
 
   return (
