@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { mockNotices, mockStaff, mockUsers } from "@/lib/data";
+import { mockNotices, mockStaff } from "@/lib/data";
 import { format } from "date-fns";
 import { Megaphone, AlertTriangle, Info, User } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,7 +15,7 @@ const noticeConfig: Record<Notice['type'], { icon: React.ElementType, color: str
 
 export function NoticeBoard() {
   const publishedNotices = mockNotices.filter(n => n.status === 'Published').sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime());
-  const allStaff = [...mockStaff, ...Object.values(mockUsers)];
+  const allStaff = [...mockStaff];
 
   return (
     <Card>

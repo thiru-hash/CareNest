@@ -4,17 +4,15 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockStaff, mockUsers } from "@/lib/data";
+import { mockStaff } from "@/lib/data";
 import { Button } from "../ui/button";
 import { MoreHorizontal, UserPlus } from "lucide-react";
-import type { Staff, User } from "@/lib/types";
+import type { Staff } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
-type CombinedUser = User | Staff;
-
 export function UserManagement() {
-  const allUsers: CombinedUser[] = [...mockStaff, ...Object.values(mockUsers)];
-  const [users, setUsers] = useState<CombinedUser[]>(allUsers);
+  const allUsers: Staff[] = [...mockStaff];
+  const [users, setUsers] = useState<Staff[]>(allUsers);
 
   const handleAddUser = () => {
     const newUser: Staff = {
@@ -31,7 +29,7 @@ export function UserManagement() {
 
   const handleDeleteUser = (userId: string) => {
     // Prevent deleting the main admin user for now
-    if (userId === 'user-1') {
+    if (userId === 'staff-admin') {
         alert("Cannot delete the primary administrator.");
         return;
     }
@@ -93,7 +91,7 @@ export function UserManagement() {
                       <DropdownMenuItem 
                         className="text-destructive" 
                         onClick={() => handleDeleteUser(user.id)}
-                        disabled={user.id === 'user-1'}
+                        disabled={user.id === 'staff-admin'}
                       >
                         Delete
                       </DropdownMenuItem>

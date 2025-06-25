@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { mockShifts, mockStaff, mockProperties, mockUsers } from "@/lib/data";
+import { mockShifts, mockStaff, mockProperties } from "@/lib/data";
 import { format, isFuture, isPast } from "date-fns";
 import { Clock, MapPin, Send } from "lucide-react";
 import type { User, Staff, Shift, UserRole } from "@/lib/types";
@@ -14,7 +14,7 @@ import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 
 // In a real app, this would come from an authentication context/session.
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
 
 export function UpcomingShifts() {
   const { toast } = useToast();

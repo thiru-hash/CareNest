@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation";
 import { mockStaff } from "@/lib/data";
 import type { UserRole } from "@/lib/types";
 
-const user = mockStaff.find(s => s.id === 'staff-1')!;
+const user = mockStaff.find(s => s.id === 'staff-admin')!;
 
 const adminRoles: UserRole[] = ["Admin"];
 

@@ -17,7 +17,7 @@ import { iconMap } from "@/lib/icon-map";
 import { UserRole } from "@/lib/types";
 import { useMemo } from "react";
 
-const user = mockStaff.find(s => s.id === 'staff-1')!;
+const user = mockStaff.find(s => s.id === 'staff-admin')!;
 
 const adminRoles: UserRole[] = ["Admin"];
 

@@ -1,17 +1,13 @@
 
 'use server';
 
-import { mockShifts, mockClients, mockUsers, mockProperties, mockStaff } from './data';
+import { mockShifts, mockClients, mockProperties, mockStaff } from './data';
 import { User, Client } from './types';
 import { isWithinInterval } from 'date-fns';
 
 function getUserRole(userId: string): User['role'] | undefined {
     // In a real app, this would come from a session or a database query.
     // For now, we find the user in our mock data.
-    const user = Object.values(mockUsers).find(u => u.id === userId);
-    if (user) return user.role;
-    
-    // Fallback for staff who might not be in the primary users object
     const staffUser = mockStaff.find(s => s.id === userId);
     return staffUser?.role as User['role'] | undefined;
 }

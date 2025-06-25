@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, PlusCircle, Megaphone, AlertTriangle, Info } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { mockNotices, mockStaff, mockUsers } from "@/lib/data";
+import { mockNotices, mockStaff } from "@/lib/data";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ export function NoticeManagement() {
     const [notices, setNotices] = useState<Notice[]>(mockNotices);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentNotice, setCurrentNotice] = useState<Notice | null>(null);
-    const allStaff = [...mockStaff, ...Object.values(mockUsers)];
+    const allStaff = [...mockStaff];
 
     const handleCreateNotice = () => {
         setCurrentNotice(null);
@@ -52,7 +52,7 @@ export function NoticeManagement() {
                 content: savedNotice.content!,
                 type: savedNotice.type!,
                 status: savedNotice.status!,
-                authorId: 'user-1', // In a real app, this would be the current user's ID
+                authorId: 'staff-admin', // In a real app, this would be the current user's ID
                 createdAt: new Date(),
             };
             setNotices(prev => [...prev, newNotice]);

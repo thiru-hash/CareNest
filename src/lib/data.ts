@@ -29,29 +29,20 @@ import type { LucideIcon } from 'lucide-react';
 
 const now = new Date();
 
-export const mockUsers: Record<string, User> = {
-  'user-1': {
-    id: 'user-1',
-    name: 'Admin User',
-    email: 'admin@carenest.com',
-    avatarUrl: 'https://placehold.co/100x100.png',
-    role: 'Admin',
-  },
-};
-
 export const mockProperties: Property[] = [
   { id: 'prop-1', name: 'Oakwood Residence', address: '123 Oak Ave, Springfield', imageUrl: 'https://placehold.co/600x400.png', status: 'Active', "data-ai-hint": "modern house" },
   { id: 'prop-2', name: 'Maple Creek Villa', address: '456 Maple St, Rivertown', imageUrl: 'https://placehold.co/600x400.png', status: 'Active', "data-ai-hint": "suburban home" },
 ];
 
 export const mockStaff: Staff[] = [
+  { id: 'staff-admin', name: 'Admin User', avatarUrl: 'https://placehold.co/100x100.png', role: 'Admin', email: 'admin@carenest.com', phone: '555-0000', groupIds: ['group-admin'] },
   { id: 'staff-1', name: 'Jane Doe', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'jane.d@carenest.com', phone: '555-1234', groupIds: ['group-workers'] },
   { id: 'staff-2', name: 'John Smith', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'john.s@carenest.com', phone: '555-5678', groupIds: ['group-workers'] },
   { id: 'staff-3', name: 'Alice Johnson', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Manager', email: 'alice.j@carenest.com', phone: '555-8765', groupIds: ['group-managers'] },
 ];
 
 export const mockGroups: Group[] = [
-    { id: 'group-admin', name: 'Administrators', description: 'Full system access', userIds: ['user-1'] },
+    { id: 'group-admin', name: 'Administrators', description: 'Full system access', userIds: ['staff-admin'] },
     { id: 'group-managers', name: 'Support Managers', description: 'Manage staff and clients', userIds: ['staff-3'] },
     { id: 'group-workers', name: 'Support Workers', description: 'View shifts and client info', userIds: ['staff-1', 'staff-2'] },
 ];
@@ -83,8 +74,8 @@ export const mockClients: Client[] = [
 ];
 
 export const mockShifts: Shift[] = [
-  // This shift is active now for Jane Doe (staff-1) to allow testing of clock-in/out from the dashboard.
-  { id: 'shift-1', title: 'Morning Support Shift', start: subHours(now, 2), end: addHours(now, 2), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
+  // A currently active shift for Jane Doe (staff-1) for testing purposes.
+  { id: 'shift-active-jd', title: 'Mid-day Support', start: subHours(now, 2), end: addHours(now, 2), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
   
   // An upcoming shift for another staff member
   { id: 'shift-2', title: 'Afternoon Community Access', start: addHours(now, 3), end: addHours(now, 7), staffId: 'staff-2', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned' },
@@ -93,10 +84,13 @@ export const mockShifts: Shift[] = [
   { id: 'shift-3', title: 'Evening Cover', start: addHours(now, 8), end: addHours(now, 12), propertyId: 'prop-2', status: 'Open' },
 
   // An open shift for tomorrow
-  { id: 'shift-4', title: 'Weekend Morning Shift', start: addDays(now, 1), end: addHours(addDays(now, 1), 8), propertyId: 'prop-1', clientId: 'client-1', status: 'Open' },
+  { id: 'shift-4', title: 'Weekend Morning Shift', start: addDays(addHours(now, 1), 1), end: addHours(addDays(now, 1), 9), propertyId: 'prop-1', clientId: 'client-1', status: 'Open' },
   
   // A completed shift from yesterday
   { id: 'shift-5', title: 'Yesterday Evening Shift', start: subHours(subDays(now, 1), 4), end: subDays(now, 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Completed' },
+
+  // A shift for Jane Doe to test clock-in/out
+  { id: 'shift-6', title: 'Morning Shift', start: new Date(now.setHours(11, 0, 0, 0)), end: new Date(now.setHours(14, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' }
 ];
 
 export const mockComplianceItems: ComplianceItem[] = [
@@ -282,7 +276,7 @@ export const mockNotices: Notice[] = [
     id: 'notice-1',
     title: 'System Maintenance Scheduled',
     content: 'Please be aware that there will be a scheduled system maintenance on Friday at 10 PM. The system may be unavailable for up to 1 hour. We apologize for any inconvenience.',
-    authorId: 'user-1',
+    authorId: 'staff-admin',
     createdAt: subDays(now, 1),
     status: 'Published',
     type: 'Urgent',
@@ -291,7 +285,7 @@ export const mockNotices: Notice[] = [
     id: 'notice-2',
     title: 'New Policy for Leave Requests',
     content: 'All leave requests must now be submitted at least 2 weeks in advance. Please see the updated policy document in the Drive for more details.',
-    authorId: 'user-1',
+    authorId: 'staff-admin',
     createdAt: subDays(now, 3),
     status: 'Published',
     type: 'Info',
@@ -300,7 +294,7 @@ export const mockNotices: Notice[] = [
     id: 'notice-3',
     title: 'Parking Lot Resurfacing',
     content: 'The north parking lot will be closed for resurfacing from Monday to Wednesday next week. Please use the south lot during this time.',
-    authorId: 'user-1',
+    authorId: 'staff-admin',
     createdAt: subDays(now, 5),
     status: 'Published',
     type: 'Warning',
@@ -309,7 +303,7 @@ export const mockNotices: Notice[] = [
     id: 'notice-4',
     title: 'Draft: End of Year Party',
     content: 'Details to be confirmed for the end of year celebration.',
-    authorId: 'user-1',
+    authorId: 'staff-admin',
     createdAt: subDays(now, 2),
     status: 'Draft',
     type: 'Info',
@@ -344,6 +338,7 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
+
 
 
 

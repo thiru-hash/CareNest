@@ -1,9 +1,10 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Waves } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
 
 export default function LoginPage() {
   return (
@@ -38,6 +39,14 @@ export default function LoginPage() {
             </Button>
           </div>
         </CardContent>
+        <CardFooter className="flex-col items-start text-sm text-muted-foreground pt-4">
+            <Separator className="mb-4" />
+            <p className="font-semibold text-foreground mb-2">Test Credentials</p>
+            <p><span className="font-medium">Admin:</span> admin@carenest.com</p>
+            <p><span className="font-medium">Support Worker:</span> jane.d@carenest.com</p>
+            <p className="mt-2 text-xs">(Password: any)</p>
+            <p className="mt-2 text-xs italic">Note: Login is simulated. To switch users, ask me to log you in as the desired role.</p>
+        </CardFooter>
       </Card>
     </div>
   );

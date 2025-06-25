@@ -17,7 +17,7 @@ import { getAccessiblePropertyIds } from "@/lib/access-control";
 import type { User, Staff } from "@/lib/types";
 
 // In a real app, this would come from an authentication context/session
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
 
 export async function LocationsTable() {
   const accessiblePropertyIds = await getAccessiblePropertyIds(currentUser.id);
