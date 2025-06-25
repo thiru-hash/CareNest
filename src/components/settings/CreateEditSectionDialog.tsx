@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { AppSection, CustomForm } from "@/lib/types";
+import type { AppSection } from "@/lib/types";
 import { iconMap, iconNames } from "@/lib/icon-map";
 import { mockForms } from "@/lib/data";
 import { Combobox, type ComboboxOption } from "../ui/combobox";
@@ -94,7 +94,7 @@ export function CreateEditSectionDialog({
     }
     return iconNames.map(name => {
       const Icon = iconMap[name as keyof typeof iconMap];
-      if (typeof Icon !== 'function') {
+      if (!Icon) {
         return null;
       }
       return {
