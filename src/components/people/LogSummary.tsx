@@ -1,13 +1,13 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
+import { useActionState, useEffect } from "react";
 import { summarizeLogsAction, FormState } from "@/app/actions";
 import { Client } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { AlertTriangle, Bot, Loader2, Sparkles, TrendingUp } from "lucide-react";
 
@@ -36,7 +36,7 @@ function SubmitButton() {
 
 
 export function LogSummary({ client }: { client: Client }) {
-  const [state, formAction] = useFormState(summarizeLogsAction, initialState);
+  const [state, formAction] = useActionState(summarizeLogsAction, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
