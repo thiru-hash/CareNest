@@ -12,12 +12,12 @@ import { CreateEditFieldDialog } from "./CreateEditFieldDialog";
 import React from "react";
 
 export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
-    const [fields, setFields] = useState<FormField[]>(initialForm.fields.sort((a,b) => a.order - b.order));
+    const [fields, setFields] = useState<FormField[]>((initialForm.fields || []).slice().sort((a, b) => a.order - b.order));
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentField, setCurrentField] = useState<FormField | null>(null);
 
     const handleCreateField = () => {
-        const maxOrder = Math.max(...fields.map(f => f.order), 0);
+        const maxOrder = Math.max(0, ...fields.map(f => f.order));
         setCurrentField({
             id: '',
             name: "New Field",

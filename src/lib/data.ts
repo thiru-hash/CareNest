@@ -2,7 +2,7 @@ import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSe
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
-  Textarea,
+  FileText,
   Square,
   Pilcrow,
   ChevronDownSquare,
@@ -133,7 +133,7 @@ export const mockForms: CustomForm[] = [
 
 export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon }[] = [
     { value: 'text', label: 'Text', icon: CaseSensitive },
-    { value: 'textbox', label: 'Text Box', icon: Textarea },
+    { value: 'textbox', label: 'Text Box', icon: FileText },
     { value: 'textbox-full', label: 'Text Box (full width)', icon: Square },
     { value: 'richtext', label: 'Rich Text', icon: Pilcrow },
     { value: 'dropdown', label: 'Dropdown List', icon: ChevronDownSquare },
