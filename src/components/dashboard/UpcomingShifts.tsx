@@ -35,7 +35,7 @@ export function UpcomingShifts() {
     let upcomingShifts: Shift[];
 
     const allUpcomingShifts = mockShifts
-      .filter(s => isFuture(s.start) && (s.status === 'Assigned' || s.status === 'Open'))
+      .filter(s => isFuture(s.end) && ['Assigned', 'Open', 'In Progress'].includes(s.status))
       .sort((a, b) => a.start.getTime() - b.start.getTime());
 
     if (isPrivilegedUser) {
