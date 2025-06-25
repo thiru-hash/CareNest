@@ -108,9 +108,16 @@ export const mockSections: AppSection[] = [
     order: 30, 
     status: 'Active',
     tabs: [
-      { id: 'tab-people-1', name: 'Client Intake', order: 10, formId: 'form-1' },
-      { id: 'tab-people-2', name: 'Progress Notes', order: 20, formId: 'form-4' },
-      { id: 'tab-people-3', name: 'Medication Chart', order: 30, formId: 'form-5' },
+      { id: 'tab-pws-1', name: 'PWS Basic Information', order: 10, formId: 'form-pws-info' },
+      { id: 'tab-pws-2', name: 'Contacts & Schedule', order: 20, formId: 'form-pws-contacts' },
+      { id: 'tab-pws-3', name: 'Communication', order: 30, formId: 'form-pws-comm' },
+      { id: 'tab-pws-4', name: 'Goals', order: 40, formId: 'form-pws-goals' },
+      { id: 'tab-pws-5', name: 'Oranga Tamariki', order: 50, formId: 'form-pws-ot' },
+      { id: 'tab-pws-6', name: 'Daily Diary', order: 60, formId: 'form-pws-diary' },
+      { id: 'tab-pws-7', name: 'Documents', order: 70, formId: 'form-pws-docs' },
+      { id: 'tab-pws-8', name: 'Health', order: 80, formId: 'form-pws-health' },
+      { id: 'tab-pws-9', name: 'Financials', order: 90, formId: 'form-pws-financials' },
+      { id: 'tab-pws-10', name: 'Key Worker Report', order: 100, formId: 'form-pws-report' },
     ]
   },
   { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 40, status: 'Active', tabs: [] },
@@ -141,7 +148,7 @@ export const mockSections: AppSection[] = [
 
 export const mockForms: CustomForm[] = [
     { 
-      id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', status: 'Active',
+      id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', status: 'Inactive',
       fields: [
         { id: 'field-1-1', name: 'First Name', type: 'text', order: 1, required: true, tooltip: "Client's legal first name." },
         { id: 'field-1-2', name: 'Last Name', type: 'text', order: 2, required: true },
@@ -161,19 +168,102 @@ export const mockForms: CustomForm[] = [
       fields: []
     },
     { 
-      id: 'form-4', name: 'Progress Note Form', linkedSectionId: 'sec-people', status: 'Active',
+      id: 'form-4', name: 'Progress Note Form', linkedSectionId: 'sec-people', status: 'Inactive',
       fields: [
         { id: 'field-4-1', name: 'Date', type: 'date', order: 10, required: true },
         { id: 'field-4-2', name: 'Note', type: 'richtext', order: 20, required: true },
       ]
     },
     { 
-      id: 'form-5', name: 'Medication Chart Form', linkedSectionId: 'sec-people', status: 'Active',
+      id: 'form-5', name: 'Medication Chart Form', linkedSectionId: 'sec-people', status: 'Inactive',
       fields: [
           { id: 'field-5-1', name: 'Medication Name', type: 'text', order: 10, required: true },
           { id: 'field-5-2', name: 'Dosage', type: 'text', order: 20, required: true },
           { id: 'field-5-3', name: 'Time Administered', type: 'time', order: 30, required: true },
           { id: 'field-5-4', name: 'Administered By', type: 'text', order: 40, required: true },
+      ]
+    },
+    // New Forms for PWS Tabs
+    {
+      id: 'form-pws-info', name: 'PWS Basic Information', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-pi-1', name: 'Profile Picture', type: 'file-upload', order: 10 },
+        { id: 'field-pi-2', name: 'PWS Basic Information', type: 'headline', order: 20 },
+        { id: 'field-pi-3', name: 'First Name', type: 'text', order: 30, required: true },
+        { id: 'field-pi-4', name: 'Last Name', type: 'text', order: 40, required: true, tooltip: "Please type last name in UPPER CASE" },
+        { id: 'field-pi-5', name: 'Middle Name', type: 'text', order: 50 },
+        { id: 'field-pi-6', name: 'Preferred Name', type: 'text', order: 60 },
+        { id: 'field-pi-7', name: 'Gender', type: 'dropdown', order: 70 },
+        { id: 'field-pi-8', name: 'Date of Birth', type: 'dob', order: 80, required: true },
+        { id: 'field-pi-9', name: 'Address', type: 'headline', order: 90, },
+        { id: 'field-pi-10', name: 'Home Address', type: 'textbox', order: 100 },
+        { id: 'field-pi-11', name: 'Phone', type: 'text', order: 110 },
+      ]
+    },
+    {
+      id: 'form-pws-contacts', name: 'Contacts & Schedule', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-cs-1', name: 'Next of Kin Name', type: 'text', order: 10 },
+        { id: 'field-cs-2', name: 'Next of Kin Contact', type: 'text', order: 20 },
+        { id: 'field-cs-3', name: 'Activity Schedule', type: 'richtext', order: 30 },
+      ]
+    },
+    {
+      id: 'form-pws-comm', name: 'Communication Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-co-1', name: 'Communication Needs', type: 'richtext', order: 10 },
+        { id: 'field-co-2', name: 'Preferred Method', type: 'dropdown', order: 20 },
+      ]
+    },
+    {
+      id: 'form-pws-goals', name: 'Goals Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-g-1', name: 'Personal Goal', type: 'text', order: 10 },
+        { id: 'field-g-2', name: 'Steps to Achieve', type: 'richtext', order: 20 },
+      ]
+    },
+    {
+      id: 'form-pws-ot', name: 'Oranga Tamariki Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-ot-1', name: 'Event Type', type: 'text', order: 10 },
+        { id: 'field-ot-2', name: 'Event Date', type: 'date', order: 20 },
+      ]
+    },
+    {
+      id: 'form-pws-diary', name: 'Daily Diary Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-dd-1', name: 'Date', type: 'date', order: 10, required: true },
+        { id: 'field-dd-2', name: 'Shift Notes', type: 'richtext', order: 20, required: true },
+        { id: 'field-dd-3', name: 'Mood', type: 'dropdown', order: 30 },
+      ]
+    },
+    {
+      id: 'form-pws-docs', name: 'Documents Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-doc-1', name: 'Document Upload', type: 'file-upload', order: 10 },
+        { id: 'field-doc-2', name: 'Document Type', type: 'dropdown', order: 20 },
+      ]
+    },
+    {
+      id: 'form-pws-health', name: 'Health Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-h-1', name: 'Allergies', type: 'richtext', order: 10 },
+        { id: 'field-h-2', name: 'Medications', type: 'richtext', order: 20 },
+        { id: 'field-h-3', name: 'Health Provider Name', type: 'text', order: 30 },
+      ]
+    },
+    {
+      id: 'form-pws-financials', name: 'Financials Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-f-1', name: 'Bank Account Details', type: 'text', order: 10 },
+        { id: 'field-f-2', name: 'Budget Plan', type: 'file-upload', order: 20 },
+      ]
+    },
+    {
+      id: 'form-pws-report', name: 'Key Worker Report Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-r-1', name: 'Report Date', type: 'date', order: 10 },
+        { id: 'field-r-2', name: 'Summary', type: 'richtext', order: 20 },
       ]
     }
 ];

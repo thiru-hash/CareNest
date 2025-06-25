@@ -3,7 +3,6 @@ import { notFound } from "next/navigation";
 import { mockClients, mockProperties, mockUsers, mockSections, mockForms } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { LogSummary } from "@/components/people/LogSummary";
 import { Building2, User } from "lucide-react";
 import { canAccessClient } from "@/lib/access-control";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -35,12 +34,17 @@ function DynamicForm({ formId }: { formId: string }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-            {form.fields.sort((a,b) => a.order - b.order).map(field => (
-                <div key={field.id} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
-                    <Label htmlFor={field.id}>{field.name}{field.required ? <span className="text-destructive ml-1">*</span> : ''}</Label>
-                    <Input id={field.id} placeholder={`Enter ${field.name}...`} className="md:col-span-2" disabled/>
-                </div>
-            ))}
+            {form.fields.sort((a,b) => a.order - b.order).map(field => {
+                if (field.type === 'headline') {
+                    return <h3 key={field.id} className="text-lg font-semibold border-b pb-2 pt-4">{field.name}</h3>
+                }
+                return (
+                    <div key={field.id} className="grid grid-cols-1 md:grid-cols-3 gap-2 items-center">
+                        <Label htmlFor={field.id}>{field.name}{field.required ? <span className="text-destructive ml-1">*</span> : ''}</Label>
+                        <Input id={field.id} placeholder={`Enter ${field.name}...`} className="md:col-span-2" disabled/>
+                    </div>
+                )
+            })}
             {form.fields.length === 0 && <p className="text-muted-foreground">This form has no fields configured yet.</p>}
         </div>
       </CardContent>
@@ -66,7 +70,7 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
   const peopleSection = mockSections.find(s => s.id === 'sec-people');
   const sectionTabs = peopleSection?.tabs?.sort((a, b) => a.order - b.order) || [];
   
-  const defaultTab = sectionTabs.find(tab => tab.name === 'Progress Notes') || sectionTabs[0];
+  const defaultTab = sectionTabs[0];
 
   return (
     <div className="space-y-6">
@@ -95,9 +99,9 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
             </div>
         </div>
 
-        {sectionTabs.length > 0 ? (
-             <Tabs defaultValue={defaultTab?.id} className="w-full">
-                <TabsList className="grid w-full max-w-full grid-cols-2 md:grid-cols-3 lg:max-w-screen-md">
+        {sectionTabs.length > 0 && defaultTab ? (
+             <Tabs defaultValue={defaultTab.id} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                     {sectionTabs.map(tab => (
                         <TabsTrigger key={tab.id} value={tab.id}>{tab.name}</TabsTrigger>
                     ))}
@@ -105,17 +109,17 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
 
                 {sectionTabs.map(tab => (
                     <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                        {tab.name === 'Progress Notes' ? (
-                            <LogSummary client={client} />
-                        ) : (
-                            <DynamicForm formId={tab.formId} />
-                        )}
+                       <DynamicForm formId={tab.formId} />
                     </TabsContent>
                 ))}
              </Tabs>
         ) : (
-            // Fallback if no tabs are configured for the section
-            <LogSummary client={client} />
+             <Card>
+                <CardHeader>
+                    <CardTitle>No Tabs Configured</CardTitle>
+                    <CardDescription>There are no tabs configured for this section yet. Please ask an administrator to set them up.</CardDescription>
+                </CardHeader>
+            </Card>
         )}
     </div>
   );
