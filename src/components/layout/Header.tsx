@@ -17,8 +17,11 @@ import { LogOut, Settings, User } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
 import { mockStaff } from "@/lib/data";
+import type { UserRole } from "@/lib/types";
 
 const user = mockStaff.find(s => s.id === 'staff-1')!;
+
+const adminRoles: UserRole[] = ["Admin"];
 
 const pageTitles: { [key: string]: string } = {
   "/dashboard": "Dashboard",
@@ -38,6 +41,8 @@ export function Header() {
     const matchedPath = Object.keys(pageTitles).find(path => pathname.startsWith(path));
     return matchedPath ? pageTitles[matchedPath] : "CareNest";
   };
+
+  const isAdmin = adminRoles.includes(user.role);
 
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
@@ -62,12 +67,14 @@ export function Header() {
                 <span>Profile</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link href="/settings">
-                <Settings className="mr-2" />
-                <span>System Settings</span>
-              </Link>
-            </DropdownMenuItem>
+            {isAdmin && (
+                <DropdownMenuItem asChild>
+                <Link href="/settings">
+                    <Settings className="mr-2" />
+                    <span>System Settings</span>
+                </Link>
+                </DropdownMenuItem>
+            )}
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
               <Link href="/">

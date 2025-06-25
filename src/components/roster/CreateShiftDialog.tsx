@@ -51,11 +51,12 @@ interface CreateShiftDialogProps {
   shift: Shift | null;
   onSave: (shifts: Shift[]) => void;
   onDelete: (shiftId: string) => void;
+  allShifts: Shift[];
 }
 
 const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
-export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }: CreateShiftDialogProps) {
+export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete, allShifts }: CreateShiftDialogProps) {
   const { toast } = useToast();
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();
@@ -101,6 +102,26 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }
     if (!title || !propertyId) {
         toast({ variant: 'destructive', title: 'Error', description: 'Please fill out all required fields.' });
         return;
+    }
+
+    // Conflict Detection Logic
+    if (staffIdValue && staffIdValue !== 'open') {
+        const otherShiftsForStaff = allShifts.filter(s => s.staffId === staffIdValue && s.id !== shift?.id);
+        const conflictingShift = otherShiftsForStaff.find(
+            existingShift => (startDateTime < existingShift.end && endDateTime > existingShift.start)
+        );
+
+        if (conflictingShift) {
+            const staffMember = mockStaff.find(s => s.id === staffIdValue);
+            const property = mockProperties.find(p => p.id === conflictingShift.propertyId);
+            toast({
+                variant: 'destructive',
+                title: 'Shift Conflict Detected',
+                description: `${staffMember?.name} is already scheduled for "${conflictingShift.title}" at ${property?.name} from ${format(conflictingShift.start, 'p')} to ${format(conflictingShift.end, 'p')}. Please resolve the conflict before saving.`,
+                duration: 9000,
+            });
+            return; // Stop the save
+        }
     }
 
     const baseShift: Omit<Shift, 'id' | 'start' | 'end'> = {

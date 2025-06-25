@@ -416,6 +416,7 @@ export function ScheduleCalendar() {
         shift={editingShift}
         onSave={handleSaveShift}
         onDelete={handleDeleteShift}
+        allShifts={shifts}
       />
     </>
   );

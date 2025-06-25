@@ -84,7 +84,7 @@ export const mockClients: Client[] = [
 
 export const mockShifts: Shift[] = [
   { id: 'shift-today-test', title: 'Mid-day Shift', start: new Date(new Date(now).setHours(11, 0, 0, 0)), end: new Date(new Date(now).setHours(14, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned' },
-  { id: 'shift-1', title: 'Morning Shift', start: subHours(now, 2), end: addHours(now, 4), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'In Progress' },
+  // { id: 'shift-1', title: 'Morning Shift', start: subHours(now, 2), end: addHours(now, 4), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'In Progress' },
   { id: 'shift-2', title: 'Afternoon Shift', start: addHours(now, 3), end: addHours(now, 9), staffId: 'staff-2', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
   { id: 'shift-3', title: 'Night Shift', start: addHours(now, 8), end: addHours(now, 16), propertyId: 'prop-2', status: 'Open' },
   { id: 'shift-4', title: 'Morning Cover', start: addDays(now, 1), end: addHours(addDays(now, 1), 8), propertyId: 'prop-2', clientId: 'client-2', status: 'Open' },
@@ -336,4 +336,5 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
+
 
