@@ -7,12 +7,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Clock, Plane, Hourglass } from "lucide-react";
 import { mockStaff } from "@/lib/data";
 import { format } from "date-fns";
+import { useToast } from "@/hooks/use-toast";
 
 // In a real app, this would come from an authentication context/session.
 // We'll use a staff member to demonstrate this page.
 const currentUser = mockStaff[0];
 
 export default function ProfilePage() {
+  const { toast } = useToast();
   const [isClockedIn, setIsClockedIn] = useState(false);
   const [clockInTime, setClockInTime] = useState<Date | null>(null);
 
@@ -21,14 +23,20 @@ export default function ProfilePage() {
       // Clocking out
       setIsClockedIn(false);
       // In a real app, this would create a timesheet record here.
-      alert(`Clocked out at ${new Date().toLocaleTimeString()}. A timesheet has been created for your review.`);
+      toast({
+          title: "Clocked Out",
+          description: `Clocked out at ${new Date().toLocaleTimeString()}. A timesheet has been created for your review.`,
+      });
       setClockInTime(null);
     } else {
       // Clocking in
       const now = new Date();
       setIsClockedIn(true);
       setClockInTime(now);
-      alert(`Clocked in at ${now.toLocaleTimeString()}`);
+       toast({
+        title: "Clocked In",
+        description: `You have clocked in at ${now.toLocaleTimeString()}`,
+      });
     }
   };
 

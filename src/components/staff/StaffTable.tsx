@@ -30,7 +30,7 @@ export function StaffTable() {
         <div className="flex justify-between items-start">
             <div>
                 <CardTitle>Staff Members</CardTitle>
-                <CardDescription>View, manage, and add staff members to the system.</CardDescription>
+                <CardDescription>View and manage staff members in the system.</CardDescription>
             </div>
             {currentUser.role === 'Admin' && (
                 <Button>
@@ -77,7 +77,7 @@ export function StaffTable() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>View Profile</DropdownMenuItem>
-                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                      {currentUser.role === 'Admin' && <DropdownMenuItem>Edit</DropdownMenuItem>}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
