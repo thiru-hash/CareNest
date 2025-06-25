@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,10 +21,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { AppSection } from "@/lib/types";
+import type { AppSection, CustomForm } from "@/lib/types";
 import { iconMap, iconNames } from "@/lib/icon-map";
 import { mockForms } from "@/lib/data";
 import { ScrollArea } from "../ui/scroll-area";
+import { Combobox } from "../ui/combobox";
 
 interface CreateEditSectionDialogProps {
   isOpen: boolean;
@@ -48,21 +50,23 @@ export function CreateEditSectionDialog({
   const isEditMode = !!section?.id;
 
   useEffect(() => {
-    if (section) {
-      setName(section.name);
-      setPath(section.path);
-      setIconName(section.iconName || "LayoutDashboard");
-      setOrder(section.order);
-      setStatus(section.status);
-      setLinkedFormId(section.linkedFormId);
-    } else {
-        // Reset for new section
-        setName("");
-        setPath("");
-        setIconName("LayoutDashboard");
-        setOrder(0);
-        setStatus("Inactive");
-        setLinkedFormId(undefined);
+    if (isOpen) {
+        if (section) {
+            setName(section.name);
+            setPath(section.path);
+            setIconName(section.iconName || "LayoutDashboard");
+            setOrder(section.order);
+            setStatus(section.status);
+            setLinkedFormId(section.linkedFormId);
+        } else {
+            // Reset for new section
+            setName("");
+            setPath("");
+            setIconName("LayoutDashboard");
+            setOrder(0);
+            setStatus("Inactive");
+            setLinkedFormId(undefined);
+        }
     }
   }, [section, isOpen]);
 
@@ -84,8 +88,20 @@ export function CreateEditSectionDialog({
     onSave(newSectionData);
     setIsOpen(false);
   };
+  
+  const iconOptions = useMemo(() => iconNames.map(name => {
+    const Icon = iconMap[name];
+    return {
+        value: name,
+        label: (
+            <div className="flex items-center gap-2">
+                <Icon className="h-5 w-5" />
+                <span>{name}</span>
+            </div>
+        )
+    }
+  }), []);
 
-  const IconComponent = iconMap[iconName];
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -125,31 +141,16 @@ export function CreateEditSectionDialog({
             <Label htmlFor="iconName" className="text-right">
               Icon
             </Label>
-            <Select value={iconName} onValueChange={setIconName}>
-              <SelectTrigger className="col-span-3">
-                <SelectValue asChild>
-                    <div className="flex items-center gap-2">
-                        {IconComponent && <IconComponent />}
-                        <span>{iconName}</span>
-                    </div>
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <ScrollArea className="h-72">
-                    {iconNames.map((name) => {
-                    const Icon = iconMap[name];
-                    return (
-                        <SelectItem key={name} value={name}>
-                        <div className="flex items-center gap-2">
-                            <Icon />
-                            <span>{name}</span>
-                        </div>
-                        </SelectItem>
-                    );
-                    })}
-                </ScrollArea>
-              </SelectContent>
-            </Select>
+            <div className="col-span-3">
+                <Combobox
+                    options={iconOptions}
+                    value={iconName}
+                    onChange={setIconName}
+                    placeholder="Select icon..."
+                    searchPlaceholder="Search icons..."
+                    noResultsMessage="No icon found."
+                />
+            </div>
           </div>
           <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="order" className="text-right">
