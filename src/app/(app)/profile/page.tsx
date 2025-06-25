@@ -13,7 +13,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 
 // In a real app, this would come from an authentication context/session.
 // We'll use the admin user to demonstrate this page.
-const currentUser = mockStaff.find(s => s.id === 'staff-admin')!;
+const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
 export default function ProfilePage() {
   const { toast } = useToast();

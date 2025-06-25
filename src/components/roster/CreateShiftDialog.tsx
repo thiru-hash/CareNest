@@ -54,7 +54,7 @@ interface CreateShiftDialogProps {
   allShifts: Shift[];
 }
 
-const currentUser = mockStaff.find(s => s.id === 'staff-admin')!;
+const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
 export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete, allShifts }: CreateShiftDialogProps) {
   const { toast } = useToast();

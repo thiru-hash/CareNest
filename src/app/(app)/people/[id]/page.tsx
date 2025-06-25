@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 // In a real app, this would come from an authentication context/session
-const currentUser = mockStaff.find(s => s.id === 'staff-admin')!;
+const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
 // Placeholder component for rendering forms based on their configuration
 function DynamicForm({ formId }: { formId: string }) {

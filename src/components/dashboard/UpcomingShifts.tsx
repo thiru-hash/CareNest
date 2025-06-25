@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -14,7 +15,7 @@ import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 
 // In a real app, this would come from an authentication context/session.
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
 
 export function UpcomingShifts() {
   const { toast } = useToast();
