@@ -9,7 +9,6 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
 import {
   LayoutDashboard,
@@ -18,7 +17,6 @@ import {
   UsersRound,
   Building2,
   Settings,
-  LogOut,
   Waves,
 } from "lucide-react";
 import { mockUsers } from "@/lib/data";
@@ -72,18 +70,6 @@ export function SidebarNav() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-      <SidebarFooter className="group-data-[collapsible=icon]:-ml-1">
-        <SidebarMenu>
-            <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip={{children: 'Logout'}}>
-                    <Link href="/">
-                        <LogOut/>
-                        <span>Logout</span>
-                    </Link>
-                </SidebarMenuButton>
-            </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
     </Sidebar>
   );
 }
