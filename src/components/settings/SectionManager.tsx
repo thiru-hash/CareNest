@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -14,7 +15,7 @@ import { CreateEditSectionDialog } from "./CreateEditSectionDialog";
 import { iconMap } from "@/lib/icon-map";
 
 export function SectionManager() {
-    const [sections, setSections] = useState<AppSection[]>(mockSections.sort((a,b) => a.order - b.order));
+    const [sections, setSections] = useState<AppSection[]>(mockSections.slice().sort((a,b) => a.order - b.order));
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentSection, setCurrentSection] = useState<AppSection | null>(null);
 
