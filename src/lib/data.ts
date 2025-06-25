@@ -83,12 +83,20 @@ export const mockClients: Client[] = [
 ];
 
 export const mockShifts: Shift[] = [
-  { id: 'shift-today-test', title: 'Mid-day Shift', start: new Date(new Date(now).setHours(11, 0, 0, 0)), end: new Date(new Date(now).setHours(14, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned' },
-  // { id: 'shift-1', title: 'Morning Shift', start: subHours(now, 2), end: addHours(now, 4), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'In Progress' },
-  { id: 'shift-2', title: 'Afternoon Shift', start: addHours(now, 3), end: addHours(now, 9), staffId: 'staff-2', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
-  { id: 'shift-3', title: 'Night Shift', start: addHours(now, 8), end: addHours(now, 16), propertyId: 'prop-2', status: 'Open' },
-  { id: 'shift-4', title: 'Morning Cover', start: addDays(now, 1), end: addHours(addDays(now, 1), 8), propertyId: 'prop-2', clientId: 'client-2', status: 'Open' },
-  { id: 'shift-5', title: 'Completed Shift', start: subDays(now, 1), end: addHours(subDays(now, 1), 8), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Completed' },
+  // This shift is active now for Jane Doe (staff-1) to allow testing of clock-in/out from the dashboard.
+  { id: 'shift-1', title: 'Morning Support Shift', start: subHours(now, 2), end: addHours(now, 2), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
+  
+  // An upcoming shift for another staff member
+  { id: 'shift-2', title: 'Afternoon Community Access', start: addHours(now, 3), end: addHours(now, 7), staffId: 'staff-2', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned' },
+  
+  // An open shift for later today
+  { id: 'shift-3', title: 'Evening Cover', start: addHours(now, 8), end: addHours(now, 12), propertyId: 'prop-2', status: 'Open' },
+
+  // An open shift for tomorrow
+  { id: 'shift-4', title: 'Weekend Morning Shift', start: addDays(now, 1), end: addHours(addDays(now, 1), 8), propertyId: 'prop-1', clientId: 'client-1', status: 'Open' },
+  
+  // A completed shift from yesterday
+  { id: 'shift-5', title: 'Yesterday Evening Shift', start: subHours(subDays(now, 1), 4), end: subDays(now, 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Completed' },
 ];
 
 export const mockComplianceItems: ComplianceItem[] = [
@@ -336,5 +344,6 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
+
 
 
