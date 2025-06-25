@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -46,6 +46,8 @@ export function CreateEditSectionDialog({
   const [order, setOrder] = useState(0);
   const [status, setStatus] = useState<"Active" | "Inactive">("Active");
   const [linkedFormId, setLinkedFormId] = useState<string | undefined>();
+  const [iconOptions, setIconOptions] = useState<ComboboxOption[]>([]);
+
 
   const isEditMode = !!section?.id;
 
@@ -70,6 +72,42 @@ export function CreateEditSectionDialog({
     }
   }, [section, isOpen]);
 
+  useEffect(() => {
+    const excludedIcons = [
+      'default', 'createLucideIcon', 'icons', 'LucideIcon', 'LucideProps', 'IconNode', 'toPascalCase'
+    ];
+    
+    if (!icons || typeof icons !== 'object') {
+        setIconOptions([]);
+        return;
+    }
+
+    const generatedOptions = Object.keys(icons).map(name => {
+        const IconComponent = (icons as any)[name];
+
+        const isComponent = IconComponent && typeof IconComponent === 'object' && IconComponent.$$typeof === Symbol.for('react.forward_ref');
+
+        if (!isComponent || excludedIcons.includes(name) || !/^[A-Z]/.test(name) ) {
+            return null;
+        }
+
+        return {
+            value: name,
+            label: (
+                <div className="flex items-center gap-2">
+                    <IconComponent className="h-5 w-5" />
+                    <span>{name}</span>
+                </div>
+            )
+        };
+    }).filter((option): option is ComboboxOption => option !== null)
+    .sort((a, b) => a.value.localeCompare(b.value));
+
+    setIconOptions(generatedOptions);
+
+  }, []);
+
+
   const handleSave = () => {
     // Basic validation
     if (!name || !path) {
@@ -89,42 +127,6 @@ export function CreateEditSectionDialog({
     setIsOpen(false);
   };
   
-  const iconOptions = useMemo(() => {
-    const excludedIcons = [
-      'default', 'createLucideIcon', 'icons', 'LucideIcon', 'LucideProps', 'IconNode', 'toPascalCase'
-    ];
-    
-    if (!icons || typeof icons !== 'object') {
-        return [];
-    }
-
-    const iconNames = Object.keys(icons)
-      .filter(name => {
-        const maybeIcon = (icons as any)[name];
-        if (!maybeIcon || excludedIcons.includes(name) || !/^[A-Z]/.test(name)) {
-          return false;
-        }
-        // This is a robust check for a React forwardRef component, which lucide-react icons are.
-        return typeof maybeIcon === 'object' && '$$typeof' in maybeIcon && maybeIcon.$$typeof === Symbol.for('react.forward_ref');
-      })
-      .sort();
-
-    return iconNames.map(name => {
-      const IconComponent = (icons as any)[name];
-      
-      return {
-        value: name,
-        label: (
-          <div className="flex items-center gap-2">
-            <IconComponent className="h-5 w-5" />
-            <span>{name}</span>
-          </div>
-        )
-      };
-    }) as ComboboxOption[];
-  }, []);
-
-
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-[425px]">
