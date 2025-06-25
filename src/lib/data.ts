@@ -98,29 +98,31 @@ export const mockComplianceItems: ComplianceItem[] = [
 ];
 
 export const mockSections: AppSection[] = [
-  { id: 'sec-dash', name: 'Dashboard', path: '/dashboard', iconName: 'LayoutDashboard', order: 1, status: 'Active', tabs: [] },
-  { id: 'sec-roster', name: 'Roster Schedule', path: '/roster', iconName: 'Calendar', order: 2, status: 'Active', tabs: [] },
+  { id: 'sec-dash', name: 'Dashboard', path: '/dashboard', iconName: 'LayoutDashboard', order: 10, status: 'Active', tabs: [] },
+  { id: 'sec-roster', name: 'Roster Schedule', path: '/roster', iconName: 'Calendar', order: 20, status: 'Active', tabs: [] },
   { 
     id: 'sec-people', 
     name: 'People We Support', 
     path: '/people', 
     iconName: 'Users', 
-    order: 3, 
+    order: 30, 
     status: 'Active',
     tabs: [
-      { id: 'tab-people-1', name: 'Client Intake', order: 1, formId: 'form-1' }
+      { id: 'tab-people-1', name: 'Client Intake', order: 10, formId: 'form-1' },
+      { id: 'tab-people-2', name: 'Progress Notes', order: 20, formId: 'form-4' },
+      { id: 'tab-people-3', name: 'Medication Chart', order: 30, formId: 'form-5' },
     ]
   },
-  { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 4, status: 'Active', tabs: [] },
+  { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 40, status: 'Active', tabs: [] },
   { 
     id: 'sec-loc', 
     name: 'Locations', 
     path: '/locations', 
     iconName: 'Building2', 
-    order: 5, 
+    order: 50, 
     status: 'Active',
     tabs: [
-        { id: 'tab-loc-1', name: 'Vehicle Check', order: 1, formId: 'form-3' }
+        { id: 'tab-loc-1', name: 'Vehicle Check', order: 10, formId: 'form-3' }
     ]
   },
   { 
@@ -128,13 +130,13 @@ export const mockSections: AppSection[] = [
     name: 'Incident Reports', 
     path: '#', 
     iconName: 'ShieldAlert', 
-    order: 6, 
+    order: 60, 
     status: 'Active',
     tabs: [
-        { id: 'tab-inc-1', name: 'Incident Form', order: 1, formId: 'form-2' }
+        { id: 'tab-inc-1', name: 'Incident Form', order: 10, formId: 'form-2' }
     ]
   },
-  { id: 'sec-settings', name: 'System Settings', path: '/settings', iconName: 'Settings', order: 99, status: 'Active', tabs: [] },
+  { id: 'sec-settings', name: 'System Settings', path: '/settings', iconName: 'Settings', order: 999, status: 'Active', tabs: [] },
 ];
 
 export const mockForms: CustomForm[] = [
@@ -158,6 +160,22 @@ export const mockForms: CustomForm[] = [
       id: 'form-3', name: 'Vehicle Check', linkedSectionId: 'sec-loc', status: 'Active',
       fields: []
     },
+    { 
+      id: 'form-4', name: 'Progress Note Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+        { id: 'field-4-1', name: 'Date', type: 'date', order: 10, required: true },
+        { id: 'field-4-2', name: 'Note', type: 'richtext', order: 20, required: true },
+      ]
+    },
+    { 
+      id: 'form-5', name: 'Medication Chart Form', linkedSectionId: 'sec-people', status: 'Active',
+      fields: [
+          { id: 'field-5-1', name: 'Medication Name', type: 'text', order: 10, required: true },
+          { id: 'field-5-2', name: 'Dosage', type: 'text', order: 20, required: true },
+          { id: 'field-5-3', name: 'Time Administered', type: 'time', order: 30, required: true },
+          { id: 'field-5-4', name: 'Administered By', type: 'text', order: 40, required: true },
+      ]
+    }
 ];
 
 
