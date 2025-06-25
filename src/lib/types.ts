@@ -112,3 +112,13 @@ export interface Timesheet {
   breakDuration: number; // in minutes
   status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
 }
+
+export interface Notice {
+  id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  createdAt: Date;
+  status: 'Published' | 'Draft';
+  type: 'Info' | 'Warning' | 'Urgent';
+}

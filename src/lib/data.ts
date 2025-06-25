@@ -1,4 +1,4 @@
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
@@ -266,6 +266,45 @@ export const mockForms: CustomForm[] = [
         { id: 'field-r-2', name: 'Summary', type: 'richtext', order: 20 },
       ]
     }
+];
+
+export const mockNotices: Notice[] = [
+  {
+    id: 'notice-1',
+    title: 'System Maintenance Scheduled',
+    content: 'Please be aware that there will be a scheduled system maintenance on Friday at 10 PM. The system may be unavailable for up to 1 hour. We apologize for any inconvenience.',
+    authorId: 'user-1',
+    createdAt: subDays(now, 1),
+    status: 'Published',
+    type: 'Urgent',
+  },
+  {
+    id: 'notice-2',
+    title: 'New Policy for Leave Requests',
+    content: 'All leave requests must now be submitted at least 2 weeks in advance. Please see the updated policy document in the Drive for more details.',
+    authorId: 'user-1',
+    createdAt: subDays(now, 3),
+    status: 'Published',
+    type: 'Info',
+  },
+  {
+    id: 'notice-3',
+    title: 'Parking Lot Resurfacing',
+    content: 'The north parking lot will be closed for resurfacing from Monday to Wednesday next week. Please use the south lot during this time.',
+    authorId: 'user-1',
+    createdAt: subDays(now, 5),
+    status: 'Published',
+    type: 'Warning',
+  },
+  {
+    id: 'notice-4',
+    title: 'Draft: End of Year Party',
+    content: 'Details to be confirmed for the end of year celebration.',
+    authorId: 'user-1',
+    createdAt: subDays(now, 2),
+    status: 'Draft',
+    type: 'Info',
+  },
 ];
 
 

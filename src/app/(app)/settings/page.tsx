@@ -5,6 +5,7 @@ import { RightsManagement } from "@/components/settings/RightsManagement";
 import { SectionManager } from "@/components/settings/SectionManager";
 import { FormBuilder } from "@/components/settings/FormBuilder";
 import { SystemSettings } from "@/components/settings/SystemSettings";
+import { NoticeManagement } from "@/components/settings/NoticeManagement";
 
 export default function SettingsPage() {
   return (
@@ -16,12 +17,13 @@ export default function SettingsPage() {
         </p>
       </div>
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-6">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-7">
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="groups">Groups</TabsTrigger>
           <TabsTrigger value="rights">Rights</TabsTrigger>
           <TabsTrigger value="sections">Sections</TabsTrigger>
           <TabsTrigger value="forms">Forms</TabsTrigger>
+          <TabsTrigger value="notices">Notices</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
         <TabsContent value="users">
@@ -38,6 +40,9 @@ export default function SettingsPage() {
         </TabsContent>
         <TabsContent value="forms">
           <FormBuilder />
+        </TabsContent>
+        <TabsContent value="notices">
+          <NoticeManagement />
         </TabsContent>
         <TabsContent value="system">
           <SystemSettings />
