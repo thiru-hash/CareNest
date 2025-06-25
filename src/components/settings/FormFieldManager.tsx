@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -23,6 +24,8 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
             name: "New Field",
             type: 'text',
             order: maxOrder + 10,
+            required: false,
+            tooltip: '',
         });
         setIsDialogOpen(true);
     };
@@ -82,7 +85,10 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
                                 return (
                                     <TableRow key={field.id}>
                                         <TableCell>{field.order}</TableCell>
-                                        <TableCell className="font-medium">{field.name}</TableCell>
+                                        <TableCell className="font-medium">
+                                            {field.name}
+                                            {field.required && <span className="text-destructive ml-1">*</span>}
+                                        </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-2">
                                                 <Icon className="h-4 w-4 text-muted-foreground" />

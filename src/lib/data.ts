@@ -111,16 +111,16 @@ export const mockForms: CustomForm[] = [
     { 
       id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-1-1', name: 'First Name', type: 'text', order: 1 },
-        { id: 'field-1-2', name: 'Last Name', type: 'text', order: 2 },
+        { id: 'field-1-1', name: 'First Name', type: 'text', order: 1, required: true, tooltip: "Client's legal first name." },
+        { id: 'field-1-2', name: 'Last Name', type: 'text', order: 2, required: true },
         { id: 'field-1-3', name: 'Date of Birth', type: 'dob', order: 3 },
       ]
     },
     { 
       id: 'form-2', name: 'Incident Report Form', linkedSectionId: 'sec-inc', status: 'Inactive',
       fields: [
-        { id: 'field-2-1', name: 'Incident Date', type: 'date', order: 1 },
-        { id: 'field-2-2', name: 'Incident Time', type: 'time', order: 2 },
+        { id: 'field-2-1', name: 'Incident Date', type: 'date', order: 1, required: true },
+        { id: 'field-2-2', name: 'Incident Time', type: 'time', order: 2, required: true },
         { id: 'field-2-3', name: 'Detailed Description', type: 'richtext', order: 3 },
       ]
     },

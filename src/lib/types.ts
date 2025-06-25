@@ -84,7 +84,8 @@ export interface FormField {
     name: string;
     type: FormFieldType;
     order: number;
-    // Add more properties from the reference here later
+    tooltip?: string;
+    required?: boolean;
 }
 
 export interface CustomForm {

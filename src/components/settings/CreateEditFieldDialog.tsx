@@ -16,6 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import type { FormField, FormFieldType } from "@/lib/types";
 import { fieldTypes } from "@/lib/data";
+import { Switch } from "../ui/switch";
+import { Textarea } from "../ui/textarea";
 
 interface CreateEditFieldDialogProps {
   isOpen: boolean;
@@ -33,6 +35,8 @@ export function CreateEditFieldDialog({
   const [name, setName] = useState("");
   const [type, setType] = useState<FormFieldType>("text");
   const [order, setOrder] = useState(0);
+  const [tooltip, setTooltip] = useState("");
+  const [required, setRequired] = useState(false);
 
   const isEditMode = !!field?.id;
 
@@ -54,11 +58,15 @@ export function CreateEditFieldDialog({
             setName(field.name);
             setType(field.type);
             setOrder(field.order);
+            setTooltip(field.tooltip || "");
+            setRequired(field.required || false);
         } else {
             // Reset for new field
             setName("");
             setType("text");
             setOrder(0);
+            setTooltip("");
+            setRequired(false);
         }
     }
   }, [field, isOpen]);
@@ -73,6 +81,8 @@ export function CreateEditFieldDialog({
       name,
       type,
       order,
+      tooltip,
+      required,
     };
     onSave(newFieldData);
     setIsOpen(false);
@@ -89,6 +99,18 @@ export function CreateEditFieldDialog({
         </DialogHeader>
         <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                    Field Name
+                </Label>
+                <Input
+                    id="name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="col-span-3"
+                    placeholder="e.g. Client First Name"
+                />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
                 <Label htmlFor="fieldType" className="text-right">
                     Field Type
                 </Label>
@@ -103,16 +125,17 @@ export function CreateEditFieldDialog({
                     />
                 </div>
             </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                    Field Name
+             <div className="grid grid-cols-4 items-start gap-4">
+                <Label htmlFor="tooltip" className="text-right pt-2">
+                    Tooltip
                 </Label>
-                <Input
-                    id="name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                <Textarea
+                    id="tooltip"
+                    value={tooltip}
+                    onChange={(e) => setTooltip(e.target.value)}
                     className="col-span-3"
-                    placeholder="e.g. Client First Name"
+                    placeholder="Optional help text for users"
+                    rows={3}
                 />
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
@@ -125,6 +148,16 @@ export function CreateEditFieldDialog({
                     value={order}
                     onChange={(e) => setOrder(parseInt(e.target.value, 10) || 0)}
                     className="col-span-3"
+                />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="required" className="text-right">
+                    Mandatory
+                </Label>
+                 <Switch
+                    id="required"
+                    checked={required}
+                    onCheckedChange={setRequired}
                 />
             </div>
         </div>
