@@ -22,9 +22,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { AppSection } from "@/lib/types";
-import { iconMap, iconNames } from "@/lib/icon-map";
 import { mockForms } from "@/lib/data";
 import { Combobox, type ComboboxOption } from "../ui/combobox";
+import * as icons from "lucide-react";
 
 interface CreateEditSectionDialogProps {
   isOpen: boolean;
@@ -89,19 +89,30 @@ export function CreateEditSectionDialog({
   };
   
   const iconOptions = useMemo(() => {
-    if (!iconNames) {
-      return [];
+    const excludedIcons = [
+      'default', 'createLucideIcon', 'icons', 'LucideIcon', 'LucideProps', 'IconNode', 'toPascalCase'
+    ];
+    
+    if (!icons || typeof icons !== 'object') {
+        return [];
     }
+
+    const iconNames = Object.keys(icons)
+      .filter(name => !excludedIcons.includes(name) && /^[A-Z]/.test(name))
+      .sort();
+
     return iconNames.map(name => {
-      const Icon = iconMap[name as keyof typeof iconMap];
-      if (!Icon) {
+      const IconComponent = (icons as any)[name];
+
+      if (!IconComponent || (typeof IconComponent !== 'function' && (typeof IconComponent !== 'object' || !IconComponent.render))) {
         return null;
       }
+      
       return {
         value: name,
         label: (
           <div className="flex items-center gap-2">
-            <Icon className="h-5 w-5" />
+            <IconComponent className="h-5 w-5" />
             <span>{name}</span>
           </div>
         )
