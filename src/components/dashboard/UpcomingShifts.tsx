@@ -9,11 +9,13 @@ import { mockShifts, mockStaff, mockProperties, mockUsers } from "@/lib/data";
 import { format, isFuture, isPast } from "date-fns";
 import { Clock, MapPin, Send } from "lucide-react";
 import type { User, Staff, Shift, UserRole } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
 
 // In a real app, this would come from an authentication context/session.
 const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
 
 export function UpcomingShifts() {
+  const { toast } = useToast();
   const [shiftsToShow, setShiftsToShow] = useState<Shift[]>([]);
   const [cardTitle, setCardTitle] = useState("Upcoming Shifts");
   const [cardDescription, setCardDescription] = useState("Loading shifts...");
@@ -44,19 +46,28 @@ export function UpcomingShifts() {
 
   const handleClockIn = (shiftId: string) => {
     setClockedInShiftId(shiftId);
-    alert(`Clocked in for shift ${shiftId} at ${new Date().toLocaleTimeString()}`);
+    toast({
+      title: "Clocked In",
+      description: `You have clocked in for shift ${shiftId} at ${new Date().toLocaleTimeString()}`,
+    });
   };
 
   const handleClockOut = () => {
     const shiftId = clockedInShiftId;
     setClockedInShiftId(null);
-    alert(`Clocked out from shift ${shiftId} at ${new Date().toLocaleTimeString()}. A timesheet has been created for your review.`);
+    toast({
+        title: "Clocked Out",
+        description: `Clocked out from shift ${shiftId} at ${new Date().toLocaleTimeString()}. A timesheet has been created for your review.`,
+    });
   };
 
   const handleRequestShift = (shift: Shift) => {
     // In a real app, this would trigger a server action to send an email/notification.
     console.log(`[Notification Sent] User ${currentUser.name} (${currentUser.id}) requested open shift ${shift.id} for "${shift.title}".`);
-    alert(`Your request to pick up the "${shift.title}" shift has been sent to the rostering team.`);
+    toast({
+        title: "Request Sent",
+        description: `Your request to pick up the "${shift.title}" shift has been sent to the rostering team.`,
+    });
   };
   
   const canClockIn = (shift: Shift) => {
