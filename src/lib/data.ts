@@ -77,7 +77,7 @@ export const mockSections: AppSection[] = [
   { id: 'sec-people', name: 'People We Support', path: '/people', iconName: 'Users', order: 3, status: 'Active', linkedFormId: 'form-1' },
   { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 4, status: 'Active' },
   { id: 'sec-loc', name: 'Locations', path: '/locations', iconName: 'Building2', order: 5, status: 'Active', linkedFormId: 'form-3' },
-  { id: 'sec-inc', name: 'Incident Reports', path: '#', iconName: 'ShieldAlert', order: 6, status: 'Inactive', linkedFormId: 'form-2' },
+  { id: 'sec-inc', name: 'Incident Reports', path: '#', iconName: 'ShieldAlert', order: 6, status: 'Active', linkedFormId: 'form-2' },
   { id: 'sec-settings', name: 'System Settings', path: '/settings', iconName: 'Settings', order: 99, status: 'Active' },
 ];
 
