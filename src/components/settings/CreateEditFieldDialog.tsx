@@ -16,8 +16,8 @@ import { Label } from "@/components/ui/label";
 import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
 import type { FormField, FormFieldType } from "@/lib/types";
 import { fieldTypes } from "@/lib/data";
-import { Switch } from "../ui/switch";
-import { Textarea } from "../ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 
 interface CreateEditFieldDialogProps {
   isOpen: boolean;
