@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -10,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { mockShifts, mockStaff, mockProperties, mockUsers, mockClients } from "@/lib/data";
+import { mockShifts, mockStaff, mockProperties, mockClients } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { format } from 'date-fns';
@@ -22,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Shift, User, Staff, Client } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
-const currentUser: User = mockUsers['user-1'];
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
 
 type ViewMode = 'staff' | 'client';
 

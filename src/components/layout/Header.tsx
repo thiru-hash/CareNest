@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -15,9 +16,9 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { LogOut, Settings, User } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { mockUsers } from "@/lib/data";
+import { mockStaff } from "@/lib/data";
 
-const user = mockUsers['user-1'];
+const user = mockStaff.find(s => s.id === 'staff-1')!;
 
 const pageTitles: { [key: string]: string } = {
   "/dashboard": "Dashboard",

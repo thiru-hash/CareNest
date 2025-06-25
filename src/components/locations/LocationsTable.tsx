@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -11,12 +12,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { mockProperties, mockUsers } from "@/lib/data";
+import { mockProperties, mockStaff } from "@/lib/data";
 import { getAccessiblePropertyIds } from "@/lib/access-control";
-import type { User } from "@/lib/types";
+import type { User, Staff } from "@/lib/types";
 
 // In a real app, this would come from an authentication context/session
-const currentUser: User = mockUsers['user-1'];
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
 
 export async function LocationsTable() {
   const accessiblePropertyIds = await getAccessiblePropertyIds(currentUser.id);

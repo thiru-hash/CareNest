@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from "next/link";
@@ -11,12 +12,12 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Waves, MoreHorizontal } from "lucide-react";
-import { mockUsers, mockSections } from "@/lib/data";
+import { mockSections, mockStaff } from "@/lib/data";
 import { iconMap } from "@/lib/icon-map";
 import { UserRole } from "@/lib/types";
 import { useMemo } from "react";
 
-const user = mockUsers["user-1"];
+const user = mockStaff.find(s => s.id === 'staff-1')!;
 
 const adminRoles: UserRole[] = ["Admin"];
 
@@ -26,14 +27,17 @@ export function SidebarNav() {
   const userNavItems = useMemo(() => {
     // In a real app, this data would likely be fetched or come from a context.
     // For now, we filter and sort the mock data.
-    if (adminRoles.includes(user.role)) {
-      return mockSections
+    let sectionsToShow = mockSections
         .filter(section => section.status === 'Active')
         .sort((a, b) => a.order - b.order);
+
+    if (!adminRoles.includes(user.role)) {
+        // Filter out admin-only sections for non-admins
+        sectionsToShow = sectionsToShow.filter(section => section.path !== '/settings');
     }
-    // Add logic here for non-admin roles if needed
-    return [];
-  }, []);
+    
+    return sectionsToShow;
+  }, [user.role]);
 
   return (
     <Sidebar collapsible="icon" variant="sidebar" side="left">

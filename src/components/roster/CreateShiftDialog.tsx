@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -36,7 +37,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { mockStaff, mockProperties, mockClients, mockUsers } from "@/lib/data";
+import { mockStaff, mockProperties, mockClients } from "@/lib/data";
 import { Calendar as CalendarIcon, Trash2 } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -52,7 +53,7 @@ interface CreateShiftDialogProps {
   onDelete: (shiftId: string) => void;
 }
 
-const currentUser = mockUsers['user-1'];
+const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
 export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete }: CreateShiftDialogProps) {
   const { toast } = useToast();

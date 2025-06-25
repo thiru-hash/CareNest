@@ -1,6 +1,6 @@
 
 import { notFound } from "next/navigation";
-import { mockClients, mockProperties, mockUsers, mockSections, mockForms } from "@/lib/data";
+import { mockClients, mockProperties, mockStaff, mockSections, mockForms } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Building2, User } from "lucide-react";
@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
 // In a real app, this would come from an authentication context/session
-const currentUser = mockUsers['user-1'];
+const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
 // Placeholder component for rendering forms based on their configuration
 function DynamicForm({ formId }: { formId: string }) {

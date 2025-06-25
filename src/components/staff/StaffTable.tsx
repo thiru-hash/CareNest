@@ -1,3 +1,4 @@
+
 import {
   Table,
   TableBody,
@@ -11,12 +12,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, UserPlus } from "lucide-react";
-import { mockStaff, mockUsers } from "@/lib/data";
+import { mockStaff } from "@/lib/data";
 import type { Staff, User } from "@/lib/types";
 
 // In a real app, this would come from an authentication context/session.
 // To test the non-admin view, you could change this to a staff member, e.g., `mockStaff[0]`.
-const currentUser: User | Staff = mockUsers['user-1'];
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
 
 export function StaffTable() {
 

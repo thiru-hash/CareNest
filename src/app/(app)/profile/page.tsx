@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef } from "react";
@@ -5,14 +6,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Clock, Plane, Hourglass, Camera } from "lucide-react";
-import { mockUsers } from "@/lib/data";
+import { mockStaff } from "@/lib/data";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 // In a real app, this would come from an authentication context/session.
 // We'll use the admin user to demonstrate this page.
-const currentUser = mockUsers['user-1'];
+const currentUser = mockStaff.find(s => s.id === 'staff-1')!;
 
 export default function ProfilePage() {
   const { toast } = useToast();

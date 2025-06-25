@@ -1,3 +1,4 @@
+
 import Link from "next/link";
 import {
   Table,
@@ -12,12 +13,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
-import { mockProperties, mockUsers } from "@/lib/data";
+import { mockProperties, mockStaff } from "@/lib/data";
 import { getAccessibleClients } from "@/lib/access-control";
-import { User } from "@/lib/types";
+import { User, Staff } from "@/lib/types";
 
 // In a real app, this would come from an authentication context/session
-const currentUser: User = mockUsers['user-1'];
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
 
 export async function ClientTable() {
   const accessibleClients = await getAccessibleClients(currentUser.id);
