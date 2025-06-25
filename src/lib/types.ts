@@ -64,9 +64,10 @@ export interface ComplianceItem {
 export interface AppSection {
     id: string;
     name: string;
-    icon: React.ElementType;
+    iconName: string;
     order: number;
     status: 'Active' | 'Inactive';
+    linkedFormId?: string;
 }
 
 export interface CustomForm {
