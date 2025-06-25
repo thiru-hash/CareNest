@@ -23,7 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Shift, User, Staff, Client } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
+const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
 
 type ViewMode = 'staff' | 'client';
 
