@@ -61,6 +61,13 @@ export interface ComplianceItem {
   status: 'Compliant' | 'Expiring Soon' | 'Overdue';
 }
 
+export interface SectionTab {
+    id: string;
+    name: string;
+    order: number;
+    formId: string;
+}
+
 export interface AppSection {
     id: string;
     name: string;
@@ -68,7 +75,7 @@ export interface AppSection {
     iconName: string;
     order: number;
     status: 'Active' | 'Inactive';
-    linkedFormId?: string;
+    tabs?: SectionTab[];
 }
 
 export type FormFieldType = 

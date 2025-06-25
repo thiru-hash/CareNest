@@ -2,11 +2,12 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { mockSections, mockForms } from "@/lib/data";
+import { mockSections } from "@/lib/data";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ export function SectionManager() {
             iconName: "LayoutDashboard",
             order: maxOrder + 10,
             status: "Inactive",
+            tabs: [],
         });
         setIsDialogOpen(true);
     };
@@ -52,15 +54,11 @@ export function SectionManager() {
             setSections(prev => prev.map(s => s.id === savedSection.id ? savedSection : s).sort((a, b) => a.order - b.order));
         } else {
             // Create new
-            setSections(prev => [...prev, savedSection].sort((a, b) => a.order - b.order));
+            const newSection = { ...savedSection, id: `sec-${Date.now()}` };
+            setSections(prev => [...prev, newSection].sort((a, b) => a.order - b.order));
         }
     };
     
-    const getFormName = (formId?: string) => {
-        if (!formId) return 'N/A';
-        return mockForms.find(f => f.id === formId)?.name || 'N/A';
-    }
-
     return (
         <>
             <Card>
@@ -82,7 +80,7 @@ export function SectionManager() {
                             <TableRow>
                                 <TableHead>Section Name</TableHead>
                                 <TableHead>Icon</TableHead>
-                                <TableHead>Linked Form</TableHead>
+                                <TableHead>Tabs</TableHead>
                                 <TableHead>Order</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead><span className="sr-only">Actions</span></TableHead>
@@ -99,7 +97,7 @@ export function SectionManager() {
                                     <TableRow key={section.id}>
                                         <TableCell className="font-medium">{section.name}</TableCell>
                                         <TableCell><Icon className="h-5 w-5 text-muted-foreground" /></TableCell>
-                                        <TableCell>{getFormName(section.linkedFormId)}</TableCell>
+                                        <TableCell>{section.tabs?.length || 0}</TableCell>
                                         <TableCell>{section.order}</TableCell>
                                         <TableCell>
                                             <Badge variant={section.status === 'Active' ? 'default' : 'secondary'} className={cn(statusClass)}>{section.status}</Badge>
@@ -113,7 +111,9 @@ export function SectionManager() {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem onClick={() => handleEditSection(section)}>Edit Section</DropdownMenuItem>
-                                                    <DropdownMenuItem>Manage Rights</DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/settings/sections/${section.id}`}>Manage Tabs</Link>
+                                                    </DropdownMenuItem>
                                                     <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteSection(section.id)}>Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>

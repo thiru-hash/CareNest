@@ -14,15 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import type { AppSection } from "@/lib/types";
-import { mockForms } from "@/lib/data";
 import { Combobox, type ComboboxOption } from "../ui/combobox";
 import * as icons from "lucide-react";
 import React from "react";
@@ -45,7 +37,6 @@ export function CreateEditSectionDialog({
   const [iconName, setIconName] = useState("LayoutDashboard");
   const [order, setOrder] = useState(0);
   const [status, setStatus] = useState<"Active" | "Inactive">("Active");
-  const [linkedFormId, setLinkedFormId] = useState<string | undefined>();
   const [iconOptions, setIconOptions] = useState<ComboboxOption[]>([]);
 
 
@@ -59,7 +50,6 @@ export function CreateEditSectionDialog({
             setIconName(section.iconName || "LayoutDashboard");
             setOrder(section.order);
             setStatus(section.status);
-            setLinkedFormId(section.linkedFormId);
         } else {
             // Reset for new section
             setName("");
@@ -67,7 +57,6 @@ export function CreateEditSectionDialog({
             setIconName("LayoutDashboard");
             setOrder(0);
             setStatus("Inactive");
-            setLinkedFormId(undefined);
         }
     }
   }, [section, isOpen]);
@@ -77,14 +66,10 @@ export function CreateEditSectionDialog({
       'default', 'createLucideIcon', 'icons', 'LucideIcon', 'LucideProps', 'IconNode', 'toPascalCase'
     ];
     
-    if (!icons || typeof icons !== 'object') {
-        setIconOptions([]);
-        return;
-    }
+    if (typeof window === 'undefined') return;
 
     const generatedOptions = Object.keys(icons).map(name => {
         const IconComponent = (icons as any)[name];
-
         const isComponent = IconComponent && typeof IconComponent === 'object' && IconComponent.$$typeof === Symbol.for('react.forward_ref');
 
         if (!isComponent || excludedIcons.includes(name) || !/^[A-Z]/.test(name) ) {
@@ -105,7 +90,7 @@ export function CreateEditSectionDialog({
 
     setIconOptions(generatedOptions);
 
-  }, []);
+  }, [isOpen]);
 
 
   const handleSave = () => {
@@ -115,13 +100,13 @@ export function CreateEditSectionDialog({
         return;
     }
     const newSectionData: AppSection = {
-      id: section?.id || `sec-${Date.now()}`,
+      id: section?.id || '',
       name,
       path,
       iconName,
       order,
       status,
-      linkedFormId: linkedFormId === "none" ? undefined : linkedFormId,
+      tabs: section?.tabs || [],
     };
     onSave(newSectionData);
     setIsOpen(false);
@@ -187,27 +172,6 @@ export function CreateEditSectionDialog({
               onChange={(e) => setOrder(parseInt(e.target.value, 10) || 0)}
               className="col-span-3"
             />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="linkedFormId" className="text-right">
-              Linked Form
-            </Label>
-            <Select
-              value={linkedFormId || "none"}
-              onValueChange={setLinkedFormId}
-            >
-              <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a form" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">None</SelectItem>
-                {mockForms.map((form) => (
-                  <SelectItem key={form.id} value={form.id}>
-                    {form.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
            <div className="grid grid-cols-4 items-center gap-4">
             <Label htmlFor="status" className="text-right">

@@ -98,13 +98,43 @@ export const mockComplianceItems: ComplianceItem[] = [
 ];
 
 export const mockSections: AppSection[] = [
-  { id: 'sec-dash', name: 'Dashboard', path: '/dashboard', iconName: 'LayoutDashboard', order: 1, status: 'Active' },
-  { id: 'sec-roster', name: 'Roster Schedule', path: '/roster', iconName: 'Calendar', order: 2, status: 'Active' },
-  { id: 'sec-people', name: 'People We Support', path: '/people', iconName: 'Users', order: 3, status: 'Active', linkedFormId: 'form-1' },
-  { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 4, status: 'Active' },
-  { id: 'sec-loc', name: 'Locations', path: '/locations', iconName: 'Building2', order: 5, status: 'Active', linkedFormId: 'form-3' },
-  { id: 'sec-inc', name: 'Incident Reports', path: '#', iconName: 'ShieldAlert', order: 6, status: 'Active', linkedFormId: 'form-2' },
-  { id: 'sec-settings', name: 'System Settings', path: '/settings', iconName: 'Settings', order: 99, status: 'Active' },
+  { id: 'sec-dash', name: 'Dashboard', path: '/dashboard', iconName: 'LayoutDashboard', order: 1, status: 'Active', tabs: [] },
+  { id: 'sec-roster', name: 'Roster Schedule', path: '/roster', iconName: 'Calendar', order: 2, status: 'Active', tabs: [] },
+  { 
+    id: 'sec-people', 
+    name: 'People We Support', 
+    path: '/people', 
+    iconName: 'Users', 
+    order: 3, 
+    status: 'Active',
+    tabs: [
+      { id: 'tab-people-1', name: 'Client Intake', order: 1, formId: 'form-1' }
+    ]
+  },
+  { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 4, status: 'Active', tabs: [] },
+  { 
+    id: 'sec-loc', 
+    name: 'Locations', 
+    path: '/locations', 
+    iconName: 'Building2', 
+    order: 5, 
+    status: 'Active',
+    tabs: [
+        { id: 'tab-loc-1', name: 'Vehicle Check', order: 1, formId: 'form-3' }
+    ]
+  },
+  { 
+    id: 'sec-inc', 
+    name: 'Incident Reports', 
+    path: '#', 
+    iconName: 'ShieldAlert', 
+    order: 6, 
+    status: 'Active',
+    tabs: [
+        { id: 'tab-inc-1', name: 'Incident Form', order: 1, formId: 'form-2' }
+    ]
+  },
+  { id: 'sec-settings', name: 'System Settings', path: '/settings', iconName: 'Settings', order: 99, status: 'Active', tabs: [] },
 ];
 
 export const mockForms: CustomForm[] = [
