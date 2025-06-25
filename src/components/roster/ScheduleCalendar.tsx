@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -34,18 +34,22 @@ export function ScheduleCalendar() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('staff');
+  const [daysOfWeek, setDaysOfWeek] = useState<Date[]>([]);
 
-  const today = new Date();
-  const dayOfWeek = today.getDay();
-  const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-  const startOfWeek = new Date(new Date().setDate(today.getDate() + diffToMonday));
+  useEffect(() => {
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+    const startOfWeek = new Date(new Date().setDate(today.getDate() + diffToMonday));
 
+    const weekDays = Array.from({ length: 7 }, (_, i) => {
+      const day = new Date(startOfWeek);
+      day.setDate(day.getDate() + i);
+      return day;
+    });
+    setDaysOfWeek(weekDays);
+  }, []);
 
-  const daysOfWeek = Array.from({ length: 7 }, (_, i) => {
-    const day = new Date(startOfWeek);
-    day.setDate(day.getDate() + i);
-    return day;
-  });
 
   const handleFilterChange = (filterType: 'staffId' | 'propertyId') => (value: string) => {
     setFilters(prev => ({ ...prev, [filterType]: value }));
@@ -392,22 +396,28 @@ export function ScheduleCalendar() {
             </Tabs>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto border rounded-lg">
-            <Table className="min-w-full">
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead className="w-[200px] sticky left-0 bg-muted/50 z-10">{viewMode === 'staff' ? 'Staff' : 'Client'}</TableHead>
-                  {daysOfWeek.map((day) => (
-                    <TableHead key={day.toISOString()} className="text-center border-l min-w-[150px]">
-                      <div className="font-semibold">{format(day, 'EEE')}</div>
-                      <div className="text-muted-foreground text-sm">{format(day, 'd MMM')}</div>
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              {viewMode === 'staff' ? renderStaffView() : renderClientView()}
-            </Table>
-          </div>
+          {daysOfWeek.length > 0 ? (
+            <div className="overflow-x-auto border rounded-lg">
+              <Table className="min-w-full">
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead className="w-[200px] sticky left-0 bg-muted/50 z-10">{viewMode === 'staff' ? 'Staff' : 'Client'}</TableHead>
+                    {daysOfWeek.map((day) => (
+                      <TableHead key={day.toISOString()} className="text-center border-l min-w-[150px]">
+                        <div className="font-semibold">{format(day, 'EEE')}</div>
+                        <div className="text-muted-foreground text-sm">{format(day, 'd MMM')}</div>
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                {viewMode === 'staff' ? renderStaffView() : renderClientView()}
+              </Table>
+            </div>
+          ) : (
+            <div className="text-center text-muted-foreground p-8">
+              Loading calendar...
+            </div>
+          )}
         </CardContent>
       </Card>
       <CreateShiftDialog 
