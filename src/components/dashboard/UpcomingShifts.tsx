@@ -10,6 +10,8 @@ import { format, isFuture, isPast } from "date-fns";
 import { Clock, MapPin, Send } from "lucide-react";
 import type { User, Staff, Shift, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
 
 // In a real app, this would come from an authentication context/session.
 const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-1')!;
@@ -20,6 +22,11 @@ export function UpcomingShifts() {
   const [cardTitle, setCardTitle] = useState("Upcoming Shifts");
   const [cardDescription, setCardDescription] = useState("Loading shifts...");
   const [clockedInShiftId, setClockedInShiftId] = useState<string | null>(null);
+  
+  const [requestedShiftIds, setRequestedShiftIds] = useState<string[]>([]);
+  const [requestingShiftId, setRequestingShiftId] = useState<string | null>(null);
+  const [requestMessage, setRequestMessage] = useState("");
+
 
   useEffect(() => {
     const privilegedRoles: UserRole[] = ['Admin', 'Support Manager', 'Roster Team'];
@@ -60,15 +67,29 @@ export function UpcomingShifts() {
         description: `Clocked out from shift ${shiftId} at ${new Date().toLocaleTimeString()}. A timesheet has been created for your review.`,
     });
   };
-
-  const handleRequestShift = (shift: Shift) => {
-    // In a real app, this would trigger a server action to send an email/notification.
-    console.log(`[Notification Sent] User ${currentUser.name} (${currentUser.id}) requested open shift ${shift.id} for "${shift.title}".`);
+  
+  const handleSendRequest = (shift: Shift, message: string) => {
+    console.log(`[Notification Sent] User ${currentUser.name} (${currentUser.id}) requested open shift ${shift.id} for "${shift.title}" with message: "${message}"`);
     toast({
         title: "Request Sent",
-        description: `Your request to pick up the "${shift.title}" shift has been sent to the rostering team.`,
+        description: `Your request for the "${shift.title}" shift has been sent.`,
     });
+    setRequestedShiftIds(prev => [...prev, shift.id]);
+    setRequestingShiftId(null);
+    setRequestMessage("");
+    // In a real app, the backend would now handle this. If the shift is assigned to someone else,
+    // a notification would be sent to all users who requested it, and it would be removed from their "Open Shifts" view.
   };
+
+  const handleRequestClick = (shiftId: string) => {
+    setRequestingShiftId(shiftId);
+    setRequestMessage("");
+  };
+
+  const handleCancelRequest = () => {
+    setRequestingShiftId(null);
+    setRequestMessage("");
+  }
   
   const canClockIn = (shift: Shift) => {
     // Allow clocking in if the shift has not ended yet.
@@ -89,6 +110,8 @@ export function UpcomingShifts() {
             const isThisShiftClockedIn = clockedInShiftId === shift.id;
             const isAnyShiftClockedIn = clockedInShiftId !== null;
             const canThisShiftBeClockedIn = canClockIn(shift);
+            const hasBeenRequested = requestedShiftIds.includes(shift.id);
+            const isRequestFormOpen = requestingShiftId === shift.id;
 
             return (
               <div key={shift.id} className="flex flex-col gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50">
@@ -134,12 +157,36 @@ export function UpcomingShifts() {
                   </div>
                 )}
                 
-                {shift.status === 'Open' && (
+                {shift.status === 'Open' && !isRequestFormOpen && (
                    <div className="w-full">
-                     <Button onClick={() => handleRequestShift(shift)} variant="outline" className="w-full">
-                       <Send className="mr-2" /> Request Shift
+                     <Button 
+                       onClick={() => handleRequestClick(shift.id)} 
+                       variant="outline" 
+                       className="w-full"
+                       disabled={hasBeenRequested}
+                     >
+                       <Send className="mr-2" />
+                       {hasBeenRequested ? 'Request Sent' : 'Request Shift'}
                      </Button>
                    </div>
+                )}
+
+                {isRequestFormOpen && (
+                  <div className="mt-2 space-y-2 border-t pt-3">
+                    <Label htmlFor={`request-message-${shift.id}`}>Optional Message</Label>
+                    <Textarea
+                      id={`request-message-${shift.id}`}
+                      placeholder="Add a message for the rostering team..."
+                      value={requestMessage}
+                      onChange={(e) => setRequestMessage(e.target.value)}
+                    />
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" onClick={handleCancelRequest}>Cancel</Button>
+                      <Button onClick={() => handleSendRequest(shift, requestMessage)}>
+                        <Send className="mr-2" /> Send Request
+                      </Button>
+                    </div>
+                  </div>
                 )}
               </div>
             );
