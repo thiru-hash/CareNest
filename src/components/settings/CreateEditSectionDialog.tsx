@@ -25,6 +25,7 @@ import type { AppSection } from "@/lib/types";
 import { mockForms } from "@/lib/data";
 import { Combobox, type ComboboxOption } from "../ui/combobox";
 import * as icons from "lucide-react";
+import React from "react";
 
 interface CreateEditSectionDialogProps {
   isOpen: boolean;
@@ -98,15 +99,18 @@ export function CreateEditSectionDialog({
     }
 
     const iconNames = Object.keys(icons)
-      .filter(name => !excludedIcons.includes(name) && /^[A-Z]/.test(name))
+      .filter(name => {
+        const maybeIcon = (icons as any)[name];
+        if (!maybeIcon || excludedIcons.includes(name) || !/^[A-Z]/.test(name)) {
+          return false;
+        }
+        // This is a robust check for a React forwardRef component, which lucide-react icons are.
+        return typeof maybeIcon === 'object' && '$$typeof' in maybeIcon && maybeIcon.$$typeof === Symbol.for('react.forward_ref');
+      })
       .sort();
 
     return iconNames.map(name => {
       const IconComponent = (icons as any)[name];
-
-      if (!IconComponent || (typeof IconComponent !== 'function' && (typeof IconComponent !== 'object' || !IconComponent.render))) {
-        return null;
-      }
       
       return {
         value: name,
@@ -117,7 +121,7 @@ export function CreateEditSectionDialog({
           </div>
         )
       };
-    }).filter(Boolean) as ComboboxOption[];
+    }) as ComboboxOption[];
   }, []);
 
 
