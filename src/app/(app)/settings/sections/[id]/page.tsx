@@ -6,7 +6,7 @@ import { TabManager } from "@/components/settings/TabManager";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function SectionTabsPage({ params }: { params: { id: string } }) {
+export default async function SectionTabsPage({ params }: { params: { id: string } }) {
   // In a real app, this data would be fetched from a database
   const section = mockSections.find((s) => s.id === params.id);
 

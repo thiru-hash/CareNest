@@ -1,3 +1,4 @@
+
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { mockForms } from "@/lib/data";
@@ -5,7 +6,7 @@ import { FormFieldManager } from "@/components/settings/FormFieldManager";
 import { ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function FormEditorPage({ params }: { params: { id: string } }) {
+export default async function FormEditorPage({ params }: { params: { id: string } }) {
   // In a real app, this data would be fetched from a database
   const form = mockForms.find((f) => f.id === params.id);
 
