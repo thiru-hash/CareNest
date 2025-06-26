@@ -227,4 +227,5 @@ export interface ClientTransaction {
     category: 'Transport' | 'Groceries' | 'Equipment' | 'Utilities' | 'Other';
     uploadedReceipt?: string;
     attachmentName?: string;
+    status: 'Pending' | 'Approved' | 'Reimbursed' | 'Rejected';
 }
