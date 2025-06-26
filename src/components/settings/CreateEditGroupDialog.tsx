@@ -19,6 +19,10 @@ import { Textarea } from "@/components/ui/textarea";
 import type { Group, Staff, AppSection, Permission, PermissionsState } from "@/lib/types";
 import { mockStaff, mockSections } from "@/lib/data";
 import { DualListBox, type DualListItem } from "./DualListBox";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 
 interface CreateEditGroupDialogProps {
   isOpen: boolean;
@@ -32,28 +36,12 @@ const allStaff: DualListItem[] = mockStaff.map(s => ({ id: s.id, name: s.name, d
 const allSections = mockSections.filter(s => s.status === 'Active');
 const PERMISSION_KEYS: Permission[] = ['view', 'create', 'edit', 'delete'];
 
-const generateAllRights = (): DualListItem[] => {
-  return allSections.flatMap(section =>
-    PERMISSION_KEYS.map(permission => {
-      const pName = permission.charAt(0).toUpperCase() + permission.slice(1);
-      return {
-        id: `${section.id}:${permission}`,
-        name: `${section.name}: ${pName}`,
-        details: `Allows ${permission} access for the ${section.name} section`
-      }
-    })
-  );
-};
-
-const allPossibleRights = generateAllRights();
-
-
 export function CreateEditGroupDialog({ isOpen, setIsOpen, group, permissions, onSave }: CreateEditGroupDialogProps) {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   
   const [selectedStaff, setSelectedStaff] = useState<DualListItem[]>([]);
-  const [selectedRights, setSelectedRights] = useState<DualListItem[]>([]);
+  const [groupPermissions, setGroupPermissions] = useState<PermissionsState[string]>({});
 
   const isEditMode = !!group?.id;
 
@@ -63,34 +51,44 @@ export function CreateEditGroupDialog({ isOpen, setIsOpen, group, permissions, o
         setName(group.name);
         setDescription(group.description);
         
-        // Set members
         const groupStaff = allStaff.filter(staff => group.userIds.includes(staff.id));
         setSelectedStaff(groupStaff);
-
-        // Set rights
-        const groupRights: DualListItem[] = [];
-        const currentGroupPermissions = permissions[group.id] || {};
-        for (const sectionId in currentGroupPermissions) {
-          for (const pKey in currentGroupPermissions[sectionId]) {
-            if (currentGroupPermissions[sectionId][pKey as Permission]) {
-              const right = allPossibleRights.find(r => r.id === `${sectionId}:${pKey}`);
-              if (right) {
-                groupRights.push(right);
-              }
-            }
-          }
-        }
-        setSelectedRights(groupRights);
+        
+        setGroupPermissions(permissions[group.id] || {});
         
       } else {
         // Reset for new group
         setName("");
         setDescription("");
         setSelectedStaff([]);
-        setSelectedRights([]);
+        setGroupPermissions({});
       }
     }
   }, [group, isOpen, permissions]);
+  
+  const handlePermissionChange = (sectionId: string, permission: Permission, checked: boolean) => {
+    setGroupPermissions(prev => {
+        const newPerms = JSON.parse(JSON.stringify(prev));
+        if (!newPerms[sectionId]) {
+            newPerms[sectionId] = {};
+        }
+        newPerms[sectionId][permission] = checked;
+        return newPerms;
+    });
+  };
+  
+  const handleSelectAllForRow = (sectionId: string, checked: boolean) => {
+    setGroupPermissions(prev => {
+        const newPerms = JSON.parse(JSON.stringify(prev));
+        newPerms[sectionId] = {
+            view: checked,
+            create: checked,
+            edit: checked,
+            delete: checked,
+        };
+        return newPerms;
+    });
+  };
 
   const handleSave = () => {
     if (!name) {
@@ -100,20 +98,16 @@ export function CreateEditGroupDialog({ isOpen, setIsOpen, group, permissions, o
     const groupData: Partial<Group> = { id: group?.id, name, description };
     const memberIds = selectedStaff.map(s => s.id);
 
-    // Convert flat rights list back to nested permission object
-    const newPermissions: { [sectionId: string]: { [key in Permission]?: boolean } } = {};
-    selectedRights.forEach(right => {
-        const [sectionId, permission] = right.id.split(':');
-        if (!newPermissions[sectionId]) {
-            newPermissions[sectionId] = {};
-        }
-        newPermissions[sectionId][permission as Permission] = true;
-    });
-
-    onSave(groupData, memberIds, newPermissions);
+    onSave(groupData, memberIds, groupPermissions);
     setIsOpen(false);
   };
   
+  const assignedRightsCount = useMemo(() => {
+    return Object.values(groupPermissions).reduce((total, sectionPerms) => {
+        return total + Object.values(sectionPerms).filter(Boolean).length;
+    }, 0);
+  }, [groupPermissions]);
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="sm:max-w-4xl max-h-[90vh] flex flex-col">
@@ -128,7 +122,7 @@ export function CreateEditGroupDialog({ isOpen, setIsOpen, group, permissions, o
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="details">Details</TabsTrigger>
             <TabsTrigger value="members">Members ({selectedStaff.length})</TabsTrigger>
-            <TabsTrigger value="rights">Rights ({selectedRights.length})</TabsTrigger>
+            <TabsTrigger value="rights">Rights ({assignedRightsCount})</TabsTrigger>
           </TabsList>
           
           <TabsContent value="details" className="pt-4">
@@ -154,14 +148,45 @@ export function CreateEditGroupDialog({ isOpen, setIsOpen, group, permissions, o
              />
           </TabsContent>
           
-          <TabsContent value="rights" className="h-[calc(100%-40px)]">
-             <DualListBox
-                available={allPossibleRights}
-                selected={selectedRights}
-                onSelectionChange={setSelectedRights}
-                availableHeader="Available Rights"
-                selectedHeader="Assigned Rights"
-             />
+          <TabsContent value="rights" className="h-[calc(100%-40px)] pt-2 overflow-hidden">
+             <ScrollArea className="h-full pr-4">
+                <Table>
+                    <TableHeader className="sticky top-0 bg-background z-10">
+                        <TableRow>
+                            <TableHead>Section</TableHead>
+                            <TableHead className="text-center">View</TableHead>
+                            <TableHead className="text-center">Create</TableHead>
+                            <TableHead className="text-center">Edit</TableHead>
+                            <TableHead className="text-center">Delete</TableHead>
+                            <TableHead className="text-center">All</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {allSections.map((section) => {
+                             const areAllSelectedForRow = PERMISSION_KEYS.every(p => groupPermissions[section.id]?.[p]);
+                             return (
+                                <TableRow key={section.id}>
+                                    <TableCell className="font-medium">{section.name}</TableCell>
+                                    {PERMISSION_KEYS.map(p => (
+                                        <TableCell key={p} className="text-center">
+                                            <Checkbox 
+                                                checked={groupPermissions[section.id]?.[p] || false}
+                                                onCheckedChange={(checked) => handlePermissionChange(section.id, p, !!checked)}
+                                            />
+                                        </TableCell>
+                                    ))}
+                                    <TableCell className="text-center">
+                                         <Checkbox 
+                                            checked={areAllSelectedForRow}
+                                            onCheckedChange={(checked) => handleSelectAllForRow(section.id, !!checked)}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        })}
+                    </TableBody>
+                </Table>
+             </ScrollArea>
           </TabsContent>
         </Tabs>
         
