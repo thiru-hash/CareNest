@@ -31,7 +31,24 @@ import {
   ClipboardPaste,
   Send,
   CalendarX2,
+  Bolt,
+  Hand,
+  Wrench,
+  PieChart,
+  Clock,
+  Circle,
+  CalendarPlus,
+  CalendarDays,
+  Calendar as CalendarIcon
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Shift, Staff, Client, UserRole } from "@/lib/types";
@@ -205,11 +222,22 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   
   const filteredResources = useMemo(() => {
       const term = searchTerm.toLowerCase();
-      if (viewMode === 'staff') {
-          return mockStaff.filter(s => s.name.toLowerCase().includes(term));
+      let resources: (Staff[] | Client[]) = viewMode === 'staff' ? mockStaff : mockClients;
+      
+      if (term) {
+        resources = resources.filter(r => r.name.toLowerCase().includes(term));
       }
-      return mockClients.filter(c => c.name.toLowerCase().includes(term));
-  }, [searchTerm, viewMode]);
+
+      if (propertyFilter !== 'all') {
+          if (viewMode === 'staff') {
+              // No direct property link on staff, so this filter doesn't apply in staff view.
+              // In a real app, you might filter staff based on properties they are qualified for.
+          } else if (viewMode === 'client') {
+              resources = (resources as Client[]).filter(c => c.propertyId === propertyFilter);
+          }
+      }
+      return resources;
+  }, [searchTerm, viewMode, propertyFilter]);
 
   const propertyFilteredShifts = useMemo(() => shifts.filter(shift => {
     return propertyFilter === 'all' || shift.propertyId === propertyFilter;
@@ -434,6 +462,17 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                      <Button variant="outline" className="h-9" disabled>
                       <Filter className="mr-2 h-4 w-4" /> Filters
                     </Button>
+                    <div className="flex items-center rounded-md border bg-background h-9">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
+                            <Bolt className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" disabled>
+                            <Hand className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" className="h-8 px-3 font-bold" disabled>
+                            ALL
+                        </Button>
+                    </div>
                 </div>
                 
                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
@@ -444,7 +483,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDateNavigate(-viewPeriod)}>
                             <ChevronLeft className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" className="h-8 px-3" onClick={handleGoToToday}>Today</Button>
+                        <Button variant="ghost" className="h-8 px-3" onClick={handleGoToToday} disabled={isToday(currentDate)}>Today</Button>
                         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDateNavigate(viewPeriod)}>
                             <ChevronRight className="h-4 w-4" />
                         </Button>
@@ -474,6 +513,42 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                         <Button variant="outline" size="icon" className="h-9 w-9" disabled>
                             <CalendarX2 className="h-4 w-4" />
                         </Button>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                                    <Wrench className="h-4 w-4" />
+                                </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Widgets</DropdownMenuLabel>
+                                <DropdownMenuItem disabled>
+                                    <Clock className="mr-2 h-4 w-4" />
+                                    <span>Clock-On/Off Status</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>
+                                    <PieChart className="mr-2 h-4 w-4" />
+                                    <span>Roster Overview</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuLabel>Manage</DropdownMenuLabel>
+                                <DropdownMenuItem disabled>
+                                    <Circle className="mr-2 h-4 w-4" />
+                                    <span>Resources</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>
+                                    <CalendarPlus className="mr-2 h-4 w-4" />
+                                    <span>Templates</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    <span>Schedules</span>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled>
+                                    <CalendarDays className="mr-2 h-4 w-4" />
+                                    <span>Public Holidays</span>
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                  </div>
               </div>
@@ -493,8 +568,8 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                     <TableHead className="w-[200px] min-w-[200px] sticky left-0 bg-muted/50 z-20">{viewMode === 'staff' ? 'Staff' : 'Client'}</TableHead>
                     {daysOfWeek.map((day) => (
                       <TableHead key={day.toISOString()} className="text-center border-l">
-                        <div className="font-semibold">{format(day, 'EEE')}</div>
-                        <div className="text-muted-foreground text-sm">{format(day, 'd MMM')}</div>
+                        <div className={`font-semibold ${isToday(day) ? 'text-primary' : ''}`}>{format(day, 'EEE')}</div>
+                        <div className={`text-muted-foreground text-sm ${isToday(day) ? 'text-primary' : ''}`}>{format(day, 'd MMM')}</div>
                       </TableHead>
                     ))}
                   </TableRow>
