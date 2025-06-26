@@ -1,3 +1,4 @@
+
 import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
@@ -356,8 +357,3 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
-
-
-
-
-
