@@ -380,6 +380,20 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                         {mockProperties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
+
+                    {viewMode === 'staff' && (
+                       <Select value={filters.staffId} onValueChange={handleFilterChange('staffId')}>
+                        <SelectTrigger className="w-full sm:w-[180px]">
+                        <SelectValue placeholder="Filter by staff" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">All Staff</SelectItem>
+                            <SelectItem value="open">Open Shifts Only</SelectItem>
+                            {mockStaff.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
+                        </SelectContent>
+                    </Select>
+                    )}
+
                     <Button onClick={handleCreateClick} className="w-full sm:w-auto">
                         <PlusCircle className="mr-2 h-4 w-4" />
                         Create Shift
