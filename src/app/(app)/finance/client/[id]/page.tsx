@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { mockClients, mockClientBudgets } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Building2, User, Landmark, DollarSign, Target, Briefcase } from "lucide-react";
+import { Building2, User, Landmark, DollarSign, Target, Briefcase, AlertTriangle } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -23,21 +23,32 @@ function BudgetCard({ title, icon: Icon, budget, spent }: { title: string, icon:
     const remaining = budget - spent;
     const percentage = budget > 0 ? (spent / budget) * 100 : 0;
     const isOver = spent > budget;
+    const isNearingLimit = percentage >= 90 && !isOver;
+
+    let progressClass = "";
+    if (isOver) {
+        progressClass = "[&>div]:bg-destructive";
+    } else if (isNearingLimit) {
+        progressClass = "[&>div]:bg-yellow-500";
+    }
 
     return (
-        <Card>
+        <Card className={cn(isNearingLimit && !isOver && "border-yellow-500/50 bg-yellow-500/5", isOver && "border-destructive/50 bg-destructive/5")}>
             <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <div className="flex items-center gap-2">
                     <Icon className="h-5 w-5 text-muted-foreground" />
                     <CardTitle className="text-md font-medium">{title}</CardTitle>
                 </div>
+                 {(isOver || isNearingLimit) && (
+                    <AlertTriangle className={cn("h-5 w-5", isOver ? "text-destructive" : "text-yellow-500")} />
+                )}
             </CardHeader>
             <CardContent>
                 <div className="text-2xl font-bold">${spent.toLocaleString()} / <span className="text-lg text-muted-foreground">${budget.toLocaleString()}</span></div>
-                <p className={cn("text-xs", isOver ? "text-destructive" : "text-muted-foreground")}>
-                    {isOver ? `$${Math.abs(remaining).toLocaleString()} over budget` : `$${remaining.toLocaleString()} remaining`}
+                <p className={cn("text-xs", isOver ? "text-destructive" : isNearingLimit ? "text-yellow-600" : "text-muted-foreground")}>
+                    {isOver ? `$${Math.abs(remaining).toLocaleString()} over budget` : isNearingLimit ? `Nearing limit, $${remaining.toLocaleString()} remaining` : `$${remaining.toLocaleString()} remaining`}
                 </p>
-                <Progress value={isOver ? 100 : percentage} className={cn("mt-2 h-2", isOver && "[&>div]:bg-destructive")} />
+                <Progress value={isOver ? 100 : percentage} className={cn("mt-2 h-2", progressClass)} />
             </CardContent>
         </Card>
     )

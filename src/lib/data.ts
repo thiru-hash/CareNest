@@ -1,5 +1,5 @@
 
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, PayrollRun, ClientBudget, ClientTransaction } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, Payroll as PayrollType, ClientFunding, ClientTransaction } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
@@ -98,25 +98,25 @@ export const mockClients: Client[] = [
 
 export const mockShifts: Shift[] = [
   // A currently active shift for Jane Doe (staff-1) for testing purposes.
-  { id: 'shift-active-jd', title: 'Mid-day Support', start: subHours(now, 2), end: addHours(now, 2), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
+  { id: 'shift-active-jd', title: 'Mid-day Support', start: subHours(now, 2), end: addHours(now, 2), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: true, isClaimed: true, isPaid: true },
   
   // An upcoming shift for another staff member
-  { id: 'shift-2', title: 'Afternoon Community Access', start: addHours(now, 3), end: addHours(now, 7), staffId: 'staff-2', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned' },
+  { id: 'shift-2', title: 'Afternoon Community Access', start: addHours(now, 3), end: addHours(now, 7), staffId: 'staff-2', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned', billable: true, rate: 55, serviceType: "Capacity", isInvoiced: true, isClaimed: false, isPaid: false },
   
   // An open shift for later today
-  { id: 'shift-3', title: 'Evening Cover', start: addHours(now, 8), end: addHours(now, 12), propertyId: 'prop-2', status: 'Open' },
+  { id: 'shift-3', title: 'Evening Cover', start: addHours(now, 8), end: addHours(now, 12), propertyId: 'prop-2', status: 'Open', billable: true, rate: 65, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
 
   // An open shift for tomorrow
-  { id: 'shift-4', title: 'Weekend Morning Shift', start: addDays(addHours(now, 1), 1), end: addHours(addDays(now, 1), 9), propertyId: 'prop-1', clientId: 'client-1', status: 'Open' },
+  { id: 'shift-4', title: 'Weekend Morning Shift', start: addDays(addHours(now, 1), 1), end: addHours(addDays(now, 1), 9), propertyId: 'prop-1', clientId: 'client-1', status: 'Open', billable: true, rate: 65, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
   
   // A completed shift from yesterday
-  { id: 'shift-5', title: 'Yesterday Evening Shift', start: subHours(subDays(now, 1), 4), end: subDays(now, 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Completed' },
+  { id: 'shift-5', title: 'Yesterday Evening Shift', start: subHours(subDays(now, 1), 4), end: subDays(now, 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Completed', billable: true, rate: 55, serviceType: "Capacity", isInvoiced: true, isClaimed: true, isPaid: false },
 
   // A shift for Jane Doe to test clock-in/out
-  { id: 'shift-6', title: 'Morning Shift', start: new Date(new Date().setHours(9, 0, 0, 0)), end: new Date(new Date().setHours(17, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
+  { id: 'shift-6', title: 'Morning Shift', start: new Date(new Date().setHours(9, 0, 0, 0)), end: new Date(new Date().setHours(17, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
 
   // New shift for admin user
-  { id: 'shift-admin-cover', title: 'Evening Admin Cover', start: now, end: midnight, staffId: 'staff-admin', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
+  { id: 'shift-admin-cover', title: 'Evening Admin Cover', start: now, end: midnight, staffId: 'staff-admin', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 70, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
 ];
 
 export const mockComplianceItems: ComplianceItem[] = [
@@ -366,29 +366,31 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 
 export const mockTimesheets: Timesheet[] = [];
 
-
 export const mockInvoices: Invoice[] = [
-  { id: 'inv-1', invoiceNumber: 'INV-00123', clientOrFunderName: 'NDIS', dueDate: addDays(now, 15), amount: 4500.00, status: 'Pending' },
-  { id: 'inv-2', invoiceNumber: 'INV-00124', clientOrFunderName: 'Peter Jones (Self-Managed)', dueDate: addDays(now, 5), amount: 750.50, status: 'Pending' },
-  { id: 'inv-3', invoiceNumber: 'INV-00121', clientOrFunderName: 'Ministry of Social Development', dueDate: subDays(now, 10), amount: 12500.00, status: 'Paid' },
-  { id: 'inv-4', invoiceNumber: 'INV-00120', clientOrFunderName: 'Mary Williams (Plan-Managed)', dueDate: subDays(now, 2), amount: 1200.75, status: 'Overdue' },
-  { id: 'inv-5', invoiceNumber: 'INV-00119', clientOrFunderName: 'NDIS', dueDate: subDays(now, 30), amount: 8200.00, status: 'Paid' },
+  { id: 'inv-1', invoiceNumber: 'INV-00123', clientId: 'client-1', dateIssued: subDays(now, 10), dueDate: addDays(now, 20), amount: 4500.00, status: 'Pending', tax: 450.00, lineItems: [], xeroExported: false },
+  { id: 'inv-2', invoiceNumber: 'INV-00124', clientId: 'client-2', dateIssued: subDays(now, 5), dueDate: addDays(now, 25), amount: 750.50, status: 'Pending', tax: 75.05, lineItems: [], xeroExported: true },
+  { id: 'inv-3', invoiceNumber: 'INV-00121', clientId: 'client-1', dateIssued: subDays(now, 45), dueDate: subDays(now, 15), amount: 12500.00, status: 'Paid', tax: 1250.00, lineItems: [], xeroExported: true },
+  { id: 'inv-4', invoiceNumber: 'INV-00120', clientId: 'client-2', dateIssued: subDays(now, 62), dueDate: subDays(now, 32), amount: 1200.75, status: 'Overdue', tax: 120.08, lineItems: [], xeroExported: false },
+  { id: 'inv-5', invoiceNumber: 'INV-00119', clientId: 'client-1', dateIssued: subDays(now, 90), dueDate: subDays(now, 60), amount: 8200.00, status: 'Paid', tax: 820.00, lineItems: [], xeroExported: true },
 ];
 
-export const mockPayrollRuns: PayrollRun[] = [
-    { id: 'pr-1', startDate: subDays(now, 14), endDate: subDays(now, 1), totalAmount: 75234.50, status: 'Paid'},
-    { id: 'pr-2', startDate: subDays(now, 28), endDate: subDays(now, 15), totalAmount: 72109.25, status: 'Paid'},
+export const mockPayrollRuns: PayrollType[] = [
+    { id: 'pr-1', periodStart: subDays(now, 14), periodEnd: subDays(now, 1), status: 'Paid', staffId: 'staff-1', hoursWorked: 80, payRate: 55, grossPay: 4400, deductions: 1200, netPay: 3200},
+    { id: 'pr-2', periodStart: subDays(now, 28), periodEnd: subDays(now, 15), status: 'Paid', staffId: 'staff-2', hoursWorked: 75, payRate: 55, grossPay: 4125, deductions: 1100, netPay: 3025},
+    { id: 'pr-3', periodStart: subDays(now, 14), periodEnd: subDays(now, 1), status: 'Pending', staffId: 'staff-3', hoursWorked: 80, payRate: 65, grossPay: 5200, deductions: 1500, netPay: 3700},
 ];
 
-export const mockClientBudgets: ClientBudget[] = [
+export const mockClientBudgets: ClientFunding[] = [
     {
         clientId: 'client-1',
         coreBudget: 25000,
-        coreSpent: 18750,
+        coreSpent: 23500, // Nearing 90%
         capacityBudget: 15000,
         capacitySpent: 16200, // Overspent
         capitalBudget: 10000,
         capitalSpent: 5000,
+        startDate: new Date(now.getFullYear(), 0, 1),
+        endDate: new Date(now.getFullYear(), 11, 31),
     },
     {
         clientId: 'client-2',
@@ -398,16 +400,18 @@ export const mockClientBudgets: ClientBudget[] = [
         capacitySpent: 8500,
         capitalBudget: 5000,
         capitalSpent: 0,
+        startDate: new Date(now.getFullYear(), 0, 1),
+        endDate: new Date(now.getFullYear(), 11, 31),
     }
 ];
 
 export const mockTransactions: ClientTransaction[] = [
-    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, attachmentName: 'NDIS_Statement_Oct.pdf' },
-    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, attachmentName: 'woolies_receipt_1410.jpg' },
-    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50 },
-    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, attachmentName: 'wheelchair_invoice.pdf' },
-    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95 },
-    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500 },
-    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75 },
-    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120 },
+    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, gst: 0, category: 'Other', attachmentName: 'NDIS_Statement_Oct.pdf' },
+    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, gst: 13.70, category: 'Groceries', attachmentName: 'woolies_receipt_1410.jpg' },
+    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50, gst: 4.14, category: 'Transport' },
+    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, gst: 0, category: 'Equipment', attachmentName: 'wheelchair_invoice.pdf' },
+    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95, gst: 8.09, category: 'Other' },
+    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500, gst: 0, category: 'Other' },
+    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75, gst: 6.82, category: 'Other' },
+    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other' },
 ];

@@ -11,17 +11,31 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, PlusCircle, Download } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Download, FileWarning } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockInvoices, mockPayrollRuns } from "@/lib/data";
-import { format } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { cn } from "@/lib/utils";
+import type { Invoice } from "@/lib/types";
 
-const statusConfig = {
-    Paid: "bg-green-500/20 text-green-700 border-green-500/30",
-    Pending: "bg-yellow-500/20 text-yellow-700 border-yellow-500/30",
-    Overdue: "bg-red-500/20 text-red-700 border-red-500/30",
-} as const;
+const getStatusConfig = (invoice: Invoice) => {
+    const isOverdue = invoice.status === 'Pending' && differenceInDays(new Date(), invoice.dueDate) > 30;
+    
+    if (isOverdue) {
+        return { variant: 'destructive', text: 'Overdue', className: "bg-red-500/20 text-red-700 border-red-500/30" };
+    }
+    
+    switch (invoice.status) {
+        case 'Paid':
+            return { variant: 'default', text: 'Paid', className: "bg-green-500/20 text-green-700 border-green-500/30" };
+        case 'Pending':
+            return { variant: 'secondary', text: 'Pending', className: "bg-yellow-500/20 text-yellow-700 border-yellow-500/30" };
+        case 'Overdue':
+             return { variant: 'destructive', text: 'Overdue', className: "bg-red-500/20 text-red-700 border-red-500/30" };
+        default:
+            return { variant: 'outline', text: invoice.status, className: "" };
+    }
+};
 
 
 export default async function OrganisationalFinancePage() {
@@ -84,35 +98,38 @@ export default async function OrganisationalFinancePage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {mockInvoices.map((invoice) => (
-                            <TableRow key={invoice.id}>
-                                <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
-                                <TableCell>{invoice.clientOrFunderName}</TableCell>
-                                <TableCell>{format(invoice.dueDate, "dd MMM yyyy")}</TableCell>
-                                <TableCell>${invoice.amount.toLocaleString()}</TableCell>
-                                <TableCell>
-                                <Badge variant="outline" className={cn(statusConfig[invoice.status])}>
-                                    {invoice.status}
-                                </Badge>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                    <Button aria-haspopup="true" size="icon" variant="ghost">
-                                        <MoreHorizontal className="h-4 w-4" />
-                                        <span className="sr-only">Toggle menu</span>
-                                    </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                    <DropdownMenuItem>View Details</DropdownMenuItem>
-                                    <DropdownMenuItem>Mark as Paid</DropdownMenuItem>
-                                    <DropdownMenuSeparator />
-                                    <DropdownMenuItem className="text-destructive">Void Invoice</DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                                </TableCell>
-                            </TableRow>
-                            ))}
+                            {mockInvoices.map((invoice) => {
+                                const statusConfig = getStatusConfig(invoice);
+                                return (
+                                <TableRow key={invoice.id}>
+                                    <TableCell className="font-medium">{invoice.invoiceNumber}</TableCell>
+                                    <TableCell>{invoice.clientId}</TableCell>
+                                    <TableCell>{format(invoice.dueDate, "dd MMM yyyy")}</TableCell>
+                                    <TableCell>${invoice.amount.toLocaleString()}</TableCell>
+                                    <TableCell>
+                                    <Badge variant={statusConfig.variant as any} className={cn(statusConfig.className)}>
+                                        {statusConfig.text === 'Overdue' && <FileWarning className="mr-1 h-3 w-3" />}
+                                        {statusConfig.text}
+                                    </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                        <Button aria-haspopup="true" size="icon" variant="ghost">
+                                            <MoreHorizontal className="h-4 w-4" />
+                                            <span className="sr-only">Toggle menu</span>
+                                        </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                        <DropdownMenuItem>View Details</DropdownMenuItem>
+                                        <DropdownMenuItem>Mark as Paid</DropdownMenuItem>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem className="text-destructive">Void Invoice</DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                    </TableCell>
+                                </TableRow>
+                            )})}
                         </TableBody>
                     </Table>
                 </CardContent>
@@ -137,10 +154,10 @@ export default async function OrganisationalFinancePage() {
                         <TableBody>
                             {mockPayrollRuns.map((run) => (
                             <TableRow key={run.id}>
-                                <TableCell className="font-medium">{format(run.startDate, "dd MMM")} - {format(run.endDate, "dd MMM yyyy")}</TableCell>
-                                <TableCell>${run.totalAmount.toLocaleString()}</TableCell>
+                                <TableCell className="font-medium">{format(run.periodStart, "dd MMM")} - {format(run.periodEnd, "dd MMM yyyy")}</TableCell>
+                                <TableCell>${run.netPay.toLocaleString()}</TableCell>
                                 <TableCell>
-                                     <Badge variant="outline" className={cn(statusConfig[run.status])}>
+                                     <Badge variant={run.status === 'Paid' ? 'default' : 'secondary'} className={cn(run.status === 'Paid' ? 'bg-green-500/20 text-green-700 border-green-500/30' : 'bg-yellow-500/20 text-yellow-700 border-yellow-500/30')}>
                                         {run.status}
                                     </Badge>
                                 </TableCell>

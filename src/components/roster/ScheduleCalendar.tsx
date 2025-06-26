@@ -39,7 +39,10 @@ import {
   Circle,
   CalendarPlus,
   CalendarDays,
-  Calendar as CalendarIcon
+  Calendar as CalendarIcon,
+  FileCheck,
+  BadgeCheck,
+  CircleDollarSign,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -148,6 +151,12 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
       start,
       end,
       status: 'Assigned',
+      billable: true,
+      rate: 55,
+      serviceType: "Core",
+      isInvoiced: false,
+      isClaimed: false,
+      isPaid: false,
     };
 
     setEditingShift(newShiftTemplate);
@@ -177,6 +186,12 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
       start,
       end,
       status: 'Open',
+      billable: true,
+      rate: 65,
+      serviceType: "Core",
+      isInvoiced: false,
+      isClaimed: false,
+      isPaid: false,
     };
 
     setEditingShift(newShiftTemplate);
@@ -273,7 +288,14 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                         return (
                           <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canPerformAction() ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
                             <p className="font-bold text-primary truncate">{shift.title}</p>
-                            <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                            <div className="flex justify-between items-center">
+                                <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                                <div className="flex gap-1">
+                                    {shift.isInvoiced && <FileCheck className="h-3 w-3 text-blue-500" title="Invoiced" />}
+                                    {shift.isClaimed && <BadgeCheck className="h-3 w-3 text-purple-500" title="Claimed" />}
+                                    {shift.isPaid && <CircleDollarSign className="h-3 w-3 text-green-500" title="Paid" />}
+                                </div>
+                            </div>
                             {client && <p className="truncate mt-1 text-purple-600">{client.name}</p>}
                             <p className="truncate mt-1">{property?.name}</p>
                           </div>
@@ -375,7 +397,14 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                         return (
                           <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canPerformAction() ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
                             <p className="font-bold text-primary truncate">{shift.title}</p>
-                            <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                             <div className="flex justify-between items-center">
+                                <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
+                                <div className="flex gap-1">
+                                    {shift.isInvoiced && <FileCheck className="h-3 w-3 text-blue-500" title="Invoiced" />}
+                                    {shift.isClaimed && <BadgeCheck className="h-3 w-3 text-purple-500" title="Claimed" />}
+                                    {shift.isPaid && <CircleDollarSign className="h-3 w-3 text-green-500" title="Paid" />}
+                                </div>
+                            </div>
                             {staff ? <p className="truncate mt-1 text-blue-600">{staff.name}</p> : <Badge variant="destructive">Open</Badge>}
                           </div>
                         );

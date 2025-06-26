@@ -69,6 +69,13 @@ export interface Shift {
   clientId?: string;
   propertyId: string;
   status: 'Open' | 'Assigned' | 'Completed' | 'In Progress';
+  // Finance integration fields
+  billable: boolean;
+  rate: number;
+  serviceType: string;
+  isInvoiced: boolean;
+  isClaimed: boolean;
+  isPaid: boolean;
 }
 
 export interface ComplianceItem {
@@ -141,24 +148,52 @@ export interface Notice {
   type: 'Info' | 'Warning' | 'Urgent';
 }
 
+// --- Enhanced Finance Types ---
+
+export interface InvoiceLineItem {
+  description: string;
+  quantity: number;
+  unitPrice: number;
+  total: number;
+}
+
 export interface Invoice {
     id: string;
     invoiceNumber: string;
-    clientOrFunderName: string;
+    clientId: string;
+    status: 'Paid' | 'Pending' | 'Overdue' | 'Draft';
+    dateIssued: Date;
     dueDate: Date;
     amount: number;
-    status: 'Paid' | 'Pending' | 'Overdue';
+    tax: number;
+    lineItems: InvoiceLineItem[];
+    xeroExported: boolean;
 }
 
-export interface PayrollRun {
+export interface Payroll {
     id: string;
-    startDate: Date;
-    endDate: Date;
-    totalAmount: number;
+    staffId: string;
+    periodStart: Date;
+    periodEnd: Date;
+    hoursWorked: number;
+    payRate: number;
+    grossPay: number;
+    deductions: number;
+    netPay: number;
     status: 'Paid' | 'Pending';
 }
 
-export interface ClientBudget {
+export interface OrganisationalBudget {
+    id: string;
+    type: 'Income' | 'Expense';
+    category: string;
+    amountAllocated: number;
+    amountUsed: number;
+    financialYear: string;
+    notes?: string;
+}
+
+export interface ClientFunding {
     clientId: string;
     coreBudget: number;
     coreSpent: number;
@@ -166,6 +201,19 @@ export interface ClientBudget {
     capacitySpent: number;
     capitalBudget: number;
     capitalSpent: number;
+    startDate: Date;
+    endDate: Date;
+}
+
+export interface ServiceBooking {
+    id: string;
+    clientId: string;
+    shiftId: string;
+    date: Date;
+    supportWorker: string;
+    rate: number;
+    fundingStream: 'Core' | 'Capacity' | 'Capital';
+    invoiced: boolean;
 }
 
 export interface ClientTransaction {
@@ -175,5 +223,8 @@ export interface ClientTransaction {
     description: string;
     type: 'Expense' | 'Payment';
     amount: number;
+    gst: number;
+    category: 'Transport' | 'Groceries' | 'Equipment' | 'Utilities' | 'Other';
+    uploadedReceipt?: string;
     attachmentName?: string;
 }
