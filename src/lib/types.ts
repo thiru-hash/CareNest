@@ -1,4 +1,5 @@
 
+
 export type UserRole =
   | 'System Admin'
   | 'Support Manager'
@@ -42,6 +43,14 @@ export interface Client {
   supportLogs: string;
 }
 
+export interface StaffDocument {
+  id: string;
+  name: string;
+  type: 'Contract' | 'Policy' | 'Certification' | 'Other';
+  uploadDate: Date;
+  url: string;
+}
+
 export interface Staff {
   id: string;
   name: string;
@@ -50,7 +59,22 @@ export interface Staff {
   email: string;
   phone: string;
   groupIds?: string[];
+  // New detailed fields
+  personalDetails?: {
+    dob: Date;
+    address: string;
+  };
+  employmentDetails?: {
+    startDate: Date;
+    employmentType: 'Full-time' | 'Part-time' | 'Casual';
+    payRate: number; // for Finance/Admin
+  };
+  hrDetails?: {
+    interviewNotes: string; // for HR/Admin
+    documents: StaffDocument[]; // for HR/Admin
+  };
 }
+
 
 export interface Property {
   id: string;

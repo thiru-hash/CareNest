@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import Link from "next/link";
@@ -28,7 +29,6 @@ const pageTitles: { [key: string]: string } = {
   "/people": "People We Support",
   "/staff": "Staff",
   "/locations": "Locations",
-  "/profile": "My Profile",
   "/settings": "System Settings",
 };
 
@@ -37,6 +37,7 @@ export function Header({ user, notices }: { user: Staff, notices: Notice[] }) {
   const pathname = usePathname();
   
   const getPageTitle = () => {
+    if (pathname.startsWith('/staff/')) return "Staff Profile";
     const matchedPath = Object.keys(pageTitles).find(path => pathname.startsWith(path));
     return matchedPath ? pageTitles[matchedPath] : "CareNest";
   };
@@ -62,7 +63,7 @@ export function Header({ user, notices }: { user: Staff, notices: Notice[] }) {
             <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/profile">
+              <Link href={`/staff/${user.id}`}>
                 <User className="mr-2" />
                 <span>Profile</span>
               </Link>

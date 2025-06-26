@@ -1,4 +1,5 @@
 
+
 import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, Payroll as PayrollType, ClientFunding, ClientTransaction } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
@@ -40,15 +41,119 @@ export const mockProperties: Property[] = [
 ];
 
 export const mockStaff: Staff[] = [
-  { id: 'staff-admin', name: 'Admin User', avatarUrl: 'https://placehold.co/100x100.png', role: 'System Admin', email: 'admin@carenest.com', phone: '555-0000', groupIds: ['group-system-admin'] },
-  { id: 'staff-1', name: 'Jane Doe', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'jane.d@carenest.com', phone: '555-1234', groupIds: ['group-support-worker'] },
-  { id: 'staff-2', name: 'John Smith', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'john.s@carenest.com', phone: '555-5678', groupIds: ['group-support-worker'] },
-  { id: 'staff-3', name: 'Alice Johnson', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Manager', email: 'alice.j@carenest.com', phone: '555-8765', groupIds: ['group-support-manager'] },
-  { id: 'staff-roster-admin', name: 'Rory Roster', avatarUrl: 'https://placehold.co/100x100.png', role: 'Roster Admin', email: 'rory.r@carenest.com', phone: '555-1001', groupIds: ['group-roster-admin'] },
-  { id: 'staff-finance', name: 'Fiona Finance', avatarUrl: 'https://placehold.co/100x100.png', role: 'Finance Admin', email: 'fiona.f@carenest.com', phone: '555-1002', groupIds: ['group-finance-admin'] },
-  { id: 'staff-ceo', name: 'Charles Executive', avatarUrl: 'https://placehold.co/100x100.png', role: 'CEO', email: 'charles.e@carenest.com', phone: '555-1003', groupIds: ['group-ceo'] },
-  { id: 'staff-hr', name: 'Holly Resources', avatarUrl: 'https://placehold.co/100x100.png', role: 'Human Resources Manager', email: 'holly.r@carenest.com', phone: '555-1004', groupIds: ['group-hr-manager'] },
+  { 
+    id: 'staff-admin', 
+    name: 'Admin User', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'System Admin', 
+    email: 'admin@carenest.com', 
+    phone: '555-0000', 
+    groupIds: ['group-system-admin'],
+    personalDetails: { dob: new Date('1980-01-01'), address: '100 Admin Way, System City' },
+    employmentDetails: { startDate: new Date('2010-05-10'), employmentType: 'Full-time', payRate: 90.00 },
+    hrDetails: {
+      interviewNotes: "Exemplary candidate, deep system knowledge.",
+      documents: [{ id: 'doc-admin-1', name: 'Admin_Contract.pdf', type: 'Contract', uploadDate: new Date('2010-05-10'), url: '#' }]
+    }
+  },
+  { 
+    id: 'staff-1', 
+    name: 'Jane Doe', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Support Worker', 
+    email: 'jane.d@carenest.com', 
+    phone: '555-1234', 
+    groupIds: ['group-support-worker'],
+    personalDetails: { dob: new Date('1992-05-20'), address: '12 Support St, Caretown' },
+    employmentDetails: { startDate: new Date('2021-03-15'), employmentType: 'Full-time', payRate: 28.50 },
+    hrDetails: {
+      interviewNotes: "Great empathy shown during the interview process.",
+      documents: [
+        { id: 'doc-jane-1', name: 'JaneDoe_Contract.pdf', type: 'Contract', uploadDate: new Date('2021-03-15'), url: '#' },
+        { id: 'doc-jane-2', name: 'FirstAid_Cert.pdf', type: 'Certification', uploadDate: new Date('2023-08-01'), url: '#' }
+      ]
+    }
+  },
+  { 
+    id: 'staff-2', 
+    name: 'John Smith', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Support Worker', 
+    email: 'john.s@carenest.com', 
+    phone: '555-5678', 
+    groupIds: ['group-support-worker'],
+    personalDetails: { dob: new Date('1995-11-30'), address: '45 Helper Ave, Communityville' },
+    employmentDetails: { startDate: new Date('2022-07-22'), employmentType: 'Part-time', payRate: 27.75 },
+     hrDetails: { interviewNotes: "", documents: [] }
+  },
+  { 
+    id: 'staff-3', 
+    name: 'Alice Johnson', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Support Manager', 
+    email: 'alice.j@carenest.com', 
+    phone: '555-8765', 
+    groupIds: ['group-support-manager'],
+    personalDetails: { dob: new Date('1985-02-10'), address: '8 Management Mews, Leadsville' },
+    employmentDetails: { startDate: new Date('2018-01-20'), employmentType: 'Full-time', payRate: 45.00 },
+     hrDetails: {
+      interviewNotes: "Strong leadership skills and excellent references.",
+      documents: [{ id: 'doc-alice-1', name: 'AliceJ_Contract.pdf', type: 'Contract', uploadDate: new Date('2018-01-20'), url: '#' }]
+    }
+  },
+  { 
+    id: 'staff-roster-admin', 
+    name: 'Rory Roster', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Roster Admin', 
+    email: 'rory.r@carenest.com', 
+    phone: '555-1001', 
+    groupIds: ['group-roster-admin'],
+    personalDetails: { dob: new Date('1988-06-25'), address: '9 Schedule St, Timely Town' },
+    employmentDetails: { startDate: new Date('2019-11-01'), employmentType: 'Full-time', payRate: 38.00 },
+    hrDetails: { interviewNotes: "", documents: [] }
+  },
+  { 
+    id: 'staff-finance', 
+    name: 'Fiona Finance', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Finance Admin', 
+    email: 'fiona.f@carenest.com', 
+    phone: '555-1002', 
+    groupIds: ['group-finance-admin'],
+    personalDetails: { dob: new Date('1990-09-15'), address: '10 Ledger Lane, Accountsville' },
+    employmentDetails: { startDate: new Date('2020-02-10'), employmentType: 'Full-time', payRate: 42.50 },
+    hrDetails: { interviewNotes: "", documents: [] }
+  },
+  { 
+    id: 'staff-ceo', 
+    name: 'Charles Executive', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'CEO', 
+    email: 'charles.e@carenest.com', 
+    phone: '555-1003', 
+    groupIds: ['group-ceo'],
+    personalDetails: { dob: new Date('1975-03-12'), address: '1 Executive Drive, Corp Heights' },
+    employmentDetails: { startDate: new Date('2015-08-01'), employmentType: 'Full-time', payRate: 150.00 },
+    hrDetails: { interviewNotes: "", documents: [] }
+  },
+  { 
+    id: 'staff-hr', 
+    name: 'Holly Resources', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Human Resources Manager', 
+    email: 'holly.r@carenest.com', 
+    phone: '555-1004', 
+    groupIds: ['group-hr-manager'],
+    personalDetails: { dob: new Date('1989-07-22'), address: '22 People Plaza, Staffington' },
+    employmentDetails: { startDate: new Date('2019-04-15'), employmentType: 'Full-time', payRate: 48.00 },
+    hrDetails: {
+      interviewNotes: "Excellent candidate for managing HR functions.",
+      documents: [{ id: 'doc-holly-1', name: 'HollyR_Contract.pdf', type: 'Contract', uploadDate: new Date('2019-04-15'), url: '#' }]
+    }
+  },
 ];
+
 
 export const mockGroups: Group[] = [
     { id: 'group-system-admin', name: 'System Administrators', description: 'Full system access', userIds: ['staff-admin'] },

@@ -1,4 +1,5 @@
 
+
 import {
   Table,
   TableBody,
@@ -10,10 +11,10 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, UserPlus } from "lucide-react";
+import { MoreHorizontal, UserPlus, ArrowRight } from "lucide-react";
 import { mockStaff } from "@/lib/data";
 import { getCurrentUser } from "@/lib/auth";
+import Link from "next/link";
 
 export async function StaffTable() {
   const currentUser = await getCurrentUser();
@@ -65,19 +66,13 @@ export async function StaffTable() {
                 </TableCell>
                 <TableCell>{staff.role}</TableCell>
                 <TableCell>{staff.phone}</TableCell>
-                <TableCell>
-                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button aria-haspopup="true" size="icon" variant="ghost">
-                        <MoreHorizontal className="h-4 w-4" />
-                        <span className="sr-only">Toggle menu</span>
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem>View Profile</DropdownMenuItem>
-                      {currentUser.role === 'System Admin' && <DropdownMenuItem>Edit</DropdownMenuItem>}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                <TableCell className="text-right">
+                   <Button asChild variant="outline" size="sm">
+                      <Link href={`/staff/${staff.id}`}>
+                          View Profile
+                          <ArrowRight className="ml-2 h-4 w-4" />
+                      </Link>
+                  </Button>
                 </TableCell>
               </TableRow>
             )) : (
