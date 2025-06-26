@@ -3,17 +3,21 @@ import { UpcomingShifts } from "@/components/dashboard/UpcomingShifts";
 import { NoticeBoard } from "@/components/dashboard/NoticeBoard";
 import { FinanceOverview } from "@/components/dashboard/FinanceOverview";
 import { getCurrentUser } from "@/lib/auth";
+import type { UserRole } from "@/lib/types";
 
 export default async function DashboardPage() {
   const currentUser = await getCurrentUser();
 
+  const financeRoles: UserRole[] = ['System Admin', 'Finance Admin', 'CEO', 'GM Service'];
+  const canViewFinance = financeRoles.includes(currentUser.role);
+
   return (
     <div className="grid gap-6">
         <NoticeBoard />
-        <FinanceOverview />
+        {canViewFinance && <FinanceOverview />}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
             <UpcomingShifts currentUser={currentUser} />
-            <ComplianceRenewals />
+            <ComplianceRenewals currentUser={currentUser} />
         </div>
     </div>
   );

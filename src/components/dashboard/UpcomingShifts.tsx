@@ -9,10 +9,11 @@ import { Button } from "@/components/ui/button";
 import { mockShifts, mockStaff, mockProperties } from "@/lib/data";
 import { format, isFuture, isPast } from "date-fns";
 import { Clock, MapPin, Send } from "lucide-react";
-import type { Staff, Shift, UserRole } from "@/lib/types";
+import type { Staff, Shift, UserRole, Timesheet } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
+import { TimesheetDialog } from "../timesheet/TimesheetDialog";
 
 export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
   const { toast } = useToast();
@@ -25,6 +26,7 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
   const [requestingShiftId, setRequestingShiftId] = useState<string | null>(null);
   const [requestMessage, setRequestMessage] = useState("");
 
+  const [shiftForTimesheet, setShiftForTimesheet] = useState<Shift | null>(null);
 
   useEffect(() => {
     const privilegedRoles: UserRole[] = ['Admin', 'Support Manager', 'Roster Team'];
@@ -57,13 +59,9 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
     });
   };
 
-  const handleClockOut = () => {
-    const shiftId = clockedInShiftId;
+  const handleClockOut = (shift: Shift) => {
     setClockedInShiftId(null);
-    toast({
-        title: "Clocked Out",
-        description: `Clocked out from shift ${shiftId} at ${new Date().toLocaleTimeString()}. A timesheet has been created for your review.`,
-    });
+    setShiftForTimesheet(shift);
   };
   
   const handleSendRequest = (shift: Shift, message: string) => {
@@ -94,105 +92,125 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
     return !isPast(shift.end);
   }
 
+  const handleSaveTimesheet = (timesheetData: Omit<Timesheet, 'id' | 'staffId'>) => {
+    console.log("Timesheet submitted:", { ...timesheetData, staffId: currentUser.id });
+    toast({
+      title: "Timesheet Submitted",
+      description: `Your timesheet for shift ${timesheetData.shiftId} has been submitted for approval.`,
+    });
+    setShiftForTimesheet(null);
+  };
+
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{cardTitle}</CardTitle>
-        <CardDescription>{cardDescription}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          {shiftsToShow.length > 0 ? shiftsToShow.map((shift) => {
-            const staff = mockStaff.find(s => s.id === shift.staffId);
-            const property = mockProperties.find(p => p.id === shift.propertyId);
-            const isThisShiftClockedIn = clockedInShiftId === shift.id;
-            const isAnyShiftClockedIn = clockedInShiftId !== null;
-            const canThisShiftBeClockedIn = canClockIn(shift);
-            const hasBeenRequested = requestedShiftIds.includes(shift.id);
-            const isRequestFormOpen = requestingShiftId === shift.id;
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>{cardTitle}</CardTitle>
+          <CardDescription>{cardDescription}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {shiftsToShow.length > 0 ? shiftsToShow.map((shift) => {
+              const staff = mockStaff.find(s => s.id === shift.staffId);
+              const property = mockProperties.find(p => p.id === shift.propertyId);
+              const isThisShiftClockedIn = clockedInShiftId === shift.id;
+              const isAnyShiftClockedIn = clockedInShiftId !== null;
+              const canThisShiftBeClockedIn = canClockIn(shift);
+              const hasBeenRequested = requestedShiftIds.includes(shift.id);
+              const isRequestFormOpen = requestingShiftId === shift.id;
 
-            return (
-              <div key={shift.id} className="flex flex-col gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50">
-                <div className="flex items-start gap-4">
-                  <div className="flex flex-col items-center w-12">
-                      <div className="font-bold text-lg">{format(shift.start, "dd")}</div>
-                      <div className="text-sm text-muted-foreground">{format(shift.start, "MMM")}</div>
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold">{shift.title}</p>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{format(shift.start, "p")} - {format(shift.end, "p")}</span>
+              return (
+                <div key={shift.id} className="flex flex-col gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50">
+                  <div className="flex items-start gap-4">
+                    <div className="flex flex-col items-center w-12">
+                        <div className="font-bold text-lg">{format(shift.start, "dd")}</div>
+                        <div className="text-sm text-muted-foreground">{format(shift.start, "MMM")}</div>
                     </div>
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <MapPin className="h-4 w-4" />
-                      <span>{property?.name || "N/A"}</span>
+                    <div className="flex-1">
+                      <p className="font-semibold">{shift.title}</p>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{format(shift.start, "p")} - {format(shift.end, "p")}</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>{property?.name || "N/A"}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      {staff ? (
+                         <Avatar className="h-8 w-8">
+                           <AvatarImage src={staff.avatarUrl} alt={staff.name} />
+                           <AvatarFallback>{staff.name.charAt(0)}</AvatarFallback>
+                         </Avatar>
+                      ) : (
+                        <Badge variant={shift.status === 'Open' ? 'destructive' : 'secondary'}>{shift.status}</Badge>
+                      )}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end gap-2">
-                    {staff ? (
-                       <Avatar className="h-8 w-8">
-                         <AvatarImage src={staff.avatarUrl} alt={staff.name} />
-                         <AvatarFallback>{staff.name.charAt(0)}</AvatarFallback>
-                       </Avatar>
-                    ) : (
-                      <Badge variant={shift.status === 'Open' ? 'destructive' : 'secondary'}>{shift.status}</Badge>
-                    )}
-                  </div>
+
+                  {shift.staffId === currentUser.id && canThisShiftBeClockedIn && (
+                    <div className="w-full">
+                      {isThisShiftClockedIn ? (
+                        <Button onClick={() => handleClockOut(shift)} className="w-full bg-destructive hover:bg-destructive/90">
+                          <Clock className="mr-2" /> Clock Out & End Shift
+                        </Button>
+                      ) : (
+                        <Button onClick={() => handleClockIn(shift.id)} disabled={isAnyShiftClockedIn} className="w-full">
+                          <Clock className="mr-2" /> Clock In & Start Shift
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                  
+                  {shift.status === 'Open' && !isRequestFormOpen && (
+                     <div className="w-full">
+                       <Button 
+                         onClick={() => handleRequestClick(shift.id)} 
+                         variant="outline" 
+                         className="w-full"
+                         disabled={hasBeenRequested}
+                       >
+                         <Send className="mr-2" />
+                         {hasBeenRequested ? 'Request Sent' : 'Request Shift'}
+                       </Button>
+                     </div>
+                  )}
+
+                  {isRequestFormOpen && (
+                    <div className="mt-2 space-y-2 border-t pt-3">
+                      <Label htmlFor={`request-message-${shift.id}`}>Optional Message</Label>
+                      <Textarea
+                        id={`request-message-${shift.id}`}
+                        placeholder="Add a message for the rostering team..."
+                        value={requestMessage}
+                        onChange={(e) => setRequestMessage(e.target.value)}
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={handleCancelRequest}>Cancel</Button>
+                        <Button onClick={() => handleSendRequest(shift, requestMessage)}>
+                          <Send className="mr-2" /> Send Request
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-
-                {shift.staffId === currentUser.id && canThisShiftBeClockedIn && (
-                  <div className="w-full">
-                    {isThisShiftClockedIn ? (
-                      <Button onClick={handleClockOut} className="w-full bg-destructive hover:bg-destructive/90">
-                        <Clock className="mr-2" /> Clock Out & End Shift
-                      </Button>
-                    ) : (
-                      <Button onClick={() => handleClockIn(shift.id)} disabled={isAnyShiftClockedIn} className="w-full">
-                        <Clock className="mr-2" /> Clock In & Start Shift
-                      </Button>
-                    )}
-                  </div>
-                )}
-                
-                {shift.status === 'Open' && !isRequestFormOpen && (
-                   <div className="w-full">
-                     <Button 
-                       onClick={() => handleRequestClick(shift.id)} 
-                       variant="outline" 
-                       className="w-full"
-                       disabled={hasBeenRequested}
-                     >
-                       <Send className="mr-2" />
-                       {hasBeenRequested ? 'Request Sent' : 'Request Shift'}
-                     </Button>
-                   </div>
-                )}
-
-                {isRequestFormOpen && (
-                  <div className="mt-2 space-y-2 border-t pt-3">
-                    <Label htmlFor={`request-message-${shift.id}`}>Optional Message</Label>
-                    <Textarea
-                      id={`request-message-${shift.id}`}
-                      placeholder="Add a message for the rostering team..."
-                      value={requestMessage}
-                      onChange={(e) => setRequestMessage(e.target.value)}
-                    />
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" onClick={handleCancelRequest}>Cancel</Button>
-                      <Button onClick={() => handleSendRequest(shift, requestMessage)}>
-                        <Send className="mr-2" /> Send Request
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            );
-          }) : (
-            <p className="text-sm text-muted-foreground text-center py-4">No upcoming shifts to display.</p>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+              );
+            }) : (
+              <p className="text-sm text-muted-foreground text-center py-4">No upcoming shifts to display.</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      {shiftForTimesheet && (
+        <TimesheetDialog 
+            shift={shiftForTimesheet}
+            isOpen={!!shiftForTimesheet}
+            setIsOpen={(isOpen) => !isOpen && setShiftForTimesheet(null)}
+            onSave={handleSaveTimesheet}
+        />
+      )}
+    </>
   );
 }

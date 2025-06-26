@@ -56,7 +56,6 @@ export function CreateEditTransactionDialog({ isOpen, setIsOpen, transaction, on
   const [amount, setAmount] = useState("");
   const [attachmentName, setAttachmentName] = useState<string | undefined>("");
   const [category, setCategory] = useState<ClientTransaction['category']>('Other');
-  const [status, setStatus] = useState<ClientTransaction['status']>('Approved');
   
   const isEditMode = !!transaction;
 
@@ -69,16 +68,13 @@ export function CreateEditTransactionDialog({ isOpen, setIsOpen, transaction, on
         setAmount(String(transaction.amount));
         setAttachmentName(transaction.attachmentName);
         setCategory(transaction.category);
-        setStatus(transaction.status);
       } else {
-        // On create, default status to Approved as per user request
         setDate(new Date());
         setDescription("");
         setType("Expense");
         setAmount("");
         setAttachmentName("");
         setCategory("Other");
-        setStatus("Approved");
       }
     }
   }, [transaction, isOpen]);
@@ -93,7 +89,6 @@ export function CreateEditTransactionDialog({ isOpen, setIsOpen, transaction, on
       return;
     }
     
-    // Assume GST is 0 unless it's an expense, then calculate it as 15% for demo.
     const gstAmount = type === 'Expense' ? parseFloat(amount) * 0.15 : 0;
 
     onSave({
@@ -104,7 +99,6 @@ export function CreateEditTransactionDialog({ isOpen, setIsOpen, transaction, on
       gst: gstAmount,
       category,
       attachmentName,
-      status,
     });
   };
 
@@ -187,20 +181,6 @@ export function CreateEditTransactionDialog({ isOpen, setIsOpen, transaction, on
                 <SelectItem value="Equipment">Equipment</SelectItem>
                 <SelectItem value="Utilities">Utilities</SelectItem>
                 <SelectItem value="Other">Other</SelectItem>
-                </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="status" className="text-right">Status</Label>
-            <Select value={status} onValueChange={(v) => setStatus(v as ClientTransaction['status'])}>
-                <SelectTrigger className="col-span-3">
-                <SelectValue placeholder="Select a status" />
-                </SelectTrigger>
-                <SelectContent>
-                <SelectItem value="Pending">Pending</SelectItem>
-                <SelectItem value="Approved">Approved</SelectItem>
-                <SelectItem value="Reimbursed">Reimbursed</SelectItem>
-                <SelectItem value="Rejected">Rejected</SelectItem>
                 </SelectContent>
             </Select>
           </div>

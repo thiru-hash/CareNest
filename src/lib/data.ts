@@ -124,6 +124,8 @@ export const mockComplianceItems: ComplianceItem[] = [
   { id: 'comp-2', title: 'Drivers License', staffId: 'staff-2', renewalDate: addDays(now, 12), status: 'Expiring Soon' },
   { id: 'comp-3', title: 'Background Check', staffId: 'staff-1', renewalDate: subDays(now, 5), status: 'Overdue' },
   { id: 'comp-4', title: 'CPR Certification', staffId: 'staff-3', renewalDate: addDays(now, 90), status: 'Compliant' },
+  { id: 'comp-5', title: 'Police Vetting', staffId: 'staff-hr', renewalDate: addDays(now, 25), status: 'Expiring Soon' },
+  { id: 'comp-6', title: 'First Aid Certificate', staffId: 'staff-admin', renewalDate: addDays(now, 300), status: 'Compliant' },
 ];
 
 export const mockSections: AppSection[] = [
@@ -406,12 +408,12 @@ export const mockClientBudgets: ClientFunding[] = [
 ];
 
 export const mockTransactions: ClientTransaction[] = [
-    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, gst: 0, category: 'Other', attachmentName: 'NDIS_Statement_Oct.pdf', status: 'Approved' },
-    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, gst: 13.70, category: 'Groceries', attachmentName: 'woolies_receipt_1410.jpg', status: 'Approved' },
-    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50, gst: 4.14, category: 'Transport', status: 'Reimbursed' },
-    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, gst: 0, category: 'Equipment', attachmentName: 'wheelchair_invoice.pdf', status: 'Pending' },
-    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95, gst: 8.09, category: 'Other', status: 'Rejected' },
-    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500, gst: 0, category: 'Other', status: 'Approved' },
-    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75, gst: 6.82, category: 'Other', status: 'Approved' },
-    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other', status: 'Pending' },
+    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, gst: 0, category: 'Other', attachmentName: 'NDIS_Statement_Oct.pdf' },
+    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, gst: 13.70, category: 'Groceries', attachmentName: 'woolies_receipt_1410.jpg' },
+    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50, gst: 4.14, category: 'Transport' },
+    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, gst: 0, category: 'Equipment', attachmentName: 'wheelchair_invoice.pdf' },
+    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95, gst: 8.09, category: 'Other' },
+    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500, gst: 0, category: 'Other' },
+    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75, gst: 6.82, category: 'Other' },
+    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other' },
 ];

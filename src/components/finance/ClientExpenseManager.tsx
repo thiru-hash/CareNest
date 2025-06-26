@@ -24,13 +24,6 @@ import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 
-const statusConfig: Record<ClientTransaction['status'], { variant: 'default' | 'secondary' | 'destructive', className: string }> = {
-  Pending: { variant: 'secondary', className: "bg-yellow-500/20 text-yellow-700 border-yellow-500/30" },
-  Approved: { variant: 'default', className: "bg-blue-500/20 text-blue-700 border-blue-500/30" },
-  Reimbursed: { variant: 'default', className: "bg-green-500/20 text-green-700 border-green-500/30" },
-  Rejected: { variant: 'destructive', className: "bg-red-500/20 text-red-700 border-red-500/30" },
-};
-
 export function ClientExpenseManager({ clientId }: { clientId: string }) {
   const [transactions, setTransactions] = useState<ClientTransaction[]>(
     mockTransactions.filter((t) => t.clientId === clientId)
@@ -55,7 +48,7 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
 
   const handleSaveTransaction = (transactionData: Omit<ClientTransaction, 'id' | 'clientId'>) => {
     if (editingTransaction) {
-      setTransactions(prev => prev.map(t => t.id === editingTransaction.id ? { ...t, ...transactionData } : t));
+      setTransactions(prev => prev.map(t => t.id === editingTransaction.id ? { ...t, ...transactionData } as ClientTransaction : t));
     } else {
       const newTransaction: ClientTransaction = {
         id: `txn-${Date.now()}`,
@@ -112,18 +105,6 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
                             <SelectItem value="Other">Other</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Select>
-                        <SelectTrigger className="w-full md:w-[160px]">
-                            <SelectValue placeholder="All Statuses" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Statuses</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                            <SelectItem value="Approved">Approved</SelectItem>
-                            <SelectItem value="Reimbursed">Reimbursed</SelectItem>
-                            <SelectItem value="Rejected">Rejected</SelectItem>
-                        </SelectContent>
-                    </Select>
                     <Button variant="outline" className="h-10" disabled>
                         <Filter className="mr-2 h-4 w-4" /> Date
                     </Button>
@@ -171,7 +152,6 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
                 <TableHead>Date</TableHead>
                 <TableHead>Description</TableHead>
                 <TableHead>Type</TableHead>
-                <TableHead>Status</TableHead>
                 <TableHead className="text-right">Amount</TableHead>
                 <TableHead className="text-right">Balance</TableHead>
                 <TableHead><span className="sr-only">Actions</span></TableHead>
@@ -180,7 +160,6 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
             <TableBody>
               {transactionsWithBalance.length > 0 ? (
                 transactionsWithBalance.map((transaction) => {
-                    const currentStatusConfig = statusConfig[transaction.status] || statusConfig.Pending;
                     return (
                   <TableRow key={transaction.id}>
                     <TableCell>{format(transaction.date, "dd MMM yyyy")}</TableCell>
@@ -202,11 +181,6 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
                               : <ArrowUpCircle className="mr-1 h-3 w-3" />
                           }
                           {transaction.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                       <Badge variant={currentStatusConfig.variant} className={cn('w-24 justify-center', currentStatusConfig.className)}>
-                        {transaction.status}
                       </Badge>
                     </TableCell>
                     <TableCell className={cn(
@@ -249,7 +223,7 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
                 )})
               ) : (
                 <TableRow>
-                  <TableCell colSpan={7} className="h-24 text-center">
+                  <TableCell colSpan={6} className="h-24 text-center">
                     No transactions have been logged for this client yet.
                   </TableCell>
                 </TableRow>

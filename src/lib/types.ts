@@ -128,14 +128,24 @@ export interface CustomForm {
     status: 'Active' | 'Inactive';
 }
 
+export interface TravelLogEntry {
+  startLocation: string;
+  endLocation: string;
+  distance: number;
+}
+
 export interface Timesheet {
   id: string;
   staffId: string;
+  shiftId: string;
   propertyId: string;
   startTime: Date;
   endTime: Date;
+  hoursWorked: number;
   breakDuration: number; // in minutes
   status: 'Draft' | 'Submitted' | 'Approved' | 'Rejected';
+  notes?: string;
+  travelLog?: TravelLogEntry[];
 }
 
 export interface Notice {
@@ -225,7 +235,5 @@ export interface ClientTransaction {
     amount: number;
     gst: number;
     category: 'Transport' | 'Groceries' | 'Equipment' | 'Utilities' | 'Other';
-    uploadedReceipt?: string;
     attachmentName?: string;
-    status: 'Pending' | 'Approved' | 'Reimbursed' | 'Rejected';
 }

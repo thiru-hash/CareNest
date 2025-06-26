@@ -5,6 +5,7 @@ import { mockComplianceItems, mockStaff } from "@/lib/data";
 import { format } from "date-fns";
 import { AlertTriangle, CheckCircle2, ShieldAlert } from "lucide-react";
 import { cn } from "@/lib/utils";
+import type { Staff, UserRole } from "@/lib/types";
 
 const statusConfig = {
     Overdue: { icon: AlertTriangle, color: 'text-destructive', badge: 'destructive' },
@@ -13,14 +14,26 @@ const statusConfig = {
 } as const;
 
 
-export function ComplianceRenewals() {
-  const renewals = mockComplianceItems.filter(item => item.status !== 'Compliant').slice(0, 4);
+export function ComplianceRenewals({ currentUser }: { currentUser: Staff }) {
+  const hrRoles: UserRole[] = ['System Admin', 'Human Resources Manager', 'HR Admin', 'HR'];
+  const isHR = hrRoles.includes(currentUser.role);
+  
+  const renewals = mockComplianceItems
+    .filter(item => {
+        if (isHR) {
+            return item.status !== 'Compliant';
+        }
+        return item.staffId === currentUser.id && item.status !== 'Compliant';
+    })
+    .slice(0, 4);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle>Compliance Renewals</CardTitle>
-        <CardDescription>Items needing attention soon.</CardDescription>
+        <CardDescription>
+          {isHR ? "Items needing attention across the organisation." : "Your items needing attention soon."}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
