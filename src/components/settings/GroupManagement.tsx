@@ -6,9 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { mockGroups, mockStaff } from "@/lib/data";
 import { Button } from "../ui/button";
-import { MoreHorizontal, Users } from "lucide-react";
+import { MoreHorizontal, Users, Copy } from "lucide-react";
 import type { Group } from "@/lib/types";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from "../ui/dropdown-menu";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,6 +79,15 @@ export function GroupManagement() {
     setCurrentGroup(null);
   };
 
+  const handleCloneGroup = (groupToClone: Group) => {
+    const newGroup: Group = {
+      ...groupToClone,
+      id: `group-${Date.now()}`,
+      name: `Copy of ${groupToClone.name}`,
+    };
+    setGroups(prev => [...prev, newGroup]);
+  };
+
   return (
     <>
       <Card>
@@ -120,6 +129,11 @@ export function GroupManagement() {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEditGroup(group)}>Edit</DropdownMenuItem>
                         <DropdownMenuItem onClick={() => handleManageMembers(group)}>Manage Members</DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleCloneGroup(group)}>
+                            <Copy className="mr-2 h-4 w-4" />
+                            <span>Clone</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
                         <DropdownMenuItem className="text-destructive" onSelect={() => handleDeleteTrigger(group)}>Delete</DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
