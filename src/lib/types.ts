@@ -69,6 +69,7 @@ export interface Staff {
   email: string;
   phone: string;
   groupIds?: string[];
+  propertyIds?: string[];
   // New detailed fields
   personalDetails?: {
     dob: Date;

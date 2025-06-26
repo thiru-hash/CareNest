@@ -38,6 +38,7 @@ midnight.setHours(23, 59, 59, 999);
 export const mockProperties: Property[] = [
   { id: 'prop-1', name: 'Oakwood Residence', address: '123 Oak Ave, Springfield', imageUrl: 'https://placehold.co/600x400.png', status: 'Active', "data-ai-hint": "modern house" },
   { id: 'prop-2', name: 'Maple Creek Villa', address: '456 Maple St, Rivertown', imageUrl: 'https://placehold.co/600x400.png', status: 'Active', "data-ai-hint": "suburban home" },
+  { id: 'prop-training', name: 'Training Center', address: '789 Learn St, Knowledgeton', imageUrl: 'https://placehold.co/600x400.png', status: 'Active', "data-ai-hint": "modern office" },
 ];
 
 export const mockStaff: Staff[] = [
@@ -49,6 +50,7 @@ export const mockStaff: Staff[] = [
     email: 'admin@carenest.com', 
     phone: '555-0000', 
     groupIds: ['group-system-admin', 'group-all'],
+    propertyIds: ['prop-1', 'prop-2', 'prop-training'],
     personalDetails: { dob: new Date('1980-01-01'), address: '100 Admin Way, System City' },
     employmentDetails: { startDate: new Date('2010-05-10'), employmentType: 'Full-time', payRate: 90.00 },
     hrDetails: {
@@ -64,6 +66,7 @@ export const mockStaff: Staff[] = [
     email: 'jane.d@carenest.com', 
     phone: '555-1234', 
     groupIds: ['group-support-worker', 'group-all'],
+    propertyIds: ['prop-1'],
     personalDetails: { dob: new Date('1992-05-20'), address: '12 Support St, Caretown' },
     employmentDetails: { startDate: new Date('2021-03-15'), employmentType: 'Full-time', payRate: 28.50 },
     hrDetails: {
@@ -82,6 +85,7 @@ export const mockStaff: Staff[] = [
     email: 'john.s@carenest.com', 
     phone: '555-5678', 
     groupIds: ['group-support-worker', 'group-all'],
+    propertyIds: [],
     personalDetails: { dob: new Date('1995-11-30'), address: '45 Helper Ave, Communityville' },
     employmentDetails: { startDate: new Date('2022-07-22'), employmentType: 'Part-time', payRate: 27.75 },
      hrDetails: { interviewNotes: "", documents: [] }
@@ -94,6 +98,7 @@ export const mockStaff: Staff[] = [
     email: 'alice.j@carenest.com', 
     phone: '555-8765', 
     groupIds: ['group-support-manager', 'group-all'],
+    propertyIds: [],
     personalDetails: { dob: new Date('1985-02-10'), address: '8 Management Mews, Leadsville' },
     employmentDetails: { startDate: new Date('2018-01-20'), employmentType: 'Full-time', payRate: 45.00 },
      hrDetails: {
@@ -109,6 +114,7 @@ export const mockStaff: Staff[] = [
     email: 'rory.r@carenest.com', 
     phone: '555-1001', 
     groupIds: ['group-roster-admin', 'group-all'],
+    propertyIds: [],
     personalDetails: { dob: new Date('1988-06-25'), address: '9 Schedule St, Timely Town' },
     employmentDetails: { startDate: new Date('2019-11-01'), employmentType: 'Full-time', payRate: 38.00 },
     hrDetails: { interviewNotes: "", documents: [] }
@@ -121,6 +127,7 @@ export const mockStaff: Staff[] = [
     email: 'fiona.f@carenest.com', 
     phone: '555-1002', 
     groupIds: ['group-finance-admin', 'group-all'],
+    propertyIds: [],
     personalDetails: { dob: new Date('1990-09-15'), address: '10 Ledger Lane, Accountsville' },
     employmentDetails: { startDate: new Date('2020-02-10'), employmentType: 'Full-time', payRate: 42.50 },
     hrDetails: { interviewNotes: "", documents: [] }
@@ -133,6 +140,7 @@ export const mockStaff: Staff[] = [
     email: 'charles.e@carenest.com', 
     phone: '555-1003', 
     groupIds: ['group-ceo', 'group-all'],
+    propertyIds: [],
     personalDetails: { dob: new Date('1975-03-12'), address: '1 Executive Drive, Corp Heights' },
     employmentDetails: { startDate: new Date('2015-08-01'), employmentType: 'Full-time', payRate: 150.00 },
     hrDetails: { interviewNotes: "", documents: [] }
@@ -145,6 +153,7 @@ export const mockStaff: Staff[] = [
     email: 'holly.r@carenest.com', 
     phone: '555-1004', 
     groupIds: ['group-hr-manager', 'group-all'],
+    propertyIds: [],
     personalDetails: { dob: new Date('1989-07-22'), address: '22 People Plaza, Staffington' },
     employmentDetails: { startDate: new Date('2019-04-15'), employmentType: 'Full-time', payRate: 48.00 },
     hrDetails: {
@@ -514,12 +523,12 @@ export const mockClientBudgets: ClientFunding[] = [
 ];
 
 export const mockTransactions: ClientTransaction[] = [
-    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, gst: 0, category: 'Other', attachmentName: 'NDIS_Statement_Oct.pdf', status: 'Approved' },
-    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, gst: 13.70, category: 'Groceries', attachmentName: 'woolies_receipt_1410.jpg', status: 'Approved' },
-    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50, gst: 4.14, category: 'Transport', status: 'Pending' },
-    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, gst: 0, category: 'Equipment', attachmentName: 'wheelchair_invoice.pdf', status: 'Approved' },
-    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95, gst: 8.09, category: 'Other', status: 'Reimbursed' },
-    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500, gst: 0, category: 'Other', status: 'Approved' },
-    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75, gst: 6.82, category: 'Other', status: 'Rejected' },
-    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other', status: 'Approved' },
+    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, gst: 0, category: 'Other', attachmentName: 'NDIS_Statement_Oct.pdf'},
+    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, gst: 13.70, category: 'Groceries', attachmentName: 'woolies_receipt_1410.jpg'},
+    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50, gst: 4.14, category: 'Transport' },
+    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, gst: 0, category: 'Equipment', attachmentName: 'wheelchair_invoice.pdf'},
+    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95, gst: 8.09, category: 'Other' },
+    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500, gst: 0, category: 'Other' },
+    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75, gst: 6.82, category: 'Other' },
+    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other' },
 ];

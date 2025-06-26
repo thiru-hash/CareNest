@@ -5,17 +5,18 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { mockStaff, mockGroups } from "@/lib/data";
+import { mockStaff, mockGroups, mockProperties } from "@/lib/data";
 import { Button } from "../ui/button";
 import { MoreHorizontal, UserPlus } from "lucide-react";
-import type { Staff, Group } from "@/lib/types";
+import type { Staff, Group, Property } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
-import { CreateEditUserDialog } from "./CreateEditUserDialog";
+import { CreateEditStaffDialog } from "./CreateEditStaffDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export function UserManagement() {
   const [users, setUsers] = useState<Staff[]>(mockStaff);
   const [groups, setGroups] = useState<Group[]>(mockGroups);
+  const [properties, setProperties] = useState<Property[]>(mockProperties);
   
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<Staff | null>(null);
@@ -57,6 +58,7 @@ export function UserManagement() {
         phone: '555-0000',
         avatarUrl: 'https://placehold.co/100x100.png',
         groupIds: userData.groupIds || [],
+        propertyIds: userData.propertyIds || [],
       };
       setUsers(prev => [...prev, newUser]);
     }
@@ -122,7 +124,7 @@ export function UserManagement() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEditUser(user)}>Edit User</DropdownMenuItem>
-                        <DropdownMenuItem>Change Role</DropdownMenuItem>
+                        <DropdownMenuItem disabled>Change Role</DropdownMenuItem>
                         <DropdownMenuItem 
                           className="text-destructive" 
                           onSelect={() => handleDeleteTrigger(user)}
@@ -140,12 +142,13 @@ export function UserManagement() {
         </CardContent>
       </Card>
 
-      <CreateEditUserDialog 
+      <CreateEditStaffDialog 
         isOpen={isDialogOpen}
         setIsOpen={setIsDialogOpen}
-        user={editingUser}
+        staff={editingUser}
         onSave={handleSaveUser}
         allGroups={groups}
+        allProperties={properties}
       />
       
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
