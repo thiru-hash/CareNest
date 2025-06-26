@@ -50,7 +50,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Shift, Staff, Client, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -434,12 +433,15 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
             <div className="p-2 rounded-lg border bg-muted/50">
               <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-2">
                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
-                        <TabsList className="grid w-full grid-cols-2">
-                            <TabsTrigger value="staff">Staff View</TabsTrigger>
-                            <TabsTrigger value="client">Client View</TabsTrigger>
-                        </TabsList>
-                    </Tabs>
+                    <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+                        <SelectTrigger className="w-full sm:w-[180px] h-9">
+                          <SelectValue placeholder="Select a view" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="staff">Staff View</SelectItem>
+                          <SelectItem value="client">Client View</SelectItem>
+                        </SelectContent>
+                    </Select>
                      <div className="relative sm:w-64">
                        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                        <Input
@@ -515,7 +517,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                                <Button variant="outline" size="icon" className="h-9 w-9">
                                     <Wrench className="h-4 w-4" />
                                 </Button>
                             </DropdownMenuTrigger>
@@ -592,5 +594,3 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
     </>
   );
 }
-
-    
