@@ -7,7 +7,7 @@ import type { UserRole } from "@/lib/types";
 export default async function DashboardPage() {
   const currentUser = await getCurrentUser();
 
-  const financeRoles: UserRole[] = ['System Admin', 'Finance Admin', 'CEO', 'GM Service'];
+  const financeRoles: UserRole[] = ['Finance Admin', 'CEO'];
   const canViewFinance = financeRoles.includes(currentUser.role);
 
   return (
