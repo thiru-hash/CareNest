@@ -1,3 +1,4 @@
+
 export type UserRole =
   | 'System Admin'
   | 'Support Manager'
@@ -138,4 +139,31 @@ export interface Notice {
   createdAt: Date;
   status: 'Published' | 'Draft';
   type: 'Info' | 'Warning' | 'Urgent';
+}
+
+export interface Invoice {
+    id: string;
+    invoiceNumber: string;
+    clientOrFunderName: string;
+    dueDate: Date;
+    amount: number;
+    status: 'Paid' | 'Pending' | 'Overdue';
+}
+
+export interface PayrollRun {
+    id: string;
+    startDate: Date;
+    endDate: Date;
+    totalAmount: number;
+    status: 'Paid' | 'Pending';
+}
+
+export interface ClientBudget {
+    clientId: string;
+    coreBudget: number;
+    coreSpent: number;
+    capacityBudget: number;
+    capacitySpent: number;
+    capitalBudget: number;
+    capitalSpent: number;
 }

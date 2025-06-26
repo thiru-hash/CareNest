@@ -56,9 +56,15 @@ const initialPermissions: PermissionsState = {
         'sec-loc': viewOnly,
         'sec-dash': viewOnly,
     },
-    'group-finance-admin': allSections(viewOnly),
+    'group-finance-admin': {
+        ...allSections(viewOnly),
+        'sec-finance': fullAccess
+    },
     'group-gm-service': allSections(viewCreateEdit),
-    'group-ceo': allSections(viewOnly),
+    'group-ceo': {
+        ...allSections(viewOnly),
+        'sec-finance': viewOnly
+    },
     'group-reception': {
         ...allSections({}),
         'sec-dash': viewOnly,

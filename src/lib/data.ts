@@ -1,5 +1,5 @@
 
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, PayrollRun, ClientBudget } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
@@ -24,6 +24,7 @@ import {
   PenSquare,
   Info,
   RectangleHorizontal,
+  Landmark,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -154,6 +155,7 @@ export const mockSections: AppSection[] = [
         { id: 'tab-loc-1', name: 'Vehicle Check', order: 10, formId: 'form-3' }
     ]
   },
+   { id: 'sec-finance', name: 'Finance', path: '/finance', iconName: 'Landmark', order: 55, status: 'Active', tabs: [] },
   { 
     id: 'sec-inc', 
     name: 'Incident Reports', 
@@ -357,3 +359,38 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
+
+
+export const mockInvoices: Invoice[] = [
+  { id: 'inv-1', invoiceNumber: 'INV-00123', clientOrFunderName: 'NDIS', dueDate: addDays(now, 15), amount: 4500.00, status: 'Pending' },
+  { id: 'inv-2', invoiceNumber: 'INV-00124', clientOrFunderName: 'Peter Jones (Self-Managed)', dueDate: addDays(now, 5), amount: 750.50, status: 'Pending' },
+  { id: 'inv-3', invoiceNumber: 'INV-00121', clientOrFunderName: 'Ministry of Social Development', dueDate: subDays(now, 10), amount: 12500.00, status: 'Paid' },
+  { id: 'inv-4', invoiceNumber: 'INV-00120', clientOrFunderName: 'Mary Williams (Plan-Managed)', dueDate: subDays(now, 2), amount: 1200.75, status: 'Overdue' },
+  { id: 'inv-5', invoiceNumber: 'INV-00119', clientOrFunderName: 'NDIS', dueDate: subDays(now, 30), amount: 8200.00, status: 'Paid' },
+];
+
+export const mockPayrollRuns: PayrollRun[] = [
+    { id: 'pr-1', startDate: subDays(now, 14), endDate: subDays(now, 1), totalAmount: 75234.50, status: 'Paid'},
+    { id: 'pr-2', startDate: subDays(now, 28), endDate: subDays(now, 15), totalAmount: 72109.25, status: 'Paid'},
+];
+
+export const mockClientBudgets: ClientBudget[] = [
+    {
+        clientId: 'client-1',
+        coreBudget: 25000,
+        coreSpent: 18750,
+        capacityBudget: 15000,
+        capacitySpent: 16200, // Overspent
+        capitalBudget: 10000,
+        capitalSpent: 5000,
+    },
+    {
+        clientId: 'client-2',
+        coreBudget: 30000,
+        coreSpent: 12000,
+        capacityBudget: 20000,
+        capacitySpent: 8500,
+        capitalBudget: 5000,
+        capitalSpent: 0,
+    }
+]
