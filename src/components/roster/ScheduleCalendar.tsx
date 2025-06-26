@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -516,3 +517,5 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
     </>
   );
 }
+
+    
