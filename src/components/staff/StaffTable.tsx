@@ -18,7 +18,7 @@ import { getCurrentUser } from "@/lib/auth";
 export async function StaffTable() {
   const currentUser = await getCurrentUser();
 
-  const staffToDisplay = currentUser.role === 'Admin'
+  const staffToDisplay = currentUser.role === 'System Admin'
     ? mockStaff
     : mockStaff.filter(staff => staff.id === currentUser.id);
 
@@ -30,7 +30,7 @@ export async function StaffTable() {
                 <CardTitle>Staff Members</CardTitle>
                 <CardDescription>View and manage staff members in the system.</CardDescription>
             </div>
-            {currentUser.role === 'Admin' && (
+            {currentUser.role === 'System Admin' && (
                 <Button>
                     <UserPlus className="mr-2 h-4 w-4" />
                     Add Staff
@@ -75,7 +75,7 @@ export async function StaffTable() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem>View Profile</DropdownMenuItem>
-                      {currentUser.role === 'Admin' && <DropdownMenuItem>Edit</DropdownMenuItem>}
+                      {currentUser.role === 'System Admin' && <DropdownMenuItem>Edit</DropdownMenuItem>}
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

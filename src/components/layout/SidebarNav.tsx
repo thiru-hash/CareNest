@@ -17,7 +17,7 @@ import { iconMap } from "@/lib/icon-map";
 import type { UserRole, Staff } from "@/lib/types";
 import { useMemo } from "react";
 
-const adminRoles: UserRole[] = ["Admin"];
+const adminRoles: UserRole[] = ["System Admin"];
 
 export function SidebarNav({ user }: { user: Staff }) {
   const pathname = usePathname();

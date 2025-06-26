@@ -56,7 +56,7 @@ export function ProfileClient({ currentUser }: { currentUser: Staff }) {
   };
 
   const handleAvatarClick = () => {
-    if (currentUser.role === 'Admin') {
+    if (currentUser.role === 'System Admin') {
       fileInputRef.current?.click();
     }
   };
@@ -72,7 +72,7 @@ export function ProfileClient({ currentUser }: { currentUser: Staff }) {
                 <AvatarImage src={avatarUrl} alt={currentUser.name} />
                 <AvatarFallback className="text-3xl">{currentUser.name.charAt(0)}</AvatarFallback>
               </Avatar>
-              {currentUser.role === 'Admin' && (
+              {currentUser.role === 'System Admin' && (
                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     <Camera className="h-8 w-8 text-white" />
                   </div>

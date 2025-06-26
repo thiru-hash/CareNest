@@ -35,16 +35,34 @@ export const mockProperties: Property[] = [
 ];
 
 export const mockStaff: Staff[] = [
-  { id: 'staff-admin', name: 'Admin User', avatarUrl: 'https://placehold.co/100x100.png', role: 'Admin', email: 'admin@carenest.com', phone: '555-0000', groupIds: ['group-admin'] },
-  { id: 'staff-1', name: 'Jane Doe', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'jane.d@carenest.com', phone: '555-1234', groupIds: ['group-workers'] },
-  { id: 'staff-2', name: 'John Smith', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'john.s@carenest.com', phone: '555-5678', groupIds: ['group-workers'] },
-  { id: 'staff-3', name: 'Alice Johnson', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Manager', email: 'alice.j@carenest.com', phone: '555-8765', groupIds: ['group-managers'] },
+  { id: 'staff-admin', name: 'Admin User', avatarUrl: 'https://placehold.co/100x100.png', role: 'System Admin', email: 'admin@carenest.com', phone: '555-0000', groupIds: ['group-system-admin'] },
+  { id: 'staff-1', name: 'Jane Doe', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'jane.d@carenest.com', phone: '555-1234', groupIds: ['group-support-worker'] },
+  { id: 'staff-2', name: 'John Smith', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Worker', email: 'john.s@carenest.com', phone: '555-5678', groupIds: ['group-support-worker'] },
+  { id: 'staff-3', name: 'Alice Johnson', avatarUrl: 'https://placehold.co/100x100.png', role: 'Support Manager', email: 'alice.j@carenest.com', phone: '555-8765', groupIds: ['group-support-manager'] },
+  { id: 'staff-roster-admin', name: 'Rory Roster', avatarUrl: 'https://placehold.co/100x100.png', role: 'Roster Admin', email: 'rory.r@carenest.com', phone: '555-1001', groupIds: ['group-roster-admin'] },
+  { id: 'staff-finance', name: 'Fiona Finance', avatarUrl: 'https://placehold.co/100x100.png', role: 'Finance Admin', email: 'fiona.f@carenest.com', phone: '555-1002', groupIds: ['group-finance-admin'] },
+  { id: 'staff-ceo', name: 'Charles Executive', avatarUrl: 'https://placehold.co/100x100.png', role: 'CEO', email: 'charles.e@carenest.com', phone: '555-1003', groupIds: ['group-ceo'] },
+  { id: 'staff-hr', name: 'Holly Resources', avatarUrl: 'https://placehold.co/100x100.png', role: 'Human Resources Manager', email: 'holly.r@carenest.com', phone: '555-1004', groupIds: ['group-hr-manager'] },
 ];
 
 export const mockGroups: Group[] = [
-    { id: 'group-admin', name: 'Administrators', description: 'Full system access', userIds: ['staff-admin'] },
-    { id: 'group-managers', name: 'Support Managers', description: 'Manage staff and clients', userIds: ['staff-3'] },
-    { id: 'group-workers', name: 'Support Workers', description: 'View shifts and client info', userIds: ['staff-1', 'staff-2'] },
+    { id: 'group-system-admin', name: 'System Administrators', description: 'Full system access', userIds: ['staff-admin'] },
+    { id: 'group-support-manager', name: 'Support Managers', description: 'Manage staff and clients', userIds: ['staff-3'] },
+    { id: 'group-support-worker', name: 'Support Workers', description: 'View shifts and client info', userIds: ['staff-1', 'staff-2'] },
+    { id: 'group-roster-admin', name: 'Roster Admin', description: 'Full access to rostering', userIds: ['staff-roster-admin'] },
+    { id: 'group-roster-scheduler', name: 'Roster Scheduler', description: 'Can create and edit shifts', userIds: [] },
+    { id: 'group-finance-admin', name: 'Finance Admin', description: 'Access to financial data and reports', userIds: ['staff-finance'] },
+    { id: 'group-gm-service', name: 'GM Service', description: 'General Manager of Services', userIds: [] },
+    { id: 'group-ceo', name: 'CEO', description: 'Chief Executive Officer', userIds: ['staff-ceo'] },
+    { id: 'group-reception', name: 'Reception', description: 'Front desk and administrative tasks', userIds: [] },
+    { id: 'group-health-safety', name: 'Health and Safety', description: 'Manages H&S incidents and compliance', userIds: [] },
+    { id: 'group-risk-management', name: 'Risk Management', description: 'Manages organizational risk', userIds: [] },
+    { id: 'group-office-admin', name: 'Office Admin Manager', description: 'Manages office operations', userIds: [] },
+    { id: 'group-clinical-advisor', name: 'Clinical Advisor', description: 'Provides clinical guidance', userIds: [] },
+    { id: 'group-hr-manager', name: 'Human Resources Manager', description: 'Manages all HR functions', userIds: ['staff-hr'] },
+    { id: 'group-hr-admin', 'name': 'HR Admin', 'description': 'Assists with HR administrative tasks', userIds: [] },
+    { id: 'group-hr', name: 'HR', description: 'General HR staff', userIds: [] },
+    { id: 'group-behavioural-support', name: 'Behavioural Support', description: 'Provides specialist behavioural support', userIds: [] },
 ];
 
 export const mockClients: Client[] = [
@@ -90,7 +108,7 @@ export const mockShifts: Shift[] = [
   { id: 'shift-5', title: 'Yesterday Evening Shift', start: subHours(subDays(now, 1), 4), end: subDays(now, 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Completed' },
 
   // A shift for Jane Doe to test clock-in/out
-  { id: 'shift-6', title: 'Morning Shift', start: new Date(now.setHours(11, 0, 0, 0)), end: new Date(now.setHours(14, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' }
+  { id: 'shift-6', title: 'Morning Shift', start: new Date(new Date().setHours(9, 0, 0, 0)), end: new Date(new Date().setHours(17, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' }
 ];
 
 export const mockComplianceItems: ComplianceItem[] = [
@@ -338,6 +356,7 @@ export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon
 ];
 
 export const mockTimesheets: Timesheet[] = [];
+
 
 
 

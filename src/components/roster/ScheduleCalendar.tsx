@@ -56,7 +56,7 @@ import { Input } from "@/components/ui/input";
 
 type ViewMode = 'staff' | 'client';
 
-const privilegedRoles: UserRole[] = ['Admin', 'Roster Team'];
+const privilegedRoles: UserRole[] = ['System Admin', 'Roster Admin', 'Roster Scheduler'];
 
 export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   const { toast } = useToast();

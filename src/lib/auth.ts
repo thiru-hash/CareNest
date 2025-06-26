@@ -6,7 +6,7 @@ import { mockStaff } from './data';
 import type { Staff } from './types';
 
 // In a real app, this would perform a database lookup.
-const adminUser = mockStaff.find(s => s.role === 'Admin')!;
+const adminUser = mockStaff.find(s => s.role === 'System Admin')!;
 
 /**
  * Retrieves the current user from the session cookie.

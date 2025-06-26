@@ -19,7 +19,7 @@ import { usePathname } from "next/navigation";
 import type { UserRole, Staff } from "@/lib/types";
 import { logout } from "@/app/actions";
 
-const adminRoles: UserRole[] = ["Admin"];
+const adminRoles: UserRole[] = ["System Admin"];
 
 const pageTitles: { [key: string]: string } = {
   "/dashboard": "Dashboard",

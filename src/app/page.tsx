@@ -6,7 +6,7 @@ import { switchUser } from '@/app/actions';
 import { mockStaff } from '@/lib/data';
 
 export default function LoginPage() {
-  const adminUser = mockStaff.find(u => u.role === 'Admin');
+  const adminUser = mockStaff.find(u => u.role === 'System Admin');
   const workerUser = mockStaff.find(u => u.role === 'Support Worker');
 
   if (!adminUser || !workerUser) {
@@ -28,7 +28,7 @@ export default function LoginPage() {
         <CardContent>
           <form className="space-y-4">
             <Button type="submit" className="w-full" formAction={switchUser.bind(null, adminUser.id)}>
-                Login as Admin
+                Login as System Admin
             </Button>
              <Button type="submit" variant="secondary" className="w-full" formAction={switchUser.bind(null, workerUser.id)}>
                 Login as Support Worker

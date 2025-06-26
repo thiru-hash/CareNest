@@ -19,10 +19,92 @@ type PermissionsState = {
     }
 };
 
+const fullAccess = { view: true, create: true, edit: true, delete: true };
+const viewOnly = { view: true, create: false, edit: false, delete: false };
+const viewCreateEdit = { view: true, create: true, edit: true, delete: false };
+const viewCreate = { view: true, create: true, edit: false, delete: false };
+
+const allSections = (permissions: { [key in Permission]?: boolean }) => {
+    return Object.fromEntries(mockSections.map(s => [s.id, permissions]));
+};
+
 const initialPermissions: PermissionsState = {
-    'group-admin': Object.fromEntries(mockSections.map(s => [s.id, { view: true, create: true, edit: true, delete: true }])),
-    'group-managers': Object.fromEntries(mockSections.map(s => [s.id, { view: true, create: true, edit: true, delete: false }])),
-    'group-workers': Object.fromEntries(mockSections.map(s => [s.id, { view: true, create: false, edit: false, delete: false }])),
+    'group-system-admin': allSections(fullAccess),
+    'group-support-manager': allSections(viewCreateEdit),
+    'group-support-worker': {
+        ...allSections({}),
+        'sec-dash': viewOnly,
+        'sec-roster': viewOnly,
+        'sec-people': viewCreate,
+        'sec-staff': viewOnly,
+        'sec-loc': viewOnly,
+        'sec-inc': viewCreate,
+    },
+    'group-roster-admin': {
+        ...allSections({}),
+        'sec-roster': fullAccess,
+        'sec-staff': viewOnly,
+        'sec-people': viewOnly,
+        'sec-loc': viewOnly,
+        'sec-dash': viewOnly,
+    },
+    'group-roster-scheduler': {
+        ...allSections({}), 
+        'sec-roster': viewCreateEdit,
+        'sec-staff': viewOnly,
+        'sec-people': viewOnly,
+        'sec-loc': viewOnly,
+        'sec-dash': viewOnly,
+    },
+    'group-finance-admin': allSections(viewOnly),
+    'group-gm-service': allSections(viewCreateEdit),
+    'group-ceo': allSections(viewOnly),
+    'group-reception': {
+        ...allSections({}),
+        'sec-dash': viewOnly,
+        'sec-roster': viewOnly,
+        'sec-staff': viewOnly,
+        'sec-loc': viewOnly,
+    },
+    'group-health-safety': {
+        ...allSections({}),
+        'sec-inc': fullAccess,
+        'sec-people': viewOnly,
+        'sec-staff': viewOnly,
+        'sec-loc': viewOnly,
+    },
+    'group-risk-management': {
+        ...allSections({}),
+        'sec-inc': fullAccess,
+    },
+    'group-office-admin': allSections(viewCreateEdit),
+    'group-clinical-advisor': {
+        ...allSections({}),
+        'sec-people': viewOnly,
+        'sec-roster': viewOnly,
+        'sec-inc': viewOnly,
+    },
+    'group-hr-manager': {
+        ...allSections({}),
+        'sec-staff': fullAccess,
+        'sec-dash': viewOnly,
+    },
+    'group-hr-admin': {
+        ...allSections({}),
+        'sec-staff': viewCreateEdit,
+        'sec-dash': viewOnly,
+    },
+    'group-hr': {
+        ...allSections({}),
+        'sec-staff': viewOnly,
+        'sec-dash': viewOnly,
+    },
+    'group-behavioural-support': {
+        ...allSections({}),
+        'sec-people': viewOnly,
+        'sec-roster': viewOnly,
+        'sec-inc': viewOnly,
+    },
 };
 
 

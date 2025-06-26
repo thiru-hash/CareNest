@@ -410,7 +410,7 @@ export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete, 
           </div>
           <DialogFooter className="justify-between sm:justify-between">
             <div>
-            {isEditMode && currentUser.role === 'Admin' && (
+            {isEditMode && currentUser.role === 'System Admin' && (
                 <AlertDialog>
                     <AlertDialogTrigger asChild>
                         <Button type="button" variant="destructive">
