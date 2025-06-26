@@ -19,6 +19,16 @@ export type UserRole =
   | 'HR'
   | 'Behavioural Support';
 
+export type Permission = 'view' | 'create' | 'edit' | 'delete';
+
+export type PermissionsState = {
+    [groupId: string]: {
+        [sectionId: string]: {
+            [key in Permission]?: boolean;
+        }
+    }
+};
+
 export interface User {
   id: string;
   name: string;

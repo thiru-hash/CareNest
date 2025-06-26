@@ -8,16 +8,7 @@ import { mockGroups, mockSections } from "@/lib/data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
-import type { Group, AppSection } from "@/lib/types";
-
-type Permission = 'view' | 'create' | 'edit' | 'delete';
-type PermissionsState = {
-    [groupId: string]: {
-        [sectionId: string]: {
-            [key in Permission]?: boolean;
-        }
-    }
-};
+import type { Group, AppSection, Permission, PermissionsState } from "@/lib/types";
 
 const fullAccess = { view: true, create: true, edit: true, delete: true };
 const viewOnly = { view: true, create: false, edit: false, delete: false };
