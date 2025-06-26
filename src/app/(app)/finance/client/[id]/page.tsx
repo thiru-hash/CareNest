@@ -1,9 +1,10 @@
 
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { mockClients, mockClientBudgets } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Building2, User, Landmark, DollarSign, Target, Briefcase, AlertTriangle } from "lucide-react";
+import { Building2, Landmark, DollarSign, Target, Briefcase, AlertTriangle, ChevronLeft } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -64,19 +65,21 @@ export default async function ClientFinancePage({ params }: { params: { id: stri
 
   return (
     <div className="space-y-6">
-        <div className="flex flex-col md:flex-row items-start gap-6">
-            <Avatar className="w-24 h-24 border-4 border-background shadow-md">
-                <AvatarImage src={client.avatarUrl} alt={client.name} />
-                <AvatarFallback className="text-3xl">{client.name.charAt(0)}</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-                <h1 className="text-3xl font-bold">{client.name}</h1>
-                <p className="text-lg text-muted-foreground">Client-Level Finance</p>
-                <div className="flex items-center gap-4 mt-2 text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span>Client ID: {client.id}</span>
-                    </div>
+        <div className="flex items-center gap-4">
+            <Button asChild variant="outline" size="icon">
+              <Link href="/finance/client">
+                <ChevronLeft className="h-4 w-4" />
+                <span className="sr-only">Back to Client List</span>
+              </Link>
+            </Button>
+            <div className="flex items-center gap-4">
+                <Avatar className="w-16 h-16 border">
+                    <AvatarImage src={client.avatarUrl} alt={client.name} />
+                    <AvatarFallback className="text-xl">{client.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                 <div>
+                    <h1 className="text-2xl font-bold">{client.name}</h1>
+                    <p className="text-md text-muted-foreground">Client-Level Finance (ID: {client.id})</p>
                 </div>
             </div>
         </div>
