@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -26,7 +25,7 @@ import {
   ChevronRight,
   ChevronsRight,
   Printer,
-  FileImport,
+  Upload,
   RefreshCw,
   ClipboardPaste,
   Send,
@@ -469,7 +468,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                             <Printer className="h-4 w-4" />
                         </Button>
                          <Button variant="outline" size="icon" className="h-9 w-9" disabled>
-                            <FileImport className="h-4 w-4" />
+                            <Upload className="h-4 w-4" />
                         </Button>
                         <Button variant="outline" size="icon" className="h-9 w-9" disabled>
                             <CalendarX2 className="h-4 w-4" />
