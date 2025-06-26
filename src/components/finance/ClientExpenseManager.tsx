@@ -213,7 +213,16 @@ export function ClientExpenseManager({ clientId }: { clientId: string }) {
                         "text-right font-semibold",
                         transaction.type === 'Payment' ? 'text-green-600' : 'text-destructive'
                     )}>
-                      {transaction.type === 'Payment' ? '+' : '-'} ${transaction.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        <div className="flex flex-col items-end -my-1">
+                            <span>
+                                {transaction.type === 'Payment' ? '+' : '-'} ${transaction.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </span>
+                            {transaction.type === 'Expense' && transaction.gst > 0 && (
+                                <span className="text-xs font-normal text-muted-foreground">
+                                    incl. ${transaction.gst.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} GST
+                                </span>
+                            )}
+                        </div>
                     </TableCell>
                     <TableCell className="text-right font-mono">
                       ${transaction.balance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
