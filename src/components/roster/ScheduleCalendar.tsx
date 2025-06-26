@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -14,43 +14,57 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { mockShifts, mockStaff, mockProperties, mockClients } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { format } from 'date-fns';
+import { format, addDays, subDays, startOfWeek, isToday } from 'date-fns';
 import { CreateShiftDialog } from "./CreateShiftDialog";
 import { Button } from "@/components/ui/button";
-import { PlusCircle } from "lucide-react";
+import {
+  PlusCircle,
+  Search,
+  Filter,
+  ChevronsLeft,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsRight,
+  Printer,
+  FileImport,
+  RefreshCw,
+} from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Shift, Staff, Client } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { Input } from "@/components/ui/input";
 
 type ViewMode = 'staff' | 'client';
 
 export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   const { toast } = useToast();
   const [shifts, setShifts] = useState<Shift[]>(mockShifts);
-  const [filters, setFilters] = useState({ staffId: 'all', propertyId: 'all' });
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingShift, setEditingShift] = useState<Shift | null>(null);
+  
   const [viewMode, setViewMode] = useState<ViewMode>('staff');
   const [daysOfWeek, setDaysOfWeek] = useState<Date[]>([]);
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [viewPeriod, setViewPeriod] = useState<7 | 14>(7);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [propertyFilter, setPropertyFilter] = useState("all");
 
   useEffect(() => {
-    const today = new Date();
-    const dayOfWeek = today.getDay();
-    const diffToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-    const startOfWeek = new Date(new Date().setDate(today.getDate() + diffToMonday));
-
-    const weekDays = Array.from({ length: 7 }, (_, i) => {
-      const day = new Date(startOfWeek);
-      day.setDate(day.getDate() + i);
+    const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday start
+    const weekDays = Array.from({ length: viewPeriod }, (_, i) => {
+      const day = addDays(start, i);
       return day;
     });
     setDaysOfWeek(weekDays);
-  }, []);
+  }, [currentDate, viewPeriod]);
+  
+  const handleDateNavigate = (days: number) => {
+    setCurrentDate(current => addDays(current, days));
+  };
 
-
-  const handleFilterChange = (filterType: 'staffId' | 'propertyId') => (value: string) => {
-    setFilters(prev => ({ ...prev, [filterType]: value }));
+  const handleGoToToday = () => {
+    setCurrentDate(new Date());
   };
 
   const handleShiftClick = (shift: Shift) => {
@@ -142,12 +156,10 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
 
   const handleSaveShift = (savedShifts: Shift[]) => {
     if (savedShifts.length === 1 && shifts.some(s => s.id === savedShifts[0].id)) {
-        // This is an update of a single shift
         const shiftToUpdate = savedShifts[0];
         setShifts(prevShifts => prevShifts.map(s => s.id === shiftToUpdate.id ? shiftToUpdate : s));
         toast({ title: "Shift Updated", description: "The shift has been successfully updated." });
     } else {
-        // This is a creation of one or more shifts
         const newShiftsWithIds = savedShifts.map((s, i) => ({
             ...s,
             id: s.id || `shift-${Date.now()}-${i}`
@@ -170,33 +182,40 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
     toast({ title: "Shift Deleted", description: "The shift has been removed from the roster."});
   }
 
-  const allStaffResources = mockStaff.map(s => ({...s, type: 'staff'}));
-  const filteredStaffResources = filters.staffId === 'all'
-    ? allStaffResources
-    : filters.staffId === 'open'
-      ? []
-      : allStaffResources.filter(s => s.id === filters.staffId);
-      
-  const showOpenShifts = filters.staffId === 'all' || filters.staffId === 'open';
+  const dateRangeText = useMemo(() => {
+    if (daysOfWeek.length === 0) return "Loading...";
+    const start = daysOfWeek[0];
+    const end = daysOfWeek[daysOfWeek.length - 1];
+    return `${format(start, "d MMM yyyy")} - ${format(end, "d MMM yyyy")}`;
+  }, [daysOfWeek]);
+  
+  const filteredResources = useMemo(() => {
+      const term = searchTerm.toLowerCase();
+      if (viewMode === 'staff') {
+          return mockStaff.filter(s => s.name.toLowerCase().includes(term));
+      }
+      return mockClients.filter(c => c.name.toLowerCase().includes(term));
+  }, [searchTerm, viewMode]);
 
-  const propertyFilteredShifts = shifts.filter(shift => {
-    return filters.propertyId === 'all' || shift.propertyId === filters.propertyId;
-  });
+  const propertyFilteredShifts = useMemo(() => shifts.filter(shift => {
+    return propertyFilter === 'all' || shift.propertyId === propertyFilter;
+  }), [shifts, propertyFilter]);
+
 
   const renderStaffView = () => (
     <TableBody>
-      {filteredStaffResources.map((staff) => {
+      {(filteredResources as Staff[]).map((staff) => {
         const staffShifts = propertyFilteredShifts.filter(s => s.staffId === staff.id);
         return (
           <TableRow key={staff.id} className="h-full">
-            <TableCell className="font-medium border-r p-2 align-top sticky left-0 bg-background z-10">
+            <TableCell className="font-medium border-r p-2 align-top sticky left-0 bg-background z-10 w-[200px] min-w-[200px]">
               <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                       <AvatarImage src={staff.avatarUrl} alt={staff.name} />
                       <AvatarFallback>{staff.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
-                  <p className="font-semibold">{staff.name}</p>
+                  <p className="font-semibold truncate">{staff.name}</p>
                   <p className="text-xs text-muted-foreground">{staff.role}</p>
                   </div>
               </div>
@@ -243,9 +262,8 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
           </TableRow>
         );
       })}
-      {showOpenShifts && (
-        <TableRow>
-          <TableCell className="font-medium border-r p-2 align-top bg-amber-50 sticky left-0 z-10">
+       <TableRow>
+          <TableCell className="font-medium border-r p-2 align-top bg-amber-50 sticky left-0 z-10 w-[200px] min-w-[200px]">
             <p className="font-semibold text-amber-800">Open Shifts</p>
             <p className="text-xs text-amber-700">Unassigned</p>
           </TableCell>
@@ -288,32 +306,23 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
             );
           })}
         </TableRow>
-      )}
-
-        {filteredStaffResources.length === 0 && !showOpenShifts && (
-          <TableRow>
-              <TableCell colSpan={8} className="h-48 text-center text-muted-foreground">
-                  No staff members match the current filter.
-              </TableCell>
-          </TableRow>
-      )}
     </TableBody>
   );
 
   const renderClientView = () => (
     <TableBody>
-      {mockClients.map((client) => {
+      {(filteredResources as Client[]).map((client) => {
         const clientShifts = propertyFilteredShifts.filter(s => s.clientId === client.id);
         return (
           <TableRow key={client.id} className="h-full">
-            <TableCell className="font-medium border-r p-2 align-top sticky left-0 bg-background z-10">
+            <TableCell className="font-medium border-r p-2 align-top sticky left-0 bg-background z-10 w-[200px] min-w-[200px]">
               <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
                       <AvatarImage src={client.avatarUrl} alt={client.name} />
                       <AvatarFallback>{client.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
-                  <p className="font-semibold">{client.name}</p>
+                  <p className="font-semibold truncate">{client.name}</p>
                   <p className="text-xs text-muted-foreground">{mockProperties.find(p => p.id === client.propertyId)?.name}</p>
                   </div>
               </div>
@@ -365,57 +374,98 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
     <>
       <Card>
         <CardHeader>
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div>
-                <CardTitle>Weekly Roster</CardTitle>
-                <CardDescription>View and manage the upcoming shift schedule for the week.</CardDescription>
-                </div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <Select value={filters.propertyId} onValueChange={handleFilterChange('propertyId')}>
-                        <SelectTrigger className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Filter by location" />
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+              <div>
+                <CardTitle>Roster Schedule</CardTitle>
+                <CardDescription>{dateRangeText}</CardDescription>
+              </div>
+              <div className="flex items-center gap-2">
+                 <Button variant="outline" className="w-full sm:w-auto" disabled>
+                    <Printer className="mr-2 h-4 w-4" /> Print
+                 </Button>
+                 <Button onClick={handleCreateClick} className="w-full sm:w-auto">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Create Shift
+                 </Button>
+              </div>
+            </div>
+
+            <div className="p-2 rounded-lg border bg-muted/50">
+              <div className="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-2">
+                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <Tabs value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+                        <TabsList className="grid w-full grid-cols-2">
+                            <TabsTrigger value="staff">Staff View</TabsTrigger>
+                            <TabsTrigger value="client">Client View</TabsTrigger>
+                        </TabsList>
+                    </Tabs>
+                     <div className="relative sm:w-64">
+                       <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                       <Input
+                          type="search"
+                          placeholder="Search by name..."
+                          className="pl-9 h-9"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                     <Select value={propertyFilter} onValueChange={setPropertyFilter}>
+                        <SelectTrigger className="w-full sm:w-[180px] h-9">
+                          <SelectValue placeholder="Filter by location" />
                         </SelectTrigger>
                         <SelectContent>
-                        <SelectItem value="all">All Locations</SelectItem>
-                        {mockProperties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                          <SelectItem value="all">All Locations</SelectItem>
+                          {mockProperties.map(p => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                         </SelectContent>
                     </Select>
-
-                    {viewMode === 'staff' && (
-                       <Select value={filters.staffId} onValueChange={handleFilterChange('staffId')}>
-                        <SelectTrigger className="w-full sm:w-[180px]">
-                        <SelectValue placeholder="Filter by staff" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="all">All Staff</SelectItem>
-                            <SelectItem value="open">Open Shifts Only</SelectItem>
-                            {mockStaff.map(s => <SelectItem key={s.id} value={s.id}>{s.name}</SelectItem>)}
-                        </SelectContent>
-                    </Select>
-                    )}
-
-                    <Button onClick={handleCreateClick} className="w-full sm:w-auto">
-                        <PlusCircle className="mr-2 h-4 w-4" />
-                        Create Shift
+                     <Button variant="outline" className="h-9" disabled>
+                      <Filter className="mr-2 h-4 w-4" /> Filters
                     </Button>
                 </div>
+                
+                 <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                    <div className="flex items-center rounded-md border bg-background p-0.5">
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDateNavigate(-(viewPeriod*2))}>
+                            <ChevronsLeft className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDateNavigate(-viewPeriod)}>
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" className="h-8 px-3" onClick={handleGoToToday}>Today</Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDateNavigate(viewPeriod)}>
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => handleDateNavigate(viewPeriod*2)}>
+                            <ChevronsRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                     <Select value={String(viewPeriod)} onValueChange={(v) => setViewPeriod(Number(v) as 7 | 14)}>
+                        <SelectTrigger className="w-full sm:w-[120px] h-9">
+                          <SelectValue placeholder="Period" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="7">Week</SelectItem>
+                          <SelectItem value="14">Fortnight</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                        <RefreshCw className="h-4 w-4" />
+                    </Button>
+                 </div>
+              </div>
             </div>
-            <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)} className="mt-4">
-                <TabsList>
-                    <TabsTrigger value="staff">Staff View</TabsTrigger>
-                    <TabsTrigger value="client">Client View</TabsTrigger>
-                </TabsList>
-            </Tabs>
+          </div>
         </CardHeader>
         <CardContent>
           {daysOfWeek.length > 0 ? (
             <div className="overflow-x-auto border rounded-lg">
-              <Table className="min-w-full">
+              <Table className="min-w-full table-fixed">
                 <TableHeader>
-                  <TableRow className="bg-muted/50">
-                    <TableHead className="w-[200px] sticky left-0 bg-muted/50 z-10">{viewMode === 'staff' ? 'Staff' : 'Client'}</TableHead>
+                  <TableRow className="bg-muted/50 hover:bg-muted/50">
+                    <TableHead className="w-[200px] min-w-[200px] sticky left-0 bg-muted/50 z-20">{viewMode === 'staff' ? 'Staff' : 'Client'}</TableHead>
                     {daysOfWeek.map((day) => (
-                      <TableHead key={day.toISOString()} className="text-center border-l min-w-[150px]">
+                      <TableHead key={day.toISOString()} className="text-center border-l">
                         <div className="font-semibold">{format(day, 'EEE')}</div>
                         <div className="text-muted-foreground text-sm">{format(day, 'd MMM')}</div>
                       </TableHead>
@@ -444,3 +494,5 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
     </>
   );
 }
+
+    
