@@ -1,5 +1,5 @@
 
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, PayrollRun, ClientBudget } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, PayrollRun, ClientBudget, ClientTransaction } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
@@ -30,6 +30,9 @@ import type { LucideIcon } from 'lucide-react';
 
 
 const now = new Date();
+const midnight = new Date();
+midnight.setHours(23, 59, 59, 999);
+
 
 export const mockProperties: Property[] = [
   { id: 'prop-1', name: 'Oakwood Residence', address: '123 Oak Ave, Springfield', imageUrl: 'https://placehold.co/600x400.png', status: 'Active', "data-ai-hint": "modern house" },
@@ -110,7 +113,10 @@ export const mockShifts: Shift[] = [
   { id: 'shift-5', title: 'Yesterday Evening Shift', start: subHours(subDays(now, 1), 4), end: subDays(now, 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Completed' },
 
   // A shift for Jane Doe to test clock-in/out
-  { id: 'shift-6', title: 'Morning Shift', start: new Date(new Date().setHours(9, 0, 0, 0)), end: new Date(new Date().setHours(17, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' }
+  { id: 'shift-6', title: 'Morning Shift', start: new Date(new Date().setHours(9, 0, 0, 0)), end: new Date(new Date().setHours(17, 0, 0, 0)), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
+
+  // New shift for admin user
+  { id: 'shift-admin-cover', title: 'Evening Admin Cover', start: now, end: midnight, staffId: 'staff-admin', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned' },
 ];
 
 export const mockComplianceItems: ComplianceItem[] = [
@@ -393,4 +399,15 @@ export const mockClientBudgets: ClientBudget[] = [
         capitalBudget: 5000,
         capitalSpent: 0,
     }
-]
+];
+
+export const mockTransactions: ClientTransaction[] = [
+    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000 },
+    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75 },
+    { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50 },
+    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200 },
+    { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95 },
+    { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500 },
+    { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75 },
+    { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120 },
+];

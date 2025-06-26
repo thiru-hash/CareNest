@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { getCurrentUser } from "@/lib/auth";
+import { ClientExpenseManager } from "@/components/finance/ClientExpenseManager";
 
 // Placeholder component for rendering forms based on their configuration
 function DynamicForm({ formId }: { formId: string }) {
@@ -108,7 +109,11 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
 
                 {sectionTabs.map(tab => (
                     <TabsContent key={tab.id} value={tab.id} className="mt-4">
-                       <DynamicForm formId={tab.formId} />
+                       {tab.id === 'tab-pws-9' ? (
+                        <ClientExpenseManager clientId={client.id} />
+                       ) : (
+                        <DynamicForm formId={tab.formId} />
+                       )}
                     </TabsContent>
                 ))}
              </Tabs>

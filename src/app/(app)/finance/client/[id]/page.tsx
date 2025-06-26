@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
+import { ClientExpenseManager } from "@/components/finance/ClientExpenseManager";
 
 function BudgetCard({ title, icon: Icon, budget, spent }: { title: string, icon: React.ElementType, budget: number, spent: number }) {
     const remaining = budget - spent;
@@ -73,7 +74,7 @@ export default async function ClientFinancePage({ params }: { params: { id: stri
             <TabsList>
                 <TabsTrigger value="budgets">NDIS Budgets</TabsTrigger>
                 <TabsTrigger value="bookings" disabled>Service Bookings</TabsTrigger>
-                <TabsTrigger value="expenses" disabled>Expenses Log</TabsTrigger>
+                <TabsTrigger value="expenses">Expenses Log</TabsTrigger>
                 <TabsTrigger value="claiming" disabled>Claiming</TabsTrigger>
             </TabsList>
             <TabsContent value="budgets" className="mt-4">
@@ -97,13 +98,8 @@ export default async function ClientFinancePage({ params }: { params: { id: stri
                     </CardHeader>
                 </Card>
             </TabsContent>
-            <TabsContent value="expenses">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Expenses Log</CardTitle>
-                        <CardDescription>Feature coming soon.</CardDescription>
-                    </CardHeader>
-                </Card>
+            <TabsContent value="expenses" className="mt-4">
+               <ClientExpenseManager clientId={client.id} />
             </TabsContent>
              <TabsContent value="claiming">
                 <Card>
@@ -117,4 +113,3 @@ export default async function ClientFinancePage({ params }: { params: { id: stri
     </div>
   );
 }
-

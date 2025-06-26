@@ -167,3 +167,12 @@ export interface ClientBudget {
     capitalBudget: number;
     capitalSpent: number;
 }
+
+export interface ClientTransaction {
+    id: string;
+    clientId: string;
+    date: Date;
+    description: string;
+    type: 'Expense' | 'Payment';
+    amount: number;
+}
