@@ -28,14 +28,19 @@ import {
   Printer,
   FileImport,
   RefreshCw,
+  ClipboardPaste,
+  Send,
+  CalendarX2,
 } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Shift, Staff, Client } from "@/lib/types";
+import type { Shift, Staff, Client, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 
 type ViewMode = 'staff' | 'client';
+
+const privilegedRoles: UserRole[] = ['Admin', 'Roster Team'];
 
 export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   const { toast } = useToast();
@@ -50,14 +55,21 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [propertyFilter, setPropertyFilter] = useState("all");
 
+  const [isClient, setIsClient] = useState(false);
   useEffect(() => {
-    const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday start
-    const weekDays = Array.from({ length: viewPeriod }, (_, i) => {
-      const day = addDays(start, i);
-      return day;
-    });
-    setDaysOfWeek(weekDays);
-  }, [currentDate, viewPeriod]);
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (isClient) {
+        const start = startOfWeek(currentDate, { weekStartsOn: 1 }); // Monday start
+        const weekDays = Array.from({ length: viewPeriod }, (_, i) => {
+        const day = addDays(start, i);
+        return day;
+        });
+        setDaysOfWeek(weekDays);
+    }
+  }, [currentDate, viewPeriod, isClient]);
   
   const handleDateNavigate = (days: number) => {
     setCurrentDate(current => addDays(current, days));
@@ -66,9 +78,11 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   const handleGoToToday = () => {
     setCurrentDate(new Date());
   };
+  
+  const canPerformAction = () => privilegedRoles.includes(currentUser.role);
 
   const handleShiftClick = (shift: Shift) => {
-    if (currentUser.role === 'Admin' || currentUser.role === 'Roster Team') {
+    if (canPerformAction()) {
       setEditingShift(shift);
       setIsDialogOpen(true);
     } else {
@@ -81,7 +95,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   };
   
   const handleCreateClick = () => {
-    if (currentUser.role === 'Admin' || currentUser.role === 'Roster Team') {
+    if (canPerformAction()) {
         setEditingShift(null);
         setIsDialogOpen(true);
     } else {
@@ -94,7 +108,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   };
 
   const handleCellCreateClick = (resource: Staff | Client, day: Date) => {
-    if (currentUser.role !== 'Admin' && currentUser.role !== 'Roster Team') {
+    if (!canPerformAction()) {
       toast({
         variant: 'destructive',
         title: "Permission Denied",
@@ -125,7 +139,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   };
   
   const handleOpenShiftCellClick = (day: Date) => {
-    if (currentUser.role !== 'Admin' && currentUser.role !== 'Roster Team') {
+     if (!canPerformAction()) {
       toast({
         variant: 'destructive',
         title: 'Permission Denied',
@@ -222,7 +236,6 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
             </TableCell>
             {daysOfWeek.map((day) => {
               const dayShifts = staffShifts.filter(shift => format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
-              const canCreate = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
               return (
                 <TableCell key={day.toISOString()} className="align-top p-1 border-l h-24 group/cell relative">
                   {dayShifts.length > 0 ? (
@@ -230,9 +243,8 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                       {dayShifts.map(shift => {
                         const property = mockProperties.find(p => p.id === shift.propertyId);
                         const client = mockClients.find(c => c.id === shift.clientId);
-                        const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
                         return (
-                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
+                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canPerformAction() ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
                             <p className="font-bold text-primary truncate">{shift.title}</p>
                             <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
                             {client && <p className="truncate mt-1 text-purple-600">{client.name}</p>}
@@ -242,7 +254,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                       })}
                     </div>
                   ) : (
-                      canCreate && (
+                      canPerformAction() && (
                           <div className="flex items-center justify-center h-full">
                               <Button
                                   variant="ghost"
@@ -269,16 +281,14 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
           </TableCell>
           {daysOfWeek.map((day) => {
             const openShifts = propertyFilteredShifts.filter(shift => !shift.staffId && format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
-            const canCreate = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
             return (
               <TableCell key={day.toISOString()} className="align-top p-1 border-l bg-amber-50/50 h-24 group/cell relative">
                   {openShifts.length > 0 ? (
                   <div className="space-y-1">
                       {openShifts.map(shift => {
                         const property = mockProperties.find(p => p.id === shift.propertyId);
-                        const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
                         return (
-                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-destructive/10 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-destructive/20 hover:border-destructive/50' : 'cursor-default'}`}>
+                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-destructive/10 border border-transparent text-xs ${canPerformAction() ? 'cursor-pointer hover:bg-destructive/20 hover:border-destructive/50' : 'cursor-default'}`}>
                             <p className="font-bold text-destructive truncate">{shift.title}</p>
                             <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
                             <p className="truncate mt-1">{property?.name}</p>
@@ -288,7 +298,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                       })}
                     </div>
                   ) : (
-                      canCreate && (
+                      canPerformAction() && (
                           <div className="flex items-center justify-center h-full">
                               <Button
                                   variant="ghost"
@@ -329,16 +339,14 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
             </TableCell>
             {daysOfWeek.map((day) => {
               const dayShifts = clientShifts.filter(shift => format(shift.start, 'yyyy-MM-dd') === format(day, 'yyyy-MM-dd'));
-              const canCreate = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
               return (
                 <TableCell key={day.toISOString()} className="align-top p-1 border-l h-24 group/cell relative">
                   {dayShifts.length > 0 ? (
                     <div className="space-y-1">
                       {dayShifts.map(shift => {
                         const staff = mockStaff.find(s => s.id === shift.staffId);
-                        const canEdit = currentUser.role === 'Admin' || currentUser.role === 'Roster Team';
                         return (
-                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canEdit ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
+                          <div key={shift.id} onClick={() => handleShiftClick(shift)} className={`p-1.5 rounded-md bg-accent/80 border border-transparent text-xs ${canPerformAction() ? 'cursor-pointer hover:bg-accent hover:border-primary/50' : 'cursor-default'}`}>
                             <p className="font-bold text-primary truncate">{shift.title}</p>
                             <p className="text-muted-foreground">{format(shift.start, 'p')} - {format(shift.end, 'p')}</p>
                             {staff ? <p className="truncate mt-1 text-blue-600">{staff.name}</p> : <Badge variant="destructive">Open</Badge>}
@@ -347,7 +355,7 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                       })}
                     </div>
                   ) : (
-                      canCreate && (
+                      canPerformAction() && (
                           <div className="flex items-center justify-center h-full">
                               <Button
                                   variant="ghost"
@@ -380,15 +388,19 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                 <CardTitle>Roster Schedule</CardTitle>
                 <CardDescription>{dateRangeText}</CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                 <Button variant="outline" className="w-full sm:w-auto" disabled>
-                    <Printer className="mr-2 h-4 w-4" /> Print
-                 </Button>
-                 <Button onClick={handleCreateClick} className="w-full sm:w-auto">
-                    <PlusCircle className="mr-2 h-4 w-4" />
-                    Create Shift
-                 </Button>
-              </div>
+               {canPerformAction() && (
+                 <div className="flex items-center gap-2">
+                    <Button variant="outline" className="w-full sm:w-auto" disabled>
+                      <ClipboardPaste className="mr-2 h-4 w-4" /> Apply Template
+                    </Button>
+                    <Button variant="outline" className="w-full sm:w-auto" disabled>
+                      <Send className="mr-2 h-4 w-4" /> Publish
+                    </Button>
+                    <Button onClick={handleCreateClick} className="w-full sm:w-auto">
+                      <PlusCircle className="mr-2 h-4 w-4" /> Create Shift
+                    </Button>
+                 </div>
+               )}
             </div>
 
             <div className="p-2 rounded-lg border bg-muted/50">
@@ -449,16 +461,31 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                           <SelectItem value="14">Fortnight</SelectItem>
                         </SelectContent>
                     </Select>
-                    <Button variant="outline" size="icon" className="h-9 w-9" disabled>
-                        <RefreshCw className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-1">
+                        <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                            <Printer className="h-4 w-4" />
+                        </Button>
+                         <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                            <FileImport className="h-4 w-4" />
+                        </Button>
+                        <Button variant="outline" size="icon" className="h-9 w-9" disabled>
+                            <CalendarX2 className="h-4 w-4" />
+                        </Button>
+                    </div>
                  </div>
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          {daysOfWeek.length > 0 ? (
+          {!isClient || daysOfWeek.length === 0 ? (
+             <div className="text-center text-muted-foreground p-8">
+              Loading calendar...
+            </div>
+          ) : (
             <div className="overflow-x-auto border rounded-lg">
               <Table className="min-w-full table-fixed">
                 <TableHeader>
@@ -475,10 +502,6 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
                 {viewMode === 'staff' ? renderStaffView() : renderClientView()}
               </Table>
             </div>
-          ) : (
-            <div className="text-center text-muted-foreground p-8">
-              Loading calendar...
-            </div>
           )}
         </CardContent>
       </Card>
@@ -494,5 +517,3 @@ export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
     </>
   );
 }
-
-    
