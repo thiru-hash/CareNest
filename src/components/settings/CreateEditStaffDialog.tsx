@@ -33,6 +33,8 @@ export function CreateEditStaffDialog({ isOpen, setIsOpen, staff, onSave, allGro
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<UserRole>("Support Worker");
   
+  const [step, setStep] = useState(1);
+
   const [selectedGroups, setSelectedGroups] = useState<DualListItem[]>([]);
   const [selectedProperties, setSelectedProperties] = useState<DualListItem[]>([]);
 
@@ -49,6 +51,7 @@ export function CreateEditStaffDialog({ isOpen, setIsOpen, staff, onSave, allGro
 
   useEffect(() => {
     if (isOpen) {
+      setStep(1); // Reset to the first step when opening the dialog
       if (staff) { // Edit mode
         setName(staff.name);
         setEmail(staff.email);
@@ -75,10 +78,33 @@ export function CreateEditStaffDialog({ isOpen, setIsOpen, staff, onSave, allGro
     }
   }, [staff, isOpen, allGroupItems, allPropertyItems]);
 
+  const handleNext = () => {
+    if (step === 1) {
+      if (!name || !email || !role) {
+        alert("Please fill in all user details.");
+        return;
+      }
+    }
+    setStep(prev => prev + 1);
+  };
+
+  const handleBack = () => {
+    setStep(prev => prev - 1);
+  };
+
+  // Determine which tab is active based on the step
+  const activeTab = step === 1 ? "details" : step === 2 ? "groups" : "areas";
+
   const handleSave = () => {
     if (!name || !email) {
       alert("User Name and Email are required.");
+      setStep(1); // Go back to details step if validation fails
       return;
+    }
+    if (step < 3 && !isEditMode) {
+       // In create mode, prevent saving until the last step
+       alert("Please complete all steps.");
+       return;
     }
     const groupIds = selectedGroups.map(g => g.id);
     const propertyIds = selectedProperties.map(p => p.id);

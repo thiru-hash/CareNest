@@ -35,6 +35,7 @@ export interface User {
   email: string;
   avatarUrl: string;
   role: UserRole;
+  staffId?: string;
 }
 
 export interface Group {
@@ -76,7 +77,7 @@ export interface Staff {
     address: string;
   };
   employmentDetails?: {
-    startDate: Date;
+    startDate?: Date;
     employmentType: 'Full-time' | 'Part-time' | 'Casual';
     payRate: number; // for Finance/Admin
   };
