@@ -16,8 +16,9 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { LogOut, Settings, User } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import type { UserRole, Staff } from "@/lib/types";
+import type { UserRole, Staff, Notice } from "@/lib/types";
 import { logout } from "@/app/actions";
+import { NoticeDropdown } from "./NoticeDropdown";
 
 const adminRoles: UserRole[] = ["System Admin"];
 
@@ -31,7 +32,7 @@ const pageTitles: { [key: string]: string } = {
   "/settings": "System Settings",
 };
 
-export function Header({ user }: { user: Staff }) {
+export function Header({ user, notices }: { user: Staff, notices: Notice[] }) {
   const { isMobile } = useSidebar();
   const pathname = usePathname();
   
@@ -46,7 +47,8 @@ export function Header({ user }: { user: Staff }) {
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
       {isMobile && <SidebarTrigger />}
       <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
-      <div className="ml-auto flex items-center gap-4">
+      <div className="ml-auto flex items-center gap-2">
+        <NoticeDropdown notices={notices} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="icon" className="rounded-full">
