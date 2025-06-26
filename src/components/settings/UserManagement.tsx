@@ -9,7 +9,7 @@ import { mockStaff, mockGroups, mockProperties } from "@/lib/data";
 import { Button } from "../ui/button";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 import type { Staff, Group, Property } from "@/lib/types";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "../ui/dropdown-menu";
 import { CreateEditStaffDialog } from "./CreateEditStaffDialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
@@ -124,7 +124,6 @@ export function UserManagement() {
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => handleEditUser(user)}>Edit User</DropdownMenuItem>
-                        <DropdownMenuItem disabled>Change Role</DropdownMenuItem>
                         <DropdownMenuItem 
                           className="text-destructive" 
                           onSelect={() => handleDeleteTrigger(user)}
