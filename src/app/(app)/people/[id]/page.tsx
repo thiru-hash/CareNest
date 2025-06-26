@@ -101,11 +101,15 @@ export default async function ClientProfilePage({ params }: { params: { id: stri
 
         {sectionTabs.length > 0 && defaultTab ? (
              <Tabs defaultValue={defaultTab.id} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {sectionTabs.map(tab => (
-                        <TabsTrigger key={tab.id} value={tab.id}>{tab.name}</TabsTrigger>
-                    ))}
-                </TabsList>
+                <div className="overflow-x-auto pb-1">
+                    <TabsList>
+                        {sectionTabs.map(tab => (
+                            <TabsTrigger key={tab.id} value={tab.id} className="whitespace-nowrap">
+                                {tab.name}
+                            </TabsTrigger>
+                        ))}
+                    </TabsList>
+                </div>
 
                 {sectionTabs.map(tab => (
                     <TabsContent key={tab.id} value={tab.id} className="mt-4">

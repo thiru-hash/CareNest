@@ -402,10 +402,10 @@ export const mockClientBudgets: ClientBudget[] = [
 ];
 
 export const mockTransactions: ClientTransaction[] = [
-    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000 },
-    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75 },
+    { id: 'txn-1', clientId: 'client-1', date: subDays(now, 15), description: 'NDIS Payment Received', type: 'Payment', amount: 5000, attachmentName: 'NDIS_Statement_Oct.pdf' },
+    { id: 'txn-2', clientId: 'client-1', date: subDays(now, 14), description: 'Woolworths Groceries', type: 'Expense', amount: 150.75, attachmentName: 'woolies_receipt_1410.jpg' },
     { id: 'txn-3', clientId: 'client-1', date: subDays(now, 12), description: 'Transport to Appointment', type: 'Expense', amount: 45.50 },
-    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200 },
+    { id: 'txn-4', clientId: 'client-1', date: subDays(now, 10), description: 'Equipment Purchase: Wheelchair', type: 'Expense', amount: 1200, attachmentName: 'wheelchair_invoice.pdf' },
     { id: 'txn-5', clientId: 'client-1', date: subDays(now, 5), description: 'Chemist Warehouse', type: 'Expense', amount: 88.95 },
     { id: 'txn-6', clientId: 'client-2', date: subDays(now, 20), description: 'NDIS Payment Received', type: 'Payment', amount: 7500 },
     { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75 },

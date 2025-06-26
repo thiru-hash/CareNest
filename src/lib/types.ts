@@ -175,4 +175,5 @@ export interface ClientTransaction {
     description: string;
     type: 'Expense' | 'Payment';
     amount: number;
+    attachmentName?: string;
 }
