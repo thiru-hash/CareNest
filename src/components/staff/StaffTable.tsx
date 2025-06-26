@@ -13,13 +13,10 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal, UserPlus } from "lucide-react";
 import { mockStaff } from "@/lib/data";
-import type { Staff, User } from "@/lib/types";
+import { getCurrentUser } from "@/lib/auth";
 
-// In a real app, this would come from an authentication context/session.
-// To test the non-admin view, you could change this to a staff member, e.g., `mockStaff[0]`.
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
-
-export function StaffTable() {
+export async function StaffTable() {
+  const currentUser = await getCurrentUser();
 
   const staffToDisplay = currentUser.role === 'Admin'
     ? mockStaff

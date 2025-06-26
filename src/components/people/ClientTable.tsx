@@ -13,15 +13,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight } from "lucide-react";
-import { mockProperties, mockStaff } from "@/lib/data";
+import { mockProperties } from "@/lib/data";
 import { getAccessibleClients } from "@/lib/access-control";
-import { User, Staff } from "@/lib/types";
-
-// In a real app, this would come from an authentication context/session
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
+import { getCurrentUser } from "@/lib/auth";
 
 export async function ClientTable() {
-  const accessibleClients = await getAccessibleClients(currentUser.id);
+  const currentUser = await getCurrentUser();
+  const accessibleClients = await getAccessibleClients(currentUser);
 
   return (
     <Card>

@@ -12,16 +12,14 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Waves, MoreHorizontal } from "lucide-react";
-import { mockSections, mockStaff } from "@/lib/data";
+import { mockSections } from "@/lib/data";
 import { iconMap } from "@/lib/icon-map";
-import { UserRole } from "@/lib/types";
+import type { UserRole, Staff } from "@/lib/types";
 import { useMemo } from "react";
-
-const user = mockStaff.find(s => s.id === 'staff-admin')!;
 
 const adminRoles: UserRole[] = ["Admin"];
 
-export function SidebarNav() {
+export function SidebarNav({ user }: { user: Staff }) {
   const pathname = usePathname();
   
   const userNavItems = useMemo(() => {

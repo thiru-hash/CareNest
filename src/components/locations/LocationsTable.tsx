@@ -12,15 +12,13 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
-import { mockProperties, mockStaff } from "@/lib/data";
+import { mockProperties } from "@/lib/data";
 import { getAccessiblePropertyIds } from "@/lib/access-control";
-import type { User, Staff } from "@/lib/types";
-
-// In a real app, this would come from an authentication context/session
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
+import { getCurrentUser } from "@/lib/auth";
 
 export async function LocationsTable() {
-  const accessiblePropertyIds = await getAccessiblePropertyIds(currentUser.id);
+  const currentUser = await getCurrentUser();
+  const accessiblePropertyIds = await getAccessiblePropertyIds(currentUser);
   const accessibleProperties = mockProperties.filter(p => accessiblePropertyIds.includes(p.id));
 
   return (

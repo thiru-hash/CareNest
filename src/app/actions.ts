@@ -1,9 +1,22 @@
 "use server";
 
-// This file is reserved for server actions.
-// The previous summarizeLogsAction has been removed as the LogSummary component
-// is no longer used on the client profile page.
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+
 export type FormState = {
     message: string;
     error?: boolean;
+}
+
+export async function switchUser(userId: string) {
+    cookies().set('currentUser_id', userId, {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 7 // 1 week
+    });
+    redirect('/dashboard');
+}
+
+export async function logout() {
+    cookies().delete('currentUser_id');
+    redirect('/');
 }

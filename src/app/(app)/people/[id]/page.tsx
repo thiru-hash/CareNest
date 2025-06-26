@@ -1,6 +1,6 @@
 
 import { notFound } from "next/navigation";
-import { mockClients, mockProperties, mockStaff, mockSections, mockForms } from "@/lib/data";
+import { mockClients, mockProperties, mockSections, mockForms } from "@/lib/data";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Building2, User } from "lucide-react";
@@ -9,9 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-
-// In a real app, this would come from an authentication context/session
-const currentUser = mockStaff.find(s => s.id === 'staff-admin')!;
+import { getCurrentUser } from "@/lib/auth";
 
 // Placeholder component for rendering forms based on their configuration
 function DynamicForm({ formId }: { formId: string }) {
@@ -53,7 +51,8 @@ function DynamicForm({ formId }: { formId: string }) {
 }
 
 export default async function ClientProfilePage({ params }: { params: { id: string } }) {
-  const hasAccess = await canAccessClient(currentUser.id, params.id);
+  const currentUser = await getCurrentUser();
+  const hasAccess = await canAccessClient(currentUser, params.id);
   if (!hasAccess) {
     notFound();
   }

@@ -41,7 +41,7 @@ import { mockStaff, mockProperties, mockClients } from "@/lib/data";
 import { Calendar as CalendarIcon, Trash2 } from "lucide-react";
 import { format, addDays } from "date-fns";
 import { cn } from "@/lib/utils";
-import type { Shift } from "@/lib/types";
+import type { Shift, Staff } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Switch } from "@/components/ui/switch";
 
@@ -52,11 +52,10 @@ interface CreateShiftDialogProps {
   onSave: (shifts: Shift[]) => void;
   onDelete: (shiftId: string) => void;
   allShifts: Shift[];
+  currentUser: Staff;
 }
 
-const currentUser = mockStaff.find(s => s.id === 'staff-admin')!;
-
-export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete, allShifts }: CreateShiftDialogProps) {
+export function CreateShiftDialog({ isOpen, setIsOpen, shift, onSave, onDelete, allShifts, currentUser }: CreateShiftDialogProps) {
   const { toast } = useToast();
   const [startDateTime, setStartDateTime] = useState<Date | undefined>();
   const [endDateTime, setEndDateTime] = useState<Date | undefined>();

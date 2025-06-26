@@ -20,14 +20,12 @@ import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Shift, User, Staff, Client } from "@/lib/types";
+import type { Shift, Staff, Client } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
-
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
 
 type ViewMode = 'staff' | 'client';
 
-export function ScheduleCalendar() {
+export function ScheduleCalendar({ currentUser }: { currentUser: Staff }) {
   const { toast } = useToast();
   const [shifts, setShifts] = useState<Shift[]>(mockShifts);
   const [filters, setFilters] = useState({ staffId: 'all', propertyId: 'all' });
@@ -427,6 +425,7 @@ export function ScheduleCalendar() {
         onSave={handleSaveShift}
         onDelete={handleDeleteShift}
         allShifts={shifts}
+        currentUser={currentUser}
       />
     </>
   );

@@ -1,12 +1,18 @@
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Waves } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
+import { switchUser } from '@/app/actions';
+import { mockStaff } from '@/lib/data';
 
 export default function LoginPage() {
+  const adminUser = mockStaff.find(u => u.role === 'Admin');
+  const workerUser = mockStaff.find(u => u.role === 'Support Worker');
+
+  if (!adminUser || !workerUser) {
+    return <div>Error: Test users not found.</div>;
+  }
+  
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-sm mx-auto">
@@ -17,35 +23,23 @@ export default function LoginPage() {
             </div>
           </div>
           <CardTitle className="text-2xl font-bold">CareNest Companion</CardTitle>
-          <CardDescription>Welcome back! Please sign in to your account.</CardDescription>
+          <CardDescription>Select a role to log in.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="m@example.com" required />
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="#" className="ml-auto inline-block text-sm underline">
-                  Forgot your password?
-                </Link>
-              </div>
-              <Input id="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full" asChild>
-              <Link href="/dashboard">Login</Link>
+          <form className="space-y-4">
+            <Button type="submit" className="w-full" formAction={switchUser.bind(null, adminUser.id)}>
+                Login as Admin
             </Button>
-          </div>
+             <Button type="submit" variant="secondary" className="w-full" formAction={switchUser.bind(null, workerUser.id)}>
+                Login as Support Worker
+            </Button>
+          </form>
         </CardContent>
         <CardFooter className="flex-col items-start text-sm text-muted-foreground pt-4">
             <Separator className="mb-4" />
-            <p className="font-semibold text-foreground mb-2">Test Credentials</p>
-            <p><span className="font-medium">Admin:</span> admin@carenest.com</p>
-            <p><span className="font-medium">Support Worker:</span> jane.d@carenest.com</p>
-            <p className="mt-2 text-xs">(Password: any)</p>
-            <p className="mt-2 text-xs italic">Note: Login is simulated. To switch users, ask me to log you in as the desired role.</p>
+            <p className="text-xs italic">
+              Note: Login is simulated using cookies. This allows you to test the application from different user perspectives.
+            </p>
         </CardFooter>
       </Card>
     </div>

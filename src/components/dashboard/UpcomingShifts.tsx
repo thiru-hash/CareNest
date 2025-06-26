@@ -9,15 +9,12 @@ import { Button } from "@/components/ui/button";
 import { mockShifts, mockStaff, mockProperties } from "@/lib/data";
 import { format, isFuture, isPast } from "date-fns";
 import { Clock, MapPin, Send } from "lucide-react";
-import type { User, Staff, Shift, UserRole } from "@/lib/types";
+import type { Staff, Shift, UserRole } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "../ui/textarea";
 import { Label } from "../ui/label";
 
-// In a real app, this would come from an authentication context/session.
-const currentUser: User | Staff = mockStaff.find(s => s.id === 'staff-admin')!;
-
-export function UpcomingShifts() {
+export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
   const { toast } = useToast();
   const [shiftsToShow, setShiftsToShow] = useState<Shift[]>([]);
   const [cardTitle, setCardTitle] = useState("Upcoming Shifts");
@@ -50,7 +47,7 @@ export function UpcomingShifts() {
     setCardDescription(isPrivilegedUser 
       ? 'A view of all upcoming shifts across the organisation.' 
       : 'Your assigned shifts and available open shifts you can pick up.');
-  }, []);
+  }, [currentUser]);
 
   const handleClockIn = (shiftId: string) => {
     setClockedInShiftId(shiftId);

@@ -16,10 +16,8 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { LogOut, Settings, User } from "lucide-react";
 import { useSidebar } from "@/components/ui/sidebar";
 import { usePathname } from "next/navigation";
-import { mockStaff } from "@/lib/data";
-import type { UserRole } from "@/lib/types";
-
-const user = mockStaff.find(s => s.id === 'staff-admin')!;
+import type { UserRole, Staff } from "@/lib/types";
+import { logout } from "@/app/actions";
 
 const adminRoles: UserRole[] = ["Admin"];
 
@@ -33,7 +31,7 @@ const pageTitles: { [key: string]: string } = {
   "/settings": "System Settings",
 };
 
-export function Header() {
+export function Header({ user }: { user: Staff }) {
   const { isMobile } = useSidebar();
   const pathname = usePathname();
   
@@ -76,12 +74,14 @@ export function Header() {
                 </DropdownMenuItem>
             )}
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/">
-                <LogOut className="mr-2" />
-                <span>Logout</span>
-              </Link>
-            </DropdownMenuItem>
+            <form action={logout}>
+              <DropdownMenuItem asChild>
+                <button type="submit" className="w-full">
+                  <LogOut className="mr-2" />
+                  <span>Logout</span>
+                </button>
+              </DropdownMenuItem>
+            </form>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
