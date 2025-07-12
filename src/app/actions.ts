@@ -9,7 +9,8 @@ export type FormState = {
 }
 
 export async function switchUser(userId: string) {
-    cookies().set('currentUser_id', userId, {
+    const cookieStore = await cookies();
+    cookieStore.set('currentUser_id', userId, {
         path: '/',
         maxAge: 60 * 60 * 24 * 7 // 1 week
     });
@@ -17,6 +18,7 @@ export async function switchUser(userId: string) {
 }
 
 export async function logout() {
-    cookies().delete('currentUser_id');
+    const cookieStore = await cookies();
+    cookieStore.delete('currentUser_id');
     redirect('/');
 }

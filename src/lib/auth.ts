@@ -15,7 +15,8 @@ const adminUser = mockStaff.find(s => s.role === 'System Admin')!;
  * @returns The current user object.
  */
 export async function getCurrentUser(): Promise<Staff> {
-  const userId = cookies().get('currentUser_id')?.value;
+  const cookieStore = await cookies();
+  const userId = cookieStore.get('currentUser_id')?.value;
   
   if (!userId) {
     return adminUser; // Default to admin if no user is logged in
