@@ -4,74 +4,130 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 10% 3.9%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 10% 3.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
-    --radius: 0.5rem;
-    --chart-1: 220.9 39.3% 11%;
-    --chart-2: 166.2 83.2% 53.3%;
-    --chart-3: 351.2 83.2% 53.3%;
-    --chart-4: 28.2 83.2% 53.3%;
-    --chart-5: 281.2 83.2% 53.3%;
-    --sidebar-background: 265 30% 97%;
-    --sidebar-foreground: 240 10% 3.9%;
-    --sidebar-primary: 262 83% 58%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 265 50% 93%;
-    --sidebar-accent-foreground: 240 10% 3.9%;
-    --sidebar-border: 265 20% 90%;
-    --sidebar-ring: 262 83% 58%;
+    /* ===== HEALTHCARE-FOCUSED COLOR PALETTE ===== */
+    
+    /* Primary Colors - Natural Green for Health & Wellness */
+    --primary: 142 76% 36%;           /* #34D399 - Natural Green */
+    --primary-foreground: 210 40% 98%; /* #F8FAFC - Clean White */
+    
+    /* Secondary Colors - Calm Beige for Comfort */
+    --secondary: 60 30% 96%;          /* #F5F5DC - Calm Beige */
+    --secondary-foreground: 220 9% 46%; /* #64748B - Muted Text */
+    
+    /* Accent Colors - Aqua Blue for Purity */
+    --accent: 217 91% 60%;            /* #60A5FA - Aqua Blue */
+    --accent-foreground: 210 40% 98%;  /* #F8FAFC - Clean White */
+    
+    /* ===== SURFACE COLORS ===== */
+    --background: 0 0% 100%;           /* #FFFFFF - Pure White */
+    --foreground: 220 9% 46%;          /* #64748B - Primary Text */
+    --card: 0 0% 100%;                 /* #FFFFFF - Card Background */
+    --card-foreground: 220 9% 46%;     /* #64748B - Card Text */
+    --popover: 0 0% 100%;              /* #FFFFFF - Popover Background */
+    --popover-foreground: 220 9% 46%;  /* #64748B - Popover Text */
+    
+    /* ===== TEXT COLORS ===== */
+    --muted: 60 30% 96%;              /* #F5F5DC - Muted Background */
+    --muted-foreground: 220 9% 46%;    /* #64748B - Muted Text */
+    
+    /* ===== INTERFACE COLORS ===== */
+    --border: 220 13% 91%;             /* #E2E8F0 - Subtle Borders */
+    --input: 220 13% 91%;              /* #E2E8F0 - Input Borders */
+    --ring: 142 76% 36%;               /* #34D399 - Focus Ring */
+    
+    /* ===== STATUS COLORS ===== */
+    --destructive: 0 84% 60%;          /* #EF4444 - Error Red */
+    --destructive-foreground: 210 40% 98%; /* #F8FAFC - Error Text */
+    
+    /* ===== HEALTHCARE-SPECIFIC COLORS ===== */
+    --success: 142 76% 36%;            /* #34D399 - Success Green */
+    --success-foreground: 210 40% 98%; /* #F8FAFC - Success Text */
+    --warning: 38 92% 50%;             /* #F59E0B - Warning Amber */
+    --warning-foreground: 210 40% 98%; /* #F8FAFC - Warning Text */
+    --info: 217 91% 60%;               /* #60A5FA - Info Blue */
+    --info-foreground: 210 40% 98%;    /* #F8FAFC - Info Text */
+    
+    /* ===== CHART COLORS ===== */
+    --chart-1: 142 76% 36%;            /* #34D399 - Natural Green */
+    --chart-2: 217 91% 60%;            /* #60A5FA - Aqua Blue */
+    --chart-3: 38 92% 50%;             /* #F59E0B - Warm Yellow */
+    --chart-4: 262 83% 58%;            /* #8B5CF6 - Soft Purple */
+    --chart-5: 0 84% 60%;              /* #EF4444 - Alert Red */
+    
+    /* ===== SIDEBAR COLORS ===== */
+    --sidebar-background: 220 9% 46%;  /* #64748B - Dark Sidebar */
+    --sidebar-foreground: 210 40% 98%; /* #F8FAFC - Light Sidebar Text */
+    --sidebar-primary: 142 76% 36%;    /* #34D399 - Primary Green */
+    --sidebar-primary-foreground: 210 40% 98%; /* #F8FAFC - Primary Text */
+    --sidebar-accent: 60 30% 96%;      /* #F5F5DC - Calm Beige */
+    --sidebar-accent-foreground: 220 9% 46%; /* #64748B - Accent Text */
+    --sidebar-border: 220 13% 91%;     /* #E2E8F0 - Sidebar Border */
+    --sidebar-ring: 142 76% 36%;       /* #34D399 - Sidebar Focus */
+    
+    /* ===== UTILITY COLORS ===== */
+    --radius: 0.5rem;                  /* Border Radius */
   }
 
   .dark {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 262 83% 58%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 10% 3.9%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 10% 3.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
-    --chart-1: 220.9 39.3% 11%;
-    --chart-2: 166.2 83.2% 53.3%;
-    --chart-3: 351.2 83.2% 53.3%;
-    --chart-4: 28.2 83.2% 53.3%;
-    --chart-5: 281.2 83.2% 53.3%;
-    --sidebar-background: 265 30% 97%;
-    --sidebar-foreground: 240 10% 3.9%;
-    --sidebar-primary: 262 83% 58%;
-    --sidebar-primary-foreground: 210 40% 98%;
-    --sidebar-accent: 265 50% 93%;
-    --sidebar-accent-foreground: 240 10% 3.9%;
-    --sidebar-border: 265 20% 90%;
-    --sidebar-ring: 262 83% 58%;
+    /* ===== DARK MODE COLOR SYSTEM ===== */
+    
+    /* Primary Colors - Dark Mode */
+    --primary: 142 76% 36%;            /* #34D399 - Same Green */
+    --primary-foreground: 210 40% 98%; /* #F8FAFC - Clean White */
+    
+    /* Secondary Colors - Dark Mode */
+    --secondary: 220 14% 96%;          /* #F1F5F9 - Light Gray */
+    --secondary-foreground: 220 9% 46%; /* #64748B - Muted Text */
+    
+    /* Accent Colors - Dark Mode */
+    --accent: 217 91% 60%;             /* #60A5FA - Aqua Blue */
+    --accent-foreground: 210 40% 98%;  /* #F8FAFC - Clean White */
+    
+    /* ===== SURFACE COLORS - DARK ===== */
+    --background: 220 9% 46%;          /* #64748B - Dark Background */
+    --foreground: 210 40% 98%;         /* #F8FAFC - Light Text */
+    --card: 220 9% 46%;                /* #64748B - Dark Card */
+    --card-foreground: 210 40% 98%;    /* #F8FAFC - Light Card Text */
+    --popover: 220 9% 46%;             /* #64748B - Dark Popover */
+    --popover-foreground: 210 40% 98%; /* #F8FAFC - Light Popover Text */
+    
+    /* ===== TEXT COLORS - DARK ===== */
+    --muted: 220 9% 46%;               /* #64748B - Dark Muted */
+    --muted-foreground: 210 40% 98%;   /* #F8FAFC - Light Muted Text */
+    
+    /* ===== INTERFACE COLORS - DARK ===== */
+    --border: 220 9% 46%;              /* #64748B - Dark Border */
+    --input: 220 9% 46%;               /* #64748B - Dark Input */
+    --ring: 142 76% 36%;               /* #34D399 - Focus Ring */
+    
+    /* ===== STATUS COLORS - DARK ===== */
+    --destructive: 0 84% 60%;          /* #EF4444 - Error Red */
+    --destructive-foreground: 210 40% 98%; /* #F8FAFC - Error Text */
+    
+    /* ===== HEALTHCARE-SPECIFIC COLORS - DARK ===== */
+    --success: 142 76% 36%;            /* #34D399 - Success Green */
+    --success-foreground: 210 40% 98%; /* #F8FAFC - Success Text */
+    --warning: 38 92% 50%;             /* #F59E0B - Warning Amber */
+    --warning-foreground: 210 40% 98%; /* #F8FAFC - Warning Text */
+    --info: 217 91% 60%;               /* #60A5FA - Info Blue */
+    --info-foreground: 210 40% 98%;    /* #F8FAFC - Info Text */
+    
+    /* ===== CHART COLORS - DARK ===== */
+    --chart-1: 142 76% 36%;            /* #34D399 - Natural Green */
+    --chart-2: 217 91% 60%;            /* #60A5FA - Aqua Blue */
+    --chart-3: 38 92% 50%;             /* #F59E0B - Warm Yellow */
+    --chart-4: 262 83% 58%;            /* #8B5CF6 - Soft Purple */
+    --chart-5: 0 84% 60%;              /* #EF4444 - Alert Red */
+    
+    /* ===== SIDEBAR COLORS - DARK ===== */
+    --sidebar-background: 220 9% 46%;  /* #64748B - Dark Sidebar */
+    --sidebar-foreground: 210 40% 98%; /* #F8FAFC - Light Sidebar Text */
+    --sidebar-primary: 142 76% 36%;    /* #34D399 - Primary Green */
+    --sidebar-primary-foreground: 210 40% 98%; /* #F8FAFC - Primary Text */
+    --sidebar-accent: 60 30% 96%;      /* #F5F5DC - Calm Beige */
+    --sidebar-accent-foreground: 220 9% 46%; /* #64748B - Accent Text */
+    --sidebar-border: 220 9% 46%;      /* #64748B - Dark Border */
+    --sidebar-ring: 142 76% 36%;       /* #34D399 - Sidebar Focus */
   }
 }
 
@@ -81,5 +137,254 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom styles for better responsiveness and visual appeal */
+@layer components {
+  /* Improved text contrast */
+  .text-primary {
+    @apply text-gray-900 dark:text-white;
+  }
+  
+  .text-secondary {
+    @apply text-gray-700 dark:text-gray-300;
+  }
+  
+  .text-muted {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+
+  /* Enhanced card styling */
+  .card {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm;
+  }
+
+  /* Better button styling */
+  .btn-primary {
+    @apply bg-green-600 text-white hover:bg-green-700 dark:bg-green-500 dark:text-white dark:hover:bg-green-600;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700;
+  }
+
+  /* Responsive container */
+  .container-responsive {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Mobile-first responsive utilities */
+  .mobile-first {
+    @apply w-full sm:w-auto;
+  }
+
+  /* Improved sidebar styling */
+  .sidebar-dark {
+    @apply bg-gray-800 text-white border-r border-gray-700;
+  }
+
+  .sidebar-item {
+    @apply text-gray-300 hover:text-white hover:bg-gray-700 transition-colors duration-200;
+  }
+
+  .sidebar-item-active {
+    @apply text-white bg-green-600 border-r-2 border-green-500;
+  }
+
+  /* Enhanced form styling */
+  .form-input {
+    @apply bg-white border border-gray-300 text-gray-900 placeholder-gray-500 focus:border-green-500 focus:ring-green-500;
+  }
+
+  .form-input-dark {
+    @apply bg-gray-800 border-gray-600 text-white placeholder-gray-400 focus:border-green-400 focus:ring-green-400;
+  }
+
+  /* Better table styling */
+  .table-enhanced {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700;
+  }
+
+  .table-header {
+    @apply bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white font-semibold;
+  }
+
+  .table-row {
+    @apply border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800;
+  }
+
+  /* Improved badge styling */
+  .badge-primary {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .badge-success {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200;
+  }
+
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200;
+  }
+
+  .badge-error {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+  }
+
+  /* Enhanced navigation */
+  .nav-link {
+    @apply text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white transition-colors duration-200;
+  }
+
+  .nav-link-active {
+    @apply text-gray-900 dark:text-white font-semibold;
+  }
+
+  /* Better modal styling */
+  .modal-overlay {
+    @apply bg-black bg-opacity-50 dark:bg-opacity-70;
+  }
+
+  .modal-content {
+    @apply bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700;
+  }
+
+  /* Improved loading states */
+  .loading-skeleton {
+    @apply bg-gray-200 dark:bg-gray-700 animate-pulse;
+  }
+
+  /* Enhanced focus states */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900;
+  }
+
+  /* Better responsive grid */
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+  }
+
+  /* Mobile navigation improvements */
+  .mobile-nav {
+    @apply fixed inset-0 z-50 bg-white dark:bg-gray-900 transform transition-transform duration-300;
+  }
+
+  .mobile-nav-open {
+    @apply translate-x-0;
+  }
+
+  .mobile-nav-closed {
+    @apply -translate-x-full;
+  }
+
+  /* Enhanced typography */
+  .heading-1 {
+    @apply text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .heading-2 {
+    @apply text-2xl sm:text-3xl lg:text-4xl font-semibold text-gray-900 dark:text-white;
+  }
+
+  .heading-3 {
+    @apply text-xl sm:text-2xl lg:text-3xl font-semibold text-gray-900 dark:text-white;
+  }
+
+  .body-text {
+    @apply text-base text-gray-900 dark:text-gray-100 leading-relaxed;
+  }
+
+  .caption-text {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  /* Better spacing utilities */
+  .section-padding {
+    @apply px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12;
+  }
+
+  .content-padding {
+    @apply px-4 sm:px-6 lg:px-8 py-4 sm:py-6;
+  }
+
+  /* Enhanced shadows */
+  .shadow-soft {
+    @apply shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+
+  .shadow-medium {
+    @apply shadow-md hover:shadow-lg transition-shadow duration-200;
+  }
+
+  .shadow-strong {
+    @apply shadow-lg hover:shadow-xl transition-shadow duration-200;
+  }
+
+  /* Healthcare-specific colors */
+  .health-green {
+    @apply bg-green-600 text-white hover:bg-green-700;
+  }
+
+  .health-blue {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .health-warm {
+    @apply bg-yellow-500 text-white hover:bg-yellow-600;
+  }
+
+  .health-calm {
+    @apply bg-gray-100 text-gray-900 hover:bg-gray-200;
+  }
+}
+
+/* Responsive breakpoints */
+@media (max-width: 640px) {
+  .mobile-hidden {
+    display: none;
+  }
+  
+  .mobile-full {
+    width: 100%;
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  .tablet-hidden {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .desktop-only {
+    display: block;
+  }
+}
+
+/* Print styles */
+@media print {
+  .print-hidden {
+    display: none !important;
+  }
+  
+  .print-visible {
+    display: block !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .high-contrast {
+    @apply border-2 border-black dark:border-white;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
