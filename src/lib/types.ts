@@ -385,3 +385,30 @@ export interface ClientTransaction {
     category: 'Transport' | 'Groceries' | 'Equipment' | 'Utilities' | 'Other';
     attachmentName?: string;
 }
+
+// Enhanced Rights Management Types
+export type RightType = 'site' | 'ajax' | 'element' | 'other';
+export type RightCategory = 'dashboard' | 'roster' | 'people' | 'finance' | 'system' | 'forms' | 'reports' | 'settings';
+
+export interface Right {
+  id: string;
+  name: string;
+  description: string;
+  type: RightType;
+  category: RightCategory;
+  defaultValue: boolean;
+  isActive: boolean;
+}
+
+export interface RightsState {
+  [groupId: string]: {
+    [rightId: string]: boolean;
+  };
+}
+
+// Permission presets for quick assignment
+export interface PermissionPreset {
+  name: string;
+  description: string;
+  permissions: { [rightId: string]: boolean };
+}

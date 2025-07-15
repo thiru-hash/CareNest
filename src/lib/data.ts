@@ -884,3 +884,329 @@ export const getAllSections = (): AppSection[] => {
   
   return uniqueSections;
 };
+
+// Enhanced Rights Data
+export const mockRights: Right[] = [
+  // Dashboard Rights
+  {
+    id: 'right-dashboard-view',
+    name: 'Dashboard View',
+    description: 'Access to view dashboard and basic widgets',
+    type: 'site',
+    category: 'dashboard',
+    defaultValue: true,
+    isActive: true
+  },
+  {
+    id: 'right-dashboard-edit',
+    name: 'Dashboard Customization',
+    description: 'Ability to customize dashboard layout and widgets',
+    type: 'element',
+    category: 'dashboard',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-dashboard-reports',
+    name: 'Dashboard Reports',
+    description: 'Access to dashboard reporting and analytics',
+    type: 'site',
+    category: 'dashboard',
+    defaultValue: false,
+    isActive: true
+  },
+
+  // Roster Rights
+  {
+    id: 'right-roster-view',
+    name: 'Roster View',
+    description: 'View roster schedules and shifts',
+    type: 'site',
+    category: 'roster',
+    defaultValue: true,
+    isActive: true
+  },
+  {
+    id: 'right-roster-create',
+    name: 'Create Shifts',
+    description: 'Create new roster shifts and schedules',
+    type: 'element',
+    category: 'roster',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-roster-edit',
+    name: 'Edit Shifts',
+    description: 'Modify existing roster shifts and schedules',
+    type: 'element',
+    category: 'roster',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-roster-delete',
+    name: 'Delete Shifts',
+    description: 'Remove roster shifts and schedules',
+    type: 'element',
+    category: 'roster',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-roster-approve',
+    name: 'Approve Shifts',
+    description: 'Approve or reject roster changes',
+    type: 'element',
+    category: 'roster',
+    defaultValue: false,
+    isActive: true
+  },
+
+  // People Rights
+  {
+    id: 'right-people-view',
+    name: 'People View',
+    description: 'View people records and basic information',
+    type: 'site',
+    category: 'people',
+    defaultValue: true,
+    isActive: true
+  },
+  {
+    id: 'right-people-create',
+    name: 'Create People Records',
+    description: 'Add new people records to the system',
+    type: 'element',
+    category: 'people',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-people-edit',
+    name: 'Edit People Records',
+    description: 'Modify existing people records',
+    type: 'element',
+    category: 'people',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-people-delete',
+    name: 'Delete People Records',
+    description: 'Remove people records from the system',
+    type: 'element',
+    category: 'people',
+    defaultValue: false,
+    isActive: true
+  },
+
+  // Finance Rights
+  {
+    id: 'right-finance-view',
+    name: 'Finance View',
+    description: 'View financial data and reports',
+    type: 'site',
+    category: 'finance',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-finance-manage',
+    name: 'Finance Management',
+    description: 'Manage financial transactions and settings',
+    type: 'element',
+    category: 'finance',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-finance-export',
+    name: 'Finance Export',
+    description: 'Export financial data to external systems',
+    type: 'element',
+    category: 'finance',
+    defaultValue: false,
+    isActive: true
+  },
+
+  // System Rights
+  {
+    id: 'right-system-settings',
+    name: 'System Settings',
+    description: 'Access to system configuration and settings',
+    type: 'site',
+    category: 'system',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-system-users',
+    name: 'User Management',
+    description: 'Manage users, groups, and permissions',
+    type: 'site',
+    category: 'system',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-system-forms',
+    name: 'Form Management',
+    description: 'Create and manage custom forms',
+    type: 'site',
+    category: 'system',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-system-sections',
+    name: 'Section Management',
+    description: 'Create and manage application sections',
+    type: 'site',
+    category: 'system',
+    defaultValue: false,
+    isActive: true
+  },
+
+  // Form Rights
+  {
+    id: 'right-forms-view',
+    name: 'View Forms',
+    description: 'View and use custom forms',
+    type: 'site',
+    category: 'forms',
+    defaultValue: true,
+    isActive: true
+  },
+  {
+    id: 'right-forms-create',
+    name: 'Create Forms',
+    description: 'Create new custom forms',
+    type: 'element',
+    category: 'forms',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-forms-edit',
+    name: 'Edit Forms',
+    description: 'Modify existing custom forms',
+    type: 'element',
+    category: 'forms',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-forms-delete',
+    name: 'Delete Forms',
+    description: 'Remove custom forms from the system',
+    type: 'element',
+    category: 'forms',
+    defaultValue: false,
+    isActive: true
+  },
+
+  // Report Rights
+  {
+    id: 'right-reports-view',
+    name: 'View Reports',
+    description: 'Access to view system reports',
+    type: 'site',
+    category: 'reports',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-reports-create',
+    name: 'Create Reports',
+    description: 'Create custom reports and analytics',
+    type: 'element',
+    category: 'reports',
+    defaultValue: false,
+    isActive: true
+  },
+  {
+    id: 'right-reports-export',
+    name: 'Export Reports',
+    description: 'Export reports to various formats',
+    type: 'element',
+    category: 'reports',
+    defaultValue: false,
+    isActive: true
+  }
+];
+
+// Permission Presets for Quick Assignment
+export const permissionPresets: PermissionPreset[] = [
+  {
+    name: 'View Only',
+    description: 'Can view data but cannot modify anything',
+    permissions: {
+      'right-dashboard-view': true,
+      'right-roster-view': true,
+      'right-people-view': true,
+      'right-forms-view': true
+    }
+  },
+  {
+    name: 'Standard User',
+    description: 'Basic user with limited create/edit permissions',
+    permissions: {
+      'right-dashboard-view': true,
+      'right-roster-view': true,
+      'right-roster-create': true,
+      'right-people-view': true,
+      'right-people-create': true,
+      'right-forms-view': true
+    }
+  },
+  {
+    name: 'Manager',
+    description: 'Manager with broader permissions including editing',
+    permissions: {
+      'right-dashboard-view': true,
+      'right-dashboard-edit': true,
+      'right-roster-view': true,
+      'right-roster-create': true,
+      'right-roster-edit': true,
+      'right-roster-approve': true,
+      'right-people-view': true,
+      'right-people-create': true,
+      'right-people-edit': true,
+      'right-forms-view': true,
+      'right-reports-view': true
+    }
+  },
+  {
+    name: 'Administrator',
+    description: 'Full administrative access to all features',
+    permissions: {
+      'right-dashboard-view': true,
+      'right-dashboard-edit': true,
+      'right-dashboard-reports': true,
+      'right-roster-view': true,
+      'right-roster-create': true,
+      'right-roster-edit': true,
+      'right-roster-delete': true,
+      'right-roster-approve': true,
+      'right-people-view': true,
+      'right-people-create': true,
+      'right-people-edit': true,
+      'right-people-delete': true,
+      'right-finance-view': true,
+      'right-finance-manage': true,
+      'right-finance-export': true,
+      'right-forms-view': true,
+      'right-forms-create': true,
+      'right-forms-edit': true,
+      'right-forms-delete': true,
+      'right-reports-view': true,
+      'right-reports-create': true,
+      'right-reports-export': true,
+      'right-system-settings': true,
+      'right-system-users': true,
+      'right-system-forms': true,
+      'right-system-sections': true
+    }
+  }
+];
