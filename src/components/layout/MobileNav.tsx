@@ -44,7 +44,7 @@ export function MobileNav({ currentUser }: MobileNavProps) {
             <Avatar className="h-10 w-10">
               <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name || 'User'} />
               <AvatarFallback className="bg-green-100 text-green-800 font-semibold">
-                {currentUser?.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                {currentUser?.name ? currentUser.name.split(' ').map(n => n[0]).join('') : 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
