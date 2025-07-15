@@ -1,7 +1,7 @@
 
 import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
-import { mockForms } from '@/lib/data';
+import { mockForms, mockSections } from '@/lib/data';
 import { FormFieldManager } from '@/components/settings/FormFieldManager';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -17,18 +17,25 @@ export default async function FormDetailPage({
   
   // Find the form in mock data
   let form = mockForms.find((f) => f.id === id);
+  
+  // Get section name for display
+  const getSectionName = (sectionId: string) => {
+    const section = mockSections.find(s => s.id === sectionId);
+    return section?.name || sectionId;
+  };
 
   // If form doesn't exist in mock data, create a fallback for new forms
   if (!form) {
     // Check if this is a new form (has timestamp-based ID)
     if (id.startsWith('form-') && /^\d+$/.test(id.replace('form-', ''))) {
-      // This is a new form, create a fallback
+      // This is a new form, create a fallback with better information
       form = {
         id: id,
         name: 'New Form',
         linkedSectionId: 'sec-people',
         status: 'Active',
-        fields: []
+        fields: [],
+        description: 'This is a newly created form. You can add fields and configure it as needed.'
       };
     } else {
       // Form doesn't exist and is not a new form
@@ -76,6 +83,16 @@ export default async function FormDetailPage({
             {form.description || 'No description available'}
           </p>
           
+          {/* Show special message for new forms */}
+          {form.id.startsWith('form-') && /^\d+$/.test(form.id.replace('form-', '')) && (
+            <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>Note:</strong> This is a newly created form. You can add fields and configure it as needed. 
+                The form will be available in the "People We Support" section once you add fields to it.
+              </p>
+            </div>
+          )}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="font-medium text-gray-700 dark:text-gray-300">Form ID:</span>
@@ -87,7 +104,7 @@ export default async function FormDetailPage({
             </div>
             <div>
               <span className="font-medium text-gray-700 dark:text-gray-300">Linked Section:</span>
-              <span className="ml-2 text-gray-600 dark:text-gray-400">{form.linkedSectionId}</span>
+              <span className="ml-2 text-gray-600 dark:text-gray-400">{getSectionName(form.linkedSectionId)}</span>
             </div>
             <div>
               <span className="font-medium text-gray-700 dark:text-gray-300">Total Fields:</span>
@@ -116,6 +133,13 @@ export default async function FormDetailPage({
                 Go to Dashboard
               </Link>
             </Button>
+            {form.id.startsWith('form-') && /^\d+$/.test(form.id.replace('form-', '')) && (
+              <Button asChild variant="outline" size="sm">
+                <Link href="/settings">
+                  Edit Form Details
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
 
