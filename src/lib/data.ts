@@ -239,27 +239,276 @@ export const mockStaff: Staff[] = [
 
 
 export const mockGroups: Group[] = [
-    { id: 'group-all', name: 'ALL', description: 'Access Core System Functionality (must be assigned to all users)', userIds: mockStaff.map(s => s.id) },
-    { id: 'group-system-admin', name: 'System Administrators', description: 'Full system access', userIds: ['staff-admin'] },
-    { id: 'group-support-manager', name: 'Support Managers', description: 'Manage staff and clients', userIds: ['staff-3'] },
-    { id: 'group-support-worker', name: 'Support Workers', description: 'View shifts and client info', userIds: ['staff-1', 'staff-2'] },
-    { id: 'group-roster-admin', name: 'Roster Admin', description: 'Full access to rostering', userIds: ['staff-roster-admin'] },
-    { id: 'group-roster-scheduler', name: 'Roster Scheduler', description: 'Can create and edit shifts', userIds: [] },
-    { id: 'group-finance-admin', name: 'Finance Admin', description: 'Access to financial data and reports', userIds: ['staff-finance'] },
-    { id: 'group-gm-service', name: 'GM Service', description: 'General Manager of Services', userIds: [] },
-    { id: 'group-ceo', name: 'CEO', description: 'Chief Executive Officer', userIds: ['staff-ceo'] },
-    { id: 'group-reception', name: 'Reception', description: 'Front desk and administrative tasks', userIds: [] },
-    { id: 'group-health-safety', name: 'Health and Safety', description: 'Manages H&S incidents and compliance', userIds: [] },
-    { id: 'group-risk-management', name: 'Risk Management', description: 'Manages organizational risk', userIds: [] },
-    { id: 'group-office-admin', name: 'Office Admin Manager', description: 'Manages office operations', userIds: [] },
-    { id: 'group-clinical-advisor', name: 'Clinical Advisor', description: 'Provides clinical guidance', userIds: [] },
-    { id: 'group-hr-manager', name: 'Human Resources Manager', description: 'Manages all HR functions', userIds: ['staff-hr'] },
-    { id: 'group-hr-admin', 'name': 'HR Admin', 'description': 'Assists with HR administrative tasks', userIds: [] },
-    { id: 'group-hr', name: 'HR', description: 'General HR staff', userIds: [] },
-    { id: 'group-behavioural-support', name: 'Behavioural Support', description: 'Provides specialist behavioural support', userIds: [] },
-    { id: 'group-it-admin', name: 'IT Administrators', description: 'Manages IT infrastructure and systems', userIds: ['staff-it-admin', 'staff-tech-admin', 'staff-client-it'] },
-    { id: 'group-tech-admin', name: 'Technical Admins', description: 'Provides technical support and system maintenance', userIds: ['staff-tech-admin'] },
-    { id: 'group-client-it-admin', name: 'Client IT Admins', description: 'Manages client-specific IT systems', userIds: ['staff-client-it'] },
+  {
+    id: 'group-all',
+    name: 'ALL',
+    description: 'Access Core System Functionality (must be assigned to all users)',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9', 'user-10', 'user-11']
+  },
+  {
+    id: 'group-system-admin',
+    name: 'FLOWLOGIC ADMIN',
+    description: 'Flowlogic Admin Functions',
+    userIds: ['user-1']
+  },
+  {
+    id: 'group-roster-admin',
+    name: 'ROSTER ADMIN',
+    description: 'Group for Administrators of Roster/Schedule of this organisation',
+    userIds: ['user-2']
+  },
+  {
+    id: 'group-roster-manager',
+    name: 'ROSTER MANAGER',
+    description: 'Manager Functions for Roster/Schedule',
+    userIds: ['user-3']
+  },
+  {
+    id: 'group-leave-admin',
+    name: 'Leave Requests: Admin',
+    description: 'Administration Functions for Leave Requests',
+    userIds: ['user-4']
+  },
+  {
+    id: 'group-timesheets-admin',
+    name: 'Timesheets: Admin',
+    description: 'Administration Functions for Timesheets (view, add, set status)',
+    userIds: ['user-5']
+  },
+  {
+    id: 'group-drive-admin',
+    name: 'Drive: Admin',
+    description: 'Administration Functions for Drive (add, edit, delete, set folder permissions)',
+    userIds: ['user-6']
+  },
+  {
+    id: 'group-reports-admin',
+    name: 'Reports: Admin',
+    description: 'Administration Functions for Report (add, edit, delete, export)',
+    userIds: ['user-7']
+  },
+  {
+    id: 'group-user-admin',
+    name: 'User Management: Admin',
+    description: 'Administration Functions for User Management (add, edit, delete, user logs, geo logs)',
+    userIds: ['user-8']
+  },
+  {
+    id: 'group-config-admin',
+    name: 'Configuration: Admin',
+    description: 'Administration Functions for Configuration (site, regions)',
+    userIds: ['user-9']
+  },
+  {
+    id: 'group-form-admin',
+    name: 'Form/Section: Admin',
+    description: 'Administration Functions for Forms/Sections (add, edit, delete)',
+    userIds: ['user-10']
+  },
+  {
+    id: 'group-messenger-admin',
+    name: 'Messenger: Admin',
+    description: 'Administration Functions for Messenger (messenger admin, mail logs)',
+    userIds: ['user-11']
+  },
+  {
+    id: 'group-drive-user',
+    name: 'Drive: User',
+    description: 'User Functions for Drive (view)',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9', 'user-10', 'user-11']
+  },
+  {
+    id: 'group-reports-user',
+    name: 'Reports: User',
+    description: 'User Functions for Reports (view, export)',
+    userIds: ['user-1', 'user-2']
+  },
+  {
+    id: 'group-sms-feature',
+    name: 'Feature: Send SMS',
+    description: 'Access SMS Feature',
+    userIds: ['user-1', 'user-2']
+  },
+  {
+    id: 'group-records-admin',
+    name: 'Records: Admin',
+    description: 'Administration Functions for Records (view access locks/revisions/logs, create record locks)',
+    userIds: ['user-3']
+  },
+  {
+    id: 'group-funding-admin',
+    name: 'Funding: Admin',
+    description: 'Administration Functions for Funding (price management, export prices)',
+    userIds: ['user-4']
+  },
+  {
+    id: 'group-finance-admin',
+    name: 'Finance: Admin',
+    description: 'Administration Functions for Finance',
+    userIds: ['user-5']
+  },
+  {
+    id: 'group-staff',
+    name: 'Staff',
+    description: 'By Default: Able to view/create own Communication Book and Incident Report records',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9', 'user-10', 'user-11']
+  },
+  {
+    id: 'group-management',
+    name: '_Role: Management',
+    description: 'By Default: Able to view all staff/client records and edit primary staff/client records',
+    userIds: ['user-1']
+  },
+  {
+    id: 'group-hr',
+    name: '_Role: Human Resources',
+    description: 'Human Resources role with HR-specific permissions',
+    userIds: []
+  },
+  {
+    id: 'group-executive',
+    name: '_Role: Executive Management',
+    description: 'By Default: Able to view/edit all staff/client records',
+    userIds: ['user-1']
+  },
+  {
+    id: 'group-ceo',
+    name: '_Role: CEO',
+    description: 'Chief Executive Officer with full system access',
+    userIds: ['user-1']
+  },
+  {
+    id: 'group-support-facilitator',
+    name: 'Support Facilitator',
+    description: 'Support Facilitators ONLY',
+    userIds: ['user-2', 'user-3']
+  },
+  {
+    id: 'group-support-manager',
+    name: 'Support Manager',
+    description: 'Support Managers and Others',
+    userIds: ['user-4']
+  },
+  {
+    id: 'group-house-lead',
+    name: 'House Lead',
+    description: 'House Lead and Senior Support Facilitator ONLY',
+    userIds: ['user-5']
+  },
+  {
+    id: 'group-gm-ce',
+    name: 'GM/CE',
+    description: 'General Manager and Chief Executive ONLY',
+    userIds: ['user-6']
+  },
+  {
+    id: 'group-finance-admin-role',
+    name: 'Finance & Admin',
+    description: 'Finance & Admin ONLY',
+    userIds: ['user-7']
+  },
+  {
+    id: 'group-reporting',
+    name: 'Reporting Group',
+    description: 'Users with reporting access',
+    userIds: ['user-8']
+  },
+  {
+    id: 'group-property',
+    name: 'Property Management',
+    description: 'Property management functions',
+    userIds: ['user-9']
+  },
+  {
+    id: 'group-admin-assistant',
+    name: 'Admin Assistant',
+    description: 'Administrative assistant functions',
+    userIds: ['user-10']
+  },
+  {
+    id: 'group-support-manager-advanced',
+    name: 'Support Manager Advanced',
+    description: 'Advanced support manager functions',
+    userIds: ['user-11']
+  },
+  {
+    id: 'group-resource-oncall',
+    name: 'Resource (OnCall)',
+    description: 'On-call resource functions',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9']
+  },
+  {
+    id: 'group-advanced-user',
+    name: 'Advanced User',
+    description: 'Advanced user functions',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5']
+  },
+  {
+    id: 'group-health-safety',
+    name: 'Health & Safety',
+    description: 'Health and safety management',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9', 'user-10', 'user-11', 'user-12', 'user-13', 'user-14', 'user-15', 'user-16']
+  },
+  {
+    id: 'group-super-switcher',
+    name: 'Super Switcher',
+    description: 'Super user switching functions',
+    userIds: ['user-1', 'user-2', 'user-3']
+  },
+  {
+    id: 'group-hrt-pht-chair',
+    name: 'HRT PHT Chair',
+    description: 'HRT PHT Chair functions',
+    userIds: []
+  },
+  {
+    id: 'group-incident-hs-manager',
+    name: 'Incident report Health & Safety Manager – Board reporting',
+    description: 'Health & Safety incident reporting for board',
+    userIds: ['user-1', 'user-2', 'user-3']
+  },
+  {
+    id: 'group-vehicle-management',
+    name: 'Vehicle Management',
+    description: 'Create, View, edit permissions',
+    userIds: ['user-1']
+  },
+  {
+    id: 'group-hr-manager',
+    name: 'HR Manager',
+    description: 'HR Manager functions',
+    userIds: ['user-1']
+  },
+  {
+    id: 'group-volunteer',
+    name: 'Volunteer',
+    description: 'By Default: Able to view/create own Communication Book',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9', 'user-10', 'user-11', 'user-12', 'user-13', 'user-14', 'user-15', 'user-16', 'user-17', 'user-18', 'user-19', 'user-20', 'user-21', 'user-22', 'user-23', 'user-24', 'user-25', 'user-26', 'user-27', 'user-28', 'user-29', 'user-30']
+  },
+  {
+    id: 'group-compliments-complaints',
+    name: 'Compliments and Complaints Register',
+    description: 'Compliments and Complaints Register',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7']
+  },
+  {
+    id: 'group-new-shift-view',
+    name: 'New Shift View',
+    description: 'Grants the view to preview the new shift modal',
+    userIds: []
+  },
+  {
+    id: 'group-new-roster-view',
+    name: 'New Roster View',
+    description: 'Show new roster view for anyone in this group',
+    userIds: []
+  },
+  {
+    id: 'group-pws-communications',
+    name: 'PWS Communications',
+    description: 'PWS Communications',
+    userIds: ['user-1', 'user-2', 'user-3', 'user-4', 'user-5', 'user-6', 'user-7', 'user-8', 'user-9', 'user-10', 'user-11', 'user-12', 'user-13', 'user-14', 'user-15', 'user-16', 'user-17', 'user-18', 'user-19', 'user-20', 'user-21', 'user-22', 'user-23', 'user-24', 'user-25', 'user-26', 'user-27', 'user-28', 'user-29']
+  }
 ];
 
 export const mockClients: Client[] = [
