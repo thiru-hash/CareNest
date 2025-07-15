@@ -6,8 +6,8 @@ import { redirect } from 'next/navigation';
 export async function switchUser(userId: string) {
   const cookieStore = await cookies();
   
-  // Set the user cookie
-  cookieStore.set('user', userId, {
+  // Set the user cookie with the correct name expected by getCurrentUser
+  cookieStore.set('currentUser_id', userId, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'lax',

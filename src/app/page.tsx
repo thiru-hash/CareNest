@@ -24,14 +24,14 @@ export default function LoginPage() {
               </div>
               
               <form className="space-y-3">
-                <Button type="submit" className="w-full" formAction={switchUser.bind(null, 'admin')}>
+                <Button type="submit" className="w-full" formAction={switchUser.bind(null, 'staff-admin')}>
                   <Shield className="h-4 w-4 mr-2" />
-                  👑 Admin
+                  👑 System Admin
                 </Button>
                 
-                <Button type="submit" variant="outline" className="w-full" formAction={switchUser.bind(null, 'user')}>
+                <Button type="submit" variant="outline" className="w-full" formAction={switchUser.bind(null, 'staff-1')}>
                   <Users className="h-4 w-4 mr-2" />
-                  👷 User
+                  👷 Support Worker
                 </Button>
               </form>
             </div>
