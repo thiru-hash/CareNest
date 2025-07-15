@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Combobox, type ComboboxOption } from "@/components/ui/combobox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { FormField, FormFieldType } from "@/lib/types";
 import { fieldTypes } from "@/lib/data";
 import { Switch } from "@/components/ui/switch";
@@ -45,7 +45,7 @@ export function CreateEditFieldDialog({
   onSave,
 }: CreateEditFieldDialogProps) {
   const [name, setName] = useState("");
-  const [type, setType] = useState<string>("text"); // CHANGED: string instead of FormFieldType
+  const [type, setType] = useState<string>("text");
   const [order, setOrder] = useState(0);
   const [tooltip, setTooltip] = useState("");
   const [required, setRequired] = useState(false);
@@ -53,18 +53,6 @@ export function CreateEditFieldDialog({
   const [visibleRoles, setVisibleRoles] = useState<string[]>([]);
 
   const isEditMode = !!field?.id;
-
-  const fieldTypeOptions = useMemo<ComboboxOption[]>(() => {
-    return fieldTypes.map(ft => ({
-        value: ft.value,
-        label: (
-            <div className="flex items-center gap-2">
-                <ft.icon className="h-5 w-5" />
-                <span>{ft.label}</span>
-            </div>
-        )
-    }));
-  }, []);
 
   const fieldTypeHelp = useMemo(() => {
     return fieldTypes.find(ft => ft.value === type)?.description || "";
@@ -74,7 +62,7 @@ export function CreateEditFieldDialog({
     if (isOpen) {
         if (field) {
             setName(field.name);
-            setType(field.type); // type is now string
+            setType(field.type);
             setOrder(field.order);
             setTooltip(field.tooltip || "");
             setRequired(field.required || false);
@@ -98,18 +86,28 @@ export function CreateEditFieldDialog({
         alert("Field Name and Type are required.");
         return;
     }
+    
+    console.log('Saving field:', { name, type, order, required, status });
+    
     const newFieldData: FormField = {
       id: field?.id || '',
       name,
-      type: type as FormFieldType, // CHANGED: cast to FormFieldType only here
+      type: type as FormFieldType,
       order,
       tooltip,
       required,
       status,
       visibleRoles,
     };
-    onSave(newFieldData);
-    setIsOpen(false);
+    
+    try {
+      onSave(newFieldData);
+      setIsOpen(false);
+      console.log('Field saved successfully');
+    } catch (error) {
+      console.error('Error saving field:', error);
+      alert('Error saving field. Please try again.');
+    }
   };
 
   const handleRoleToggle = (roleId: string) => {
@@ -147,21 +145,35 @@ export function CreateEditFieldDialog({
                     Field Type
                 </Label>
                 <div className="col-span-3">
-                    <Combobox
-                        options={fieldTypeOptions}
-                        value={type}
-                        onValueChange={setType}
-                        placeholder="Select field type..."
-                        searchPlaceholder="Search field types..."
-                        noResultsMessage="No field type found."
-                    />
+                    <div className="mb-2 text-xs text-muted-foreground">
+                        Current type: {type} | Available types: {fieldTypes.length}
+                    </div>
+                    <Select 
+                        value={type} 
+                        onValueChange={(newType) => {
+                            console.log('Field type changed from', type, 'to', newType);
+                            setType(newType);
+                        }}
+                    >
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select field type..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {fieldTypes.map((ft) => (
+                                <SelectItem key={ft.value} value={ft.value}>
+                                    <div className="flex items-center gap-2">
+                                        <ft.icon className="h-4 w-4" />
+                                        <span>{ft.label}</span>
+                                    </div>
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                     {fieldTypeHelp && (
                       <div className="mt-2 text-xs text-muted-foreground bg-muted p-2 rounded">
                         {fieldTypeHelp}
                       </div>
                     )}
-
-
                 </div>
             </div>
              <div className="grid grid-cols-4 items-start gap-4">
