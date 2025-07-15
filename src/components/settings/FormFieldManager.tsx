@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { fieldTypes } from "@/lib/data";
+import { fieldTypes, setStoredForms, getStoredForms, mockForms } from "@/lib/data";
 import type { CustomForm, FormField } from "@/lib/types";
 import { CreateEditFieldDialog } from "./CreateEditFieldDialog";
 import React from "react";
@@ -38,27 +38,70 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
         setIsDialogOpen(true);
     };
 
+    const updateFormInStorage = (updatedFields: FormField[]) => {
+        const storedForms = getStoredForms();
+        const updatedForm = { ...initialForm, fields: updatedFields };
+        
+        // Check if this form is in stored forms
+        const formIndex = storedForms.findIndex(f => f.id === initialForm.id);
+        if (formIndex !== -1) {
+            // Update existing stored form
+            storedForms[formIndex] = updatedForm;
+        } else {
+            // Add new form to stored forms
+            storedForms.push(updatedForm);
+        }
+        
+        setStoredForms(storedForms);
+    };
+
     const handleDeleteField = (fieldId: string) => {
-        setFields(prev => prev.filter(field => field.id !== fieldId));
+        const updatedFields = fields.filter(field => field.id !== fieldId);
+        setFields(updatedFields);
+        updateFormInStorage(updatedFields);
     };
 
     const handleInactivateField = (fieldId: string) => {
-        setFields(prev => prev.map(field => field.id === fieldId ? { ...field, status: 'Inactive' } : field));
+        const updatedFields = fields.map(field => field.id === fieldId ? { ...field, status: 'Inactive' } : field);
+        setFields(updatedFields);
+        updateFormInStorage(updatedFields);
     };
 
     const handleActivateField = (fieldId: string) => {
-        setFields(prev => prev.map(field => field.id === fieldId ? { ...field, status: 'Active' } : field));
+        const updatedFields = fields.map(field => field.id === fieldId ? { ...field, status: 'Active' } : field);
+        setFields(updatedFields);
+        updateFormInStorage(updatedFields);
     };
 
     const handleSaveField = (savedField: FormField) => {
+        let updatedFields: FormField[];
+        
         if (fields.some(f => f.id === savedField.id)) {
             // Update existing
-            setFields(prev => prev.map(f => f.id === savedField.id ? savedField : f).sort((a,b) => a.order - b.order));
+            updatedFields = fields.map(f => f.id === savedField.id ? savedField : f).sort((a,b) => a.order - b.order);
         } else {
             // Create new
-             const newField = { ...savedField, id: `field-${Date.now()}` };
-            setFields(prev => [...prev, newField].sort((a, b) => a.order - b.order));
+            const newField = { ...savedField, id: `field-${Date.now()}` };
+            updatedFields = [...fields, newField].sort((a, b) => a.order - b.order);
         }
+        
+        setFields(updatedFields);
+        
+        // Update the form in localStorage
+        const storedForms = getStoredForms();
+        const updatedForm = { ...initialForm, fields: updatedFields };
+        
+        // Check if this form is in stored forms
+        const formIndex = storedForms.findIndex(f => f.id === initialForm.id);
+        if (formIndex !== -1) {
+            // Update existing stored form
+            storedForms[formIndex] = updatedForm;
+        } else {
+            // Add new form to stored forms
+            storedForms.push(updatedForm);
+        }
+        
+        setStoredForms(storedForms);
     };
     
     const getFieldTypeName = (type: FormField['type']) => {

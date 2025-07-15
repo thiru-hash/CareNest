@@ -1,7 +1,7 @@
 
 import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
-import { mockForms, mockSections } from '@/lib/data';
+import { mockForms, mockSections, getAllForms } from '@/lib/data';
 import { FormFieldManager } from '@/components/settings/FormFieldManager';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
@@ -15,8 +15,8 @@ export default async function FormDetailPage({
   const { id } = await params;
   const currentUser = await getCurrentUser();
   
-  // Find the form in mock data
-  let form = mockForms.find((f) => f.id === id);
+  // Find the form in all data (mock + stored)
+  let form = getAllForms().find((f) => f.id === id);
   
   // Get section name for display
   const getSectionName = (sectionId: string) => {

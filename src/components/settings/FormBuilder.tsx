@@ -10,7 +10,7 @@ import { MoreHorizontal, PlusCircle } from "lucide-react";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "../ui/table";
-import { mockForms, mockSections } from "@/lib/data";
+import { mockForms, mockSections, getAllForms, getAllSections, setStoredForms, getStoredForms } from "@/lib/data";
 import { Badge } from "../ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
@@ -39,8 +39,8 @@ export function FormBuilder({
   readonly = false,
   onDatabaseCreation 
 }: FormBuilderProps) {
-  const [forms, setForms] = useState<CustomForm[]>(mockForms);
-  const [sections, setSections] = useState<AppSection[]>(mockSections);
+  const [forms, setForms] = useState<CustomForm[]>(() => getAllForms());
+  const [sections, setSections] = useState<AppSection[]>(() => getAllSections());
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentForm, setCurrentForm] = useState<CustomForm | null>(null);
   const [formData, setFormData] = useState<{ [key: string]: any }>(initialData);
@@ -67,17 +67,33 @@ export function FormBuilder({
   }, []);
 
   const handleDeleteForm = useCallback((formId: string) => {
-    setForms((prev) => prev.filter((form) => form.id !== formId));
-  }, []);
+    const updatedForms = forms.filter((form) => form.id !== formId);
+    setForms(updatedForms);
+    
+    // Update localStorage
+    const newForms = updatedForms.filter(form => 
+      !mockForms.some(mockForm => mockForm.id === form.id)
+    );
+    setStoredForms(newForms);
+  }, [forms]);
 
   const handleSaveForm = useCallback((savedForm: CustomForm) => {
+    let updatedForms: CustomForm[];
+    
     if (forms.some((f) => f.id === savedForm.id)) {
-      setForms((prev) =>
-        prev.map((f) => (f.id === savedForm.id ? savedForm : f))
-      );
+      updatedForms = forms.map((f) => (f.id === savedForm.id ? savedForm : f));
     } else {
-      setForms((prev) => [...prev, { ...savedForm, fields: [] }]);
+      updatedForms = [...forms, { ...savedForm, fields: [] }];
     }
+    
+    setForms(updatedForms);
+    
+    // Store only the new forms (not the mock forms) in localStorage
+    const storedForms = getStoredForms();
+    const newForms = updatedForms.filter(form => 
+      !mockForms.some(mockForm => mockForm.id === form.id)
+    );
+    setStoredForms(newForms);
   }, [forms]);
 
   const handleInputChange = useCallback((fieldId: string, value: any) => {

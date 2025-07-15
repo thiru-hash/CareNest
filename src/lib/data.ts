@@ -1,5 +1,3 @@
-
-
 import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, Payroll as PayrollType, ClientFunding, ClientTransaction } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
@@ -811,3 +809,78 @@ export const mockTransactions: ClientTransaction[] = [
     { id: 'txn-7', clientId: 'client-2', date: subDays(now, 18), description: 'Art Supplies', type: 'Expense', amount: 75, gst: 6.82, category: 'Other' },
     { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other' },
 ];
+
+// Local storage keys
+const FORMS_STORAGE_KEY = 'carenest_forms';
+const SECTIONS_STORAGE_KEY = 'carenest_sections';
+
+// Helper functions for localStorage
+export const getStoredForms = (): CustomForm[] => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const stored = localStorage.getItem(FORMS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error reading forms from localStorage:', error);
+    return [];
+  }
+};
+
+export const setStoredForms = (forms: CustomForm[]): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(FORMS_STORAGE_KEY, JSON.stringify(forms));
+  } catch (error) {
+    console.error('Error writing forms to localStorage:', error);
+  }
+};
+
+export const getStoredSections = (): AppSection[] => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const stored = localStorage.getItem(SECTIONS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error reading sections from localStorage:', error);
+    return [];
+  }
+};
+
+export const setStoredSections = (sections: AppSection[]): void => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(SECTIONS_STORAGE_KEY, JSON.stringify(sections));
+  } catch (error) {
+    console.error('Error writing sections to localStorage:', error);
+  }
+};
+
+// Get all forms (mock + stored)
+export const getAllForms = (): CustomForm[] => {
+  const storedForms = getStoredForms();
+  const allForms = [...mockForms, ...storedForms];
+  
+  // Remove duplicates (stored forms take precedence)
+  const uniqueForms = allForms.filter((form, index, self) => 
+    index === self.findIndex(f => f.id === form.id)
+  );
+  
+  return uniqueForms;
+};
+
+// Get all sections (mock + stored)
+export const getAllSections = (): AppSection[] => {
+  const storedSections = getStoredSections();
+  const allSections = [...mockSections, ...storedSections];
+  
+  // Remove duplicates (stored sections take precedence)
+  const uniqueSections = allSections.filter((section, index, self) => 
+    index === self.findIndex(s => s.id === section.id)
+  );
+  
+  return uniqueSections;
+};
