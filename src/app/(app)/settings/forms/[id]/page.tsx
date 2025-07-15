@@ -14,10 +14,26 @@ export default async function FormDetailPage({
 }) {
   const { id } = await params;
   const currentUser = await getCurrentUser();
-  const form = mockForms.find((f) => f.id === id);
+  
+  // Find the form in mock data
+  let form = mockForms.find((f) => f.id === id);
 
+  // If form doesn't exist in mock data, create a fallback for new forms
   if (!form) {
-    notFound();
+    // Check if this is a new form (has timestamp-based ID)
+    if (id.startsWith('form-') && /^\d+$/.test(id.replace('form-', ''))) {
+      // This is a new form, create a fallback
+      form = {
+        id: id,
+        name: 'New Form',
+        linkedSectionId: 'sec-people',
+        status: 'Active',
+        fields: []
+      };
+    } else {
+      // Form doesn't exist and is not a new form
+      notFound();
+    }
   }
 
   return (
@@ -26,11 +42,11 @@ export default async function FormDetailPage({
         {/* Breadcrumb Navigation */}
         <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
           <Link href="/settings" className="hover:text-foreground transition-colors">
-            Settings
+            System Settings
           </Link>
           <span>/</span>
           <Link href="/settings" className="hover:text-foreground transition-colors">
-            Forms
+            Forms Management
           </Link>
           <span>/</span>
           <span className="text-foreground">{form.name}</span>
@@ -46,7 +62,7 @@ export default async function FormDetailPage({
           <Button asChild variant="outline" size="sm">
             <Link href="/settings">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Settings
+              Back to System Settings
             </Link>
           </Button>
         </div>
@@ -87,7 +103,7 @@ export default async function FormDetailPage({
             <Button asChild variant="outline" size="sm">
               <Link href="/settings">
                 <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Settings
+                Back to System Settings
               </Link>
             </Button>
             <Button asChild variant="outline" size="sm">
