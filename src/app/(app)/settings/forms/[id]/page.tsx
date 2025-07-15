@@ -3,6 +3,9 @@ import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { mockForms } from '@/lib/data';
 import { FormFieldManager } from '@/components/settings/FormFieldManager';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function FormDetailPage({ 
   params 
@@ -20,10 +23,33 @@ export default async function FormDetailPage({
   return (
     <div className="section-padding">
       <div className="mb-8">
-        <h1 className="heading-1 mb-2">Form Management</h1>
-        <p className="body-text text-gray-600 dark:text-gray-400">
-          Manage form configuration and fields
-        </p>
+        {/* Breadcrumb Navigation */}
+        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+          <Link href="/settings" className="hover:text-foreground transition-colors">
+            Settings
+          </Link>
+          <span>/</span>
+          <Link href="/settings" className="hover:text-foreground transition-colors">
+            Forms
+          </Link>
+          <span>/</span>
+          <span className="text-foreground">{form.name}</span>
+        </div>
+        
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="heading-1 mb-2">Form Management</h1>
+            <p className="body-text text-gray-600 dark:text-gray-400">
+              Manage form configuration and fields
+            </p>
+          </div>
+          <Button asChild variant="outline" size="sm">
+            <Link href="/settings">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Settings
+            </Link>
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-6">
@@ -51,6 +77,29 @@ export default async function FormDetailPage({
               <span className="font-medium text-gray-700 dark:text-gray-300">Total Fields:</span>
               <span className="ml-2 text-gray-600 dark:text-gray-400">{form.fields?.length || 0}</span>
             </div>
+          </div>
+        </div>
+
+        {/* Quick Actions */}
+        <div className="card shadow-soft p-6">
+          <h3 className="heading-3 mb-4">Quick Actions</h3>
+          <div className="flex flex-wrap gap-3">
+            <Button asChild variant="outline" size="sm">
+              <Link href="/settings">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Settings
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/settings/forms">
+                View All Forms
+              </Link>
+            </Button>
+            <Button asChild variant="outline" size="sm">
+              <Link href="/dashboard">
+                Go to Dashboard
+              </Link>
+            </Button>
           </div>
         </div>
 

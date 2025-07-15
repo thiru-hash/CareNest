@@ -246,8 +246,10 @@ export function CreateEditFieldDialog({
             </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave}>Save Field</Button>
+          <div className="flex items-center gap-2">
+            <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Field</Button>
+          </div>
         </DialogFooter>
       </DialogContent>
     </Dialog>
