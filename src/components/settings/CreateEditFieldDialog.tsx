@@ -150,7 +150,10 @@ export function CreateEditFieldDialog({
                     <Combobox
                         options={fieldTypeOptions}
                         value={type}
-                        onValueChange={setType}
+                        onValueChange={(value) => {
+                            console.log('Field type selected:', value);
+                            setType(value);
+                        }}
                         placeholder="Select field type..."
                         searchPlaceholder="Search field types..."
                         noResultsMessage="No field type found."
@@ -160,6 +163,9 @@ export function CreateEditFieldDialog({
                         {fieldTypeHelp}
                       </div>
                     )}
+                    <div className="mt-1 text-xs text-blue-600">
+                      Current type: {type}
+                    </div>
 
                 </div>
             </div>

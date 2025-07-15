@@ -35,16 +35,6 @@ interface ComboboxProps {
     className?: string;
 }
 
-const ComboboxContext = React.createContext<{
-    value?: string
-    onValueChange?: (value: string) => void
-    open: boolean
-    setOpen: (open: boolean) => void
-}>({
-    open: false,
-    setOpen: () => {}
-})
-
 export function Combobox({ 
     options, 
     value, 
@@ -58,8 +48,7 @@ export function Combobox({
     const selectedOption = options.find((option) => option.value === value)
 
     return (
-        <ComboboxContext.Provider value={{ value, onValueChange, open, setOpen }}>
-            <Popover open={open} onOpenChange={setOpen}>
+        <Popover open={open} onOpenChange={setOpen}>
                 <PopoverTrigger asChild>
                     <Button
                         variant="outline"
@@ -102,28 +91,7 @@ export function Combobox({
                     </Command>
                 </PopoverContent>
             </Popover>
-        </ComboboxContext.Provider>
     )
 }
 
-export function ComboboxTrigger({ children, ...props }: React.ComponentProps<typeof PopoverTrigger>) {
-    return <PopoverTrigger {...props}>{children}</PopoverTrigger>
-}
 
-export function ComboboxContent({ children, ...props }: React.ComponentProps<typeof PopoverContent>) {
-    return <PopoverContent {...props}>{children}</PopoverContent>
-}
-
-export function ComboboxItem({ children, value, ...props }: React.ComponentProps<typeof CommandItem> & { value: string }) {
-    return <CommandItem value={value} {...props}>{children}</CommandItem>
-}
-
-export function ComboboxValue({ placeholder }: { placeholder?: string }) {
-    const context = React.useContext(ComboboxContext)
-    const selectedOption = React.useMemo(() => {
-        // This would need to be passed down from parent, but for now we'll use placeholder
-        return null
-    }, [context.value])
-    
-    return <span>{selectedOption ? selectedOption.label : placeholder}</span>
-}
