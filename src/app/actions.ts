@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function switchUser(userId: string) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   
   // Set the user cookie
   cookieStore.set('user', userId, {

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +11,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Clock, Plane, Hourglass, Camera, Mail, Phone, MapPin, Calendar, Building, DollarSign, FileText, Shield, Download, Eye, Search, User } from "lucide-react";
+import { Clock, Plane, Hourglass, Camera, Mail, Phone, MapPin, Calendar, Building, DollarSign, FileText, Shield, Download, Eye, Search, User, Edit, EyeOff } from "lucide-react";
 import type { Staff } from "@/lib/types";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import { useRoster } from "@/lib/hooks/useRoster";
+import { useSystemSettings } from "@/lib/hooks/useSystemSettings";
 import { Label } from "@/components/ui/label";
+import { FormBuilder } from "@/components/settings/FormBuilder";
+import { mockForms } from "@/lib/data";
+import type { CustomForm } from "@/lib/types";
 
 interface ProfileClientProps {
   currentUser: Staff;
@@ -47,8 +52,10 @@ interface Timesheet {
 }
 
 export function ProfileClient({ currentUser, isOwnProfile = true }: ProfileClientProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const { clockIn, clockOut, getCurrentShift, currentUserId } = useRoster();
+  const { canViewPayRates, canEditStaff, settings } = useSystemSettings();
   
   const [avatarUrl, setAvatarUrl] = useState(currentUser.avatarUrl);
   const [isClockedIn, setIsClockedIn] = useState(false);
@@ -62,7 +69,19 @@ export function ProfileClient({ currentUser, isOwnProfile = true }: ProfileClien
     dateRange: 'all',
     search: ''
   });
+  const [dynamicForms, setDynamicForms] = useState<CustomForm[]>([]);
+  const [formData, setFormData] = useState<{ [key: string]: any }>({});
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Load dynamic forms if enabled
+  useEffect(() => {
+    if (settings.enableDynamicForms) {
+      const staffForms = mockForms.filter(form => 
+        form.id.includes('staff') || form.id.includes('form-staff')
+      );
+      setDynamicForms(staffForms);
+    }
+  }, [settings.enableDynamicForms]);
 
   // Mock timesheet data for the current user
   useEffect(() => {
@@ -222,6 +241,18 @@ export function ProfileClient({ currentUser, isOwnProfile = true }: ProfileClien
     }
   };
 
+  const handleEditProfile = () => {
+    router.push(`/staff/${currentUser.id}/edit`);
+  };
+
+  const handleFormSubmit = (formId: string, data: any) => {
+    setFormData(prev => ({ ...prev, [formId]: data }));
+    toast({
+      title: "Form Updated",
+      description: "Custom form data has been saved.",
+    });
+  };
+
   const formatDate = (date: Date | undefined) => {
     if (!date) return 'Not specified';
     return format(date, 'MMM dd, yyyy');
@@ -306,11 +337,19 @@ export function ProfileClient({ currentUser, isOwnProfile = true }: ProfileClien
               />
             </div>
             <div className="flex-1 pt-2">
-              <div className="flex items-center gap-3 mb-2">
-                <h1 className="text-3xl font-bold">{currentUser.name}</h1>
-                <Badge className={getEmploymentTypeColor(currentUser.employmentDetails?.employmentType || 'Unknown')}>
-                  {currentUser.employmentDetails?.employmentType || 'Unknown'}
-                </Badge>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-3xl font-bold">{currentUser.name}</h1>
+                  <Badge className={getEmploymentTypeColor(currentUser.employmentDetails?.employmentType || 'Unknown')}>
+                    {currentUser.employmentDetails?.employmentType || 'Unknown'}
+                  </Badge>
+                </div>
+                {canEditStaff(currentUser.role, isOwnProfile) && (
+                  <Button variant="outline" size="sm" onClick={handleEditProfile}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit Profile
+                  </Button>
+                )}
               </div>
               <p className="text-muted-foreground text-lg">{currentUser.role}</p>
               <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
@@ -393,14 +432,22 @@ export function ProfileClient({ currentUser, isOwnProfile = true }: ProfileClien
                   {currentUser.employmentDetails?.employmentType || 'Not specified'}
                 </span>
               </div>
-              {currentUser.employmentDetails?.payRate && (
+              {currentUser.employmentDetails?.payRate && canViewPayRates(currentUser.role) ? (
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-muted-foreground">Pay Rate</span>
                   <span className="text-sm font-medium">
                     ${currentUser.employmentDetails.payRate}/hr
                   </span>
                 </div>
-              )}
+              ) : currentUser.employmentDetails?.payRate && !canViewPayRates(currentUser.role) ? (
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Pay Rate</span>
+                  <div className="flex items-center gap-1">
+                    <EyeOff className="h-3 w-3 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Hidden</span>
+                  </div>
+                </div>
+              ) : null}
             </div>
           </CardContent>
         </Card>
@@ -455,6 +502,34 @@ export function ProfileClient({ currentUser, isOwnProfile = true }: ProfileClien
               </p>
             </CardContent>
           </Card>
+
+          {/* Dynamic Forms Section */}
+          {settings.enableDynamicForms && dynamicForms.length > 0 && (
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Custom Forms</h3>
+              {dynamicForms.map((form) => (
+                <Card key={form.id}>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <FileText className="h-5 w-5" />
+                      {form.name}
+                    </CardTitle>
+                    <CardDescription>
+                      Custom form created in System Settings
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <FormBuilder
+                      form={form}
+                      onSubmit={(data) => handleFormSubmit(form.id, data)}
+                      initialData={formData[form.id] || {}}
+                      readOnly={!canEditStaff(currentUser.role, isOwnProfile)}
+                    />
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="timesheets" className="space-y-6">

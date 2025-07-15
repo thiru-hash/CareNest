@@ -14,10 +14,11 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MoreHorizontal, UserPlus, ArrowRight, Mail, Phone, MapPin, Calendar, Building, Users } from "lucide-react";
+import { MoreHorizontal, UserPlus, ArrowRight, Mail, Phone, MapPin, Calendar, Building, Users, EyeOff } from "lucide-react";
 import type { Staff, UserRole } from "@/lib/types";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { AddStaffFormModal } from "@/components/staff/AddStaffFormModal";
+import { useSystemSettings } from "@/lib/hooks/useSystemSettings";
 
 interface StaffTableClientProps {
   staffToDisplay: Staff[];
@@ -26,6 +27,7 @@ interface StaffTableClientProps {
 
 export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClientProps) {
   const [isAddStaffModalOpen, setIsAddStaffModalOpen] = useState(false);
+  const { canViewPayRates } = useSystemSettings();
 
   const getStatusBadge = (staff: Staff) => {
     // Determine status based on employment details
@@ -143,11 +145,16 @@ export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClie
                         <Calendar className="h-3 w-3" />
                         <span>Started: {formatDate(staffMember.employmentDetails?.startDate)}</span>
                       </div>
-                      {staffMember.employmentDetails?.payRate && (
+                      {staffMember.employmentDetails?.payRate && canViewPayRates(currentUser.role) ? (
                         <div className="text-xs text-muted-foreground">
                           ${staffMember.employmentDetails.payRate}/hr
                         </div>
-                      )}
+                      ) : staffMember.employmentDetails?.payRate && !canViewPayRates(currentUser.role) ? (
+                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                          <EyeOff className="h-3 w-3" />
+                          <span>Hidden</span>
+                        </div>
+                      ) : null}
                     </div>
                   </TableCell>
                   <TableCell className="text-right">
