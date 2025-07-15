@@ -121,6 +121,48 @@ export function useRoster() {
           notes: 'Morning support shift',
           createdAt: new Date('2024-01-10'),
           updatedAt: new Date('2024-01-15')
+        },
+        {
+          id: 'shift-6',
+          startTime: '09:00',
+          endTime: '13:00',
+          date: todayStr,
+          area: 'Aspire HQ',
+          client: '103 Tawa',
+          assignedStaff: 'staff-1',
+          status: 'clocked-in',
+          notes: 'Test shift - already clocked in',
+          createdAt: new Date('2024-01-10'),
+          updatedAt: new Date('2024-01-15')
+        },
+        {
+          id: 'shift-7',
+          startTime: new Date().toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }).split(':')[0] + ':' + (parseInt(new Date().toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }).split(':')[1]) + 2).toString().padStart(2, '0'),
+          endTime: new Date().toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }).split(':')[0] + ':' + (parseInt(new Date().toLocaleTimeString('en-US', { 
+            hour12: false, 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }).split(':')[1]) + 4).toString().padStart(2, '0'),
+          date: todayStr,
+          area: 'Aspire HQ',
+          client: '105 Johnson',
+          assignedStaff: 'staff-1',
+          status: 'assigned',
+          notes: 'Test shift - clock in available in 2 minutes',
+          createdAt: new Date('2024-01-10'),
+          updatedAt: new Date('2024-01-15')
         }
       ];
 
@@ -199,22 +241,35 @@ export function useRoster() {
     loadRosterData();
   }, [currentUserId]);
 
-  // Clock in function
+  // Clock in function - integrates with existing roster system
   const clockIn = (shiftId: string) => {
     setShifts(prevShifts => 
       prevShifts.map(shift => 
         shift.id === shiftId ? { ...shift, status: 'clocked-in' } : shift
       )
     );
+    
+    // In real implementation, this would:
+    // 1. Update the shift status in the database
+    // 2. Grant access to client/property details for this shift
+    // 3. Trigger any notifications or audit logs
+    console.log(`Clocked in for shift ${shiftId} - access granted to client/property details`);
   };
 
-  // Clock out function
+  // Clock out function - integrates with existing roster system
   const clockOut = (shiftId: string) => {
     setShifts(prevShifts => 
       prevShifts.map(shift => 
         shift.id === shiftId ? { ...shift, status: 'clocked-out' } : shift
       )
     );
+    
+    // In real implementation, this would:
+    // 1. Update the shift status in the database
+    // 2. Revoke access to client/property details for this shift
+    // 3. Create timesheet entry
+    // 4. Trigger any notifications or audit logs
+    console.log(`Clocked out for shift ${shiftId} - access revoked to client/property details`);
   };
 
   // Request open shift function

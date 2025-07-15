@@ -210,7 +210,7 @@ export default function DashboardPage() {
     const [hours, minutes] = shift.startTime.split(':');
     shiftStart.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     
-    // Check if shift is today and within 15 minutes of start time (more realistic)
+    // Check if shift is today and within 1 minute of start time (your business logic)
     const today = new Date();
     const shiftDate = new Date(shift.date);
     const isToday = today.toDateString() === shiftDate.toDateString();
@@ -218,9 +218,9 @@ export default function DashboardPage() {
     if (!isToday) return false;
     
     const timeDiff = shiftStart.getTime() - now.getTime();
-    const fifteenMinutes = 15 * 60 * 1000; // 15 minutes in milliseconds
+    const oneMinute = 1 * 60 * 1000; // 1 minute in milliseconds
     
-    return timeDiff >= -fifteenMinutes && timeDiff <= fifteenMinutes; // Allow 15 minutes before and after
+    return timeDiff >= -oneMinute && timeDiff <= oneMinute; // Allow 1 minute before and after
   };
 
   const isShiftInProgress = (shift: any) => {
@@ -266,6 +266,11 @@ export default function DashboardPage() {
     };
   };
 
+  // Check if client/property details should be visible (only when clocked in)
+  const shouldShowClientDetails = (shift: any) => {
+    return shift.status === 'clocked-in';
+  };
+
   const calculateShiftHours = (startTime: string, endTime: string, breaks: any[]) => {
     const [startHour, startMin] = startTime.split(':').map(Number);
     const [endHour, endMin] = endTime.split(':').map(Number);
@@ -290,11 +295,11 @@ export default function DashboardPage() {
   const getStatusBadge = (shift: any) => {
     switch (shift.status) {
       case 'clocked-in':
-        return <Badge className="bg-success/10 text-success border-success/20">Clocked In</Badge>;
+        return <Badge className="bg-success/10 text-success border-success/20">In Progress</Badge>;
       case 'clocked-out':
-        return <Badge className="bg-muted text-muted-foreground">Clocked Out</Badge>;
+        return <Badge className="bg-muted text-muted-foreground">Completed</Badge>;
       case 'assigned':
-        return <Badge className="bg-info/10 text-info border-info/20">Current</Badge>;
+        return <Badge className="bg-info/10 text-info border-info/20">Ready</Badge>;
       case 'scheduled':
         return <Badge className="bg-warning/10 text-warning border-warning/20">Upcoming</Badge>;
       default:
@@ -390,6 +395,10 @@ export default function DashboardPage() {
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl lg:text-3xl font-bold text-left">Dashboard</h1>
           <p className="text-muted-foreground text-left">Welcome to your CareNest dashboard</p>
+          <div className="text-xs text-muted-foreground">
+            Current Time: {new Date().toLocaleTimeString()} | 
+            Today: {new Date().toISOString().split('T')[0]}
+          </div>
         </div>
 
         {/* My Shifts Section */}
@@ -426,9 +435,27 @@ export default function DashboardPage() {
                       <td className="py-2 px-2">
                         <div className="font-medium text-gray-900">{shift.area}</div>
                         <div className="text-xs text-muted-foreground">{shift.notes}</div>
-                        {isFieldVisible('my-shifts-client') && <div className="text-xs text-muted-foreground md:hidden">{shift.client}</div>}
+                        {isFieldVisible('my-shifts-client') && shouldShowClientDetails(shift) && (
+                          <div className="text-xs text-muted-foreground md:hidden">{shift.client}</div>
+                        )}
+                        {isFieldVisible('my-shifts-client') && !shouldShowClientDetails(shift) && (
+                          <div className="text-xs text-muted-foreground md:hidden">Client details hidden until clocked in</div>
+                        )}
+                        <div className="text-xs text-blue-600">
+                          Status: {shift.status} | 
+                          Time: {shift.startTime}-{shift.endTime} | 
+                          Date: {shift.date}
+                        </div>
                       </td>
-                      {isFieldVisible('my-shifts-client') && <td className="py-2 px-2 hidden md:table-cell">{shift.client}</td>}
+                      {isFieldVisible('my-shifts-client') && (
+                        <td className="py-2 px-2 hidden md:table-cell">
+                          {shouldShowClientDetails(shift) ? (
+                            shift.client
+                          ) : (
+                            <span className="text-muted-foreground">Hidden until clocked in</span>
+                          )}
+                        </td>
+                      )}
                       <td className="py-2 px-2">
                         <span className="font-semibold">{shift.startTime}</span> - <span className="font-semibold">{shift.endTime}</span>
                         <div className="text-xs text-muted-foreground">{formatDate(shift.date)}</div>
@@ -437,7 +464,8 @@ export default function DashboardPage() {
                       {isFieldVisible('my-shifts-actions') && (
                         <td className="py-2 px-2">
                           <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                            {(shift.status === 'assigned' || shift.status === 'scheduled') && (isShiftAboutToStart(shift) || isShiftInProgress(shift)) && (
+                            
+                            {(shift.status === 'assigned' || shift.status === 'scheduled') && isShiftAboutToStart(shift) && (
                               <Button 
                                 size="sm" 
                                 className="bg-primary text-white text-xs"
@@ -446,13 +474,23 @@ export default function DashboardPage() {
                                 <Play className="h-3 w-3 mr-1" /> Clock In
                               </Button>
                             )}
+                            {(shift.status === 'assigned' || shift.status === 'scheduled') && !isShiftAboutToStart(shift) && (
+                              <span className="text-xs text-muted-foreground">
+                                Clock in available 1 min before shift
+                              </span>
+                            )}
                             {shift.status === 'clocked-in' && (
-                              <Button size="sm" variant="destructive" onClick={() => { setSelectedShift(shift); handleClockOut(shift.id); }} className="text-xs">
+                              <Button 
+                                size="sm" 
+                                variant="destructive" 
+                                onClick={() => { setSelectedShift(shift); handleClockOut(shift.id); }} 
+                                className="text-xs"
+                              >
                                 <Square className="h-3 w-3 mr-1" /> Clock Out
                               </Button>
                             )}
-                            {(shift.status === 'assigned' || shift.status === 'scheduled') && !isShiftAboutToStart(shift) && !isShiftInProgress(shift) && (
-                              <span className="text-xs text-muted-foreground">Not ready</span>
+                            {shift.status === 'clocked-out' && (
+                              <span className="text-xs text-muted-foreground">Completed</span>
                             )}
                             {(shift.status === 'completed' || shift.status === 'cancelled') && (
                               <span className="text-xs text-muted-foreground">No actions</span>
