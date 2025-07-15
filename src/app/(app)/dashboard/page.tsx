@@ -12,6 +12,7 @@ import { Calendar, Clock, MapPin, Play, Square, AlertTriangle, CheckCircle, XCir
 import { useRoster } from '@/lib/hooks/useRoster';
 import { useDashboardConfig } from '@/lib/hooks/useDashboardConfig';
 import { UserLevelSelector } from '@/components/UserLevelSelector';
+import { mockClients, mockProperties } from '@/lib/data';
 
 interface ComplianceItem {
   id: string;
@@ -70,20 +71,10 @@ export default function DashboardPage() {
 
   const [openShiftRequestDialogOpen, setOpenShiftRequestDialogOpen] = useState(false);
   const [clockOutDialogOpen, setClockOutDialogOpen] = useState(false);
-  const [timesheetDialogOpen, setTimesheetDialogOpen] = useState(false);
   const [selectedShift, setSelectedShift] = useState<any>(null);
   const [selectedOpenShift, setSelectedOpenShift] = useState<any>(null);
   const [openShiftRequestReason, setOpenShiftRequestReason] = useState('');
   const [clockOutReason, setClockOutReason] = useState('');
-  const [timesheetData, setTimesheetData] = useState({
-    clockInTime: '',
-    clockOutTime: '',
-    clockInLocation: '',
-    clockOutLocation: '',
-    breaks: [{ startTime: '', endTime: '', duration: '' }],
-    notes: '',
-    totalHours: { hours: 0, minutes: 0 }
-  });
 
   const handleClockIn = (shiftId: string) => {
     const location = getCurrentLocation();
@@ -93,13 +84,6 @@ export default function DashboardPage() {
       hour: '2-digit', 
       minute: '2-digit' 
     });
-    
-    // Store clock in data
-    setTimesheetData(prev => ({
-      ...prev,
-      clockInTime,
-      clockInLocation: location.address
-    }));
     
     // Call the clock in function from the hook
     clockIn(shiftId);
@@ -117,91 +101,23 @@ export default function DashboardPage() {
       minute: '2-digit' 
     });
     
-    // Update timesheet data
-    setTimesheetData(prev => ({
-      ...prev,
-      clockOutTime,
-      clockOutLocation: location.address
-    }));
-    
     if (selectedShift && isShiftEarly(selectedShift)) {
       setClockOutDialogOpen(true);
     } else {
-      // Calculate total hours
-      const totalHours = calculateShiftHours(
-        timesheetData.clockInTime, 
-        clockOutTime, 
-        timesheetData.breaks
-      );
-      
-      setTimesheetData(prev => ({
-        ...prev,
-        totalHours
-      }));
-      
-      setTimesheetDialogOpen(true);
+      // Direct clock out without timesheet dialog
+      clockOut(shiftId);
+      console.log(`Successfully clocked out at ${clockOutTime} from ${location.address}`);
     }
-    // Show success feedback (you could add a toast notification here)
-    console.log(`Successfully clocked out at ${clockOutTime} from ${location.address}`);
   };
 
   const confirmClockOut = () => {
     if (selectedShift) {
-      // Calculate total hours
-      const totalHours = calculateShiftHours(
-        timesheetData.clockInTime, 
-        timesheetData.clockOutTime, 
-        timesheetData.breaks
-      );
-      
-      setTimesheetData(prev => ({
-        ...prev,
-        totalHours
-      }));
-      
+      clockOut(selectedShift.id);
       setClockOutDialogOpen(false);
       setClockOutReason('');
-      setTimesheetDialogOpen(true);
+      setSelectedShift(null);
+      console.log('Clock out confirmed with reason:', clockOutReason);
     }
-  };
-
-  const submitTimesheet = () => {
-    // Here you would submit the timesheet to your backend
-    console.log('Timesheet submitted:', {
-      shift: selectedShift,
-      timesheetData,
-      earlyClockOutReason: clockOutReason
-    });
-    
-    clockOut(selectedShift.id);
-    setTimesheetDialogOpen(false);
-    setClockOutReason('');
-    setSelectedShift(null);
-    setTimesheetData({
-      clockInTime: '',
-      clockOutTime: '',
-      clockInLocation: '',
-      clockOutLocation: '',
-      breaks: [{ startTime: '', endTime: '', duration: '' }],
-      notes: '',
-      totalHours: { hours: 0, minutes: 0 }
-    });
-  };
-
-  const addBreak = () => {
-    setTimesheetData(prev => ({
-      ...prev,
-      breaks: [...prev.breaks, { startTime: '', endTime: '', duration: '' }]
-    }));
-  };
-
-  const updateBreak = (index: number, field: string, value: string) => {
-    setTimesheetData(prev => ({
-      ...prev,
-      breaks: prev.breaks.map((break_, i) => 
-        i === index ? { ...break_, [field]: value } : break_
-      )
-    }));
   };
 
   const isShiftAboutToStart = (shift: any) => {
@@ -269,27 +185,6 @@ export default function DashboardPage() {
   // Check if client/property details should be visible (only when clocked in)
   const shouldShowClientDetails = (shift: any) => {
     return shift.status === 'clocked-in';
-  };
-
-  const calculateShiftHours = (startTime: string, endTime: string, breaks: any[]) => {
-    const [startHour, startMin] = startTime.split(':').map(Number);
-    const [endHour, endMin] = endTime.split(':').map(Number);
-    
-    let totalMinutes = (endHour * 60 + endMin) - (startHour * 60 + startMin);
-    
-    // Subtract break time
-    const totalBreakMinutes = breaks.reduce((total, break_) => {
-      const [breakStartHour, breakStartMin] = break_.startTime.split(':').map(Number);
-      const [breakEndHour, breakEndMin] = break_.endTime.split(':').map(Number);
-      return total + ((breakEndHour * 60 + breakEndMin) - (breakStartHour * 60 + breakStartMin));
-    }, 0);
-    
-    totalMinutes -= totalBreakMinutes;
-    
-    const hours = Math.floor(totalMinutes / 60);
-    const minutes = totalMinutes % 60;
-    
-    return { hours, minutes, totalMinutes };
   };
 
   const getStatusBadge = (shift: any) => {
@@ -399,7 +294,54 @@ export default function DashboardPage() {
             Current Time: {new Date().toLocaleTimeString()} | 
             Today: {new Date().toISOString().split('T')[0]}
           </div>
-        </div>
+      </div>
+
+        {/* People We Support Section */}
+        {isSectionVisible('people-we-support') && (
+          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-left">
+                <Users className="h-5 w-5 text-primary" /> People We Support
+              </h2>
+              <Button size="sm" variant="outline" asChild>
+                <a href="/people">View All</a>
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {mockClients.slice(0, 3).map((client) => {
+                const property = mockProperties.find(p => p.id === client.propertyId);
+                return (
+                  <Card key={client.id} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <span className="text-primary font-semibold">
+                            {client.name.charAt(0)}
+                          </span>
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm">{client.name}</h3>
+                          <p className="text-xs text-muted-foreground">{property?.name || 'N/A'}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <Badge 
+                          variant={client.status === 'Active' ? 'default' : 'secondary'}
+                          className="text-xs"
+                        >
+                          {client.status}
+                        </Badge>
+                        <Button size="sm" variant="ghost" asChild>
+                          <a href={`/people/${client.id}`}>View</a>
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* My Shifts Section */}
         {isSectionVisible('my-shifts') && (
@@ -587,7 +529,7 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* Dialogs (unchanged) */}
+        {/* Dialogs */}
         {/* Open Shift Request Dialog */}
         <Dialog open={openShiftRequestDialogOpen} onOpenChange={setOpenShiftRequestDialogOpen}>
           <DialogContent className="max-w-2xl">
@@ -671,127 +613,6 @@ export default function DashboardPage() {
                   Confirm Clock Out
               </Button>
             </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Timesheet Dialog */}
-        <Dialog open={timesheetDialogOpen} onOpenChange={setTimesheetDialogOpen}>
-          <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>Submit Timesheet</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-6">
-              {/* Shift Details */}
-              <div className="p-4 bg-muted rounded-lg">
-                <h3 className="font-semibold mb-2 text-foreground">Shift Details</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <span className="font-medium text-foreground">Client:</span> {selectedShift?.client}
-                  </div>
-                  <div>
-                    <span className="font-medium text-foreground">Area:</span> {selectedShift?.area}
-            </div>
-                  <div>
-                    <span className="font-medium text-foreground">Scheduled:</span> {selectedShift?.startTime} - {selectedShift?.endTime}
-            </div>
-                  <div>
-                    <span className="font-medium text-foreground">Date:</span> {selectedShift?.date}
-            </div>
-            </div>
-      </div>
-
-              {/* Clock In/Out Times */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <Label>Clock In Time</Label>
-                  <div className="mt-1 p-3 bg-muted rounded-lg border">
-                    <div className="font-semibold text-foreground">{timesheetData.clockInTime}</div>
-                    <div className="text-xs text-muted-foreground">{timesheetData.clockInLocation}</div>
-                  </div>
-                </div>
-                <div>
-                  <Label>Clock Out Time</Label>
-                  <div className="mt-1 p-3 bg-muted rounded-lg border">
-                    <div className="font-semibold text-foreground">{timesheetData.clockOutTime}</div>
-                    <div className="text-xs text-muted-foreground">{timesheetData.clockOutLocation}</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Total Hours */}
-              <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
-                <div className="flex justify-between items-center">
-                  <span className="font-semibold text-foreground">Total Hours Worked:</span>
-                  <span className="text-lg font-bold text-success">
-                    {timesheetData.totalHours.hours}h {timesheetData.totalHours.minutes}m
-                  </span>
-                </div>
-              </div>
-
-              {/* Break Times */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <Label>Break Times</Label>
-                  <Button size="sm" variant="outline" onClick={addBreak}>
-                    Add Break
-                  </Button>
-                </div>
-                <div className="space-y-3">
-                  {timesheetData.breaks.map((break_, index) => (
-                    <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                      <Input
-                        placeholder="Start Time"
-                        value={break_.startTime}
-                        onChange={(e) => updateBreak(index, 'startTime', e.target.value)}
-                      />
-                      <Input
-                        placeholder="End Time"
-                        value={break_.endTime}
-                        onChange={(e) => updateBreak(index, 'endTime', e.target.value)}
-                      />
-                      <Input
-                        placeholder="Duration"
-                        value={break_.duration}
-                        onChange={(e) => updateBreak(index, 'duration', e.target.value)}
-                      />
-            </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Notes */}
-              <div>
-                <Label htmlFor="timesheet-notes">Notes (Optional)</Label>
-                <Textarea
-                  id="timesheet-notes"
-                  placeholder="Add any notes about your shift, reasons for finishing late, or other relevant information..."
-                  value={timesheetData.notes}
-                  onChange={(e) => setTimesheetData(prev => ({ ...prev, notes: e.target.value }))}
-                  className="mt-2"
-                  rows={3}
-                />
-              </div>
-
-              {/* Early Clock Out Reason */}
-              {clockOutReason && (
-                <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <AlertTriangle className="h-4 w-4 text-warning" />
-                    <span className="font-semibold text-warning">Early Clock Out Reason:</span>
-            </div>
-                  <p className="text-sm text-warning">{clockOutReason}</p>
-                </div>
-              )}
-
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setTimesheetDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={submitTimesheet}>
-                  Submit Timesheet
-                </Button>
-              </div>
             </div>
           </DialogContent>
         </Dialog>

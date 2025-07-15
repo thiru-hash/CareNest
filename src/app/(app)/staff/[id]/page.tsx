@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { mockStaff } from '@/lib/data';
-import { StaffTableClient } from '@/components/staff/StaffTableClient';
+import { ProfileClient } from '@/components/staff/ProfileClient';
 
-export default async function StaffProfilePage({ 
+export default async function StaffDetailPage({ 
   params 
 }: { 
   params: Promise<{ id: string }> 
@@ -16,21 +16,27 @@ export default async function StaffProfilePage({
     notFound();
   }
 
+  // Check if user is viewing their own profile
+  const isOwnProfile = currentUser.id === id;
+
   return (
     <div className="section-padding">
       <div className="mb-8">
-        <h1 className="heading-1 mb-2">Staff Profile</h1>
+        <h1 className="heading-1 mb-2">
+          {isOwnProfile ? 'My Profile' : `${staffMember.name}'s Profile`}
+        </h1>
         <p className="body-text text-gray-600 dark:text-gray-400">
-          View and manage staff member details
+          {isOwnProfile 
+            ? 'View and manage your personal information and employment details'
+            : `View ${staffMember.name}'s profile and employment information`
+          }
         </p>
       </div>
 
-      <div className="card shadow-soft p-6">
-        <StaffTableClient 
-          staff={[staffMember]} 
-          currentUser={currentUser}
-        />
-      </div>
+      <ProfileClient 
+        currentUser={staffMember} 
+        isOwnProfile={isOwnProfile}
+      />
     </div>
   );
 }

@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { User, Settings, LogOut } from 'lucide-react';
 import type { Staff } from '@/lib/types';
+import Link from 'next/link';
 
 interface MobileNavProps {
   currentUser: Staff;
@@ -40,7 +41,7 @@ export function MobileNav({ currentUser }: MobileNavProps) {
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-4">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+              <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
               <AvatarFallback className="bg-green-100 text-green-800 font-semibold">
                 {currentUser.name.split(' ').map(n => n[0]).join('')}
               </AvatarFallback>
@@ -59,13 +60,17 @@ export function MobileNav({ currentUser }: MobileNavProps) {
           </div>
           
           <div className="space-y-1">
-            <Button variant="ghost" size="sm" className="w-full justify-start">
-              <User className="mr-2 h-4 w-4" />
-              <span>Profile</span>
+            <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+              <Link href={`/staff/${currentUser.id}`}>
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </Link>
             </Button>
-            <Button variant="ghost" size="sm" className="w-full justify-start">
-              <Settings className="mr-2 h-4 w-4" />
-              <span>Settings</span>
+            <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+              <Link href="/settings">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </Link>
             </Button>
             <Button variant="ghost" size="sm" className="w-full justify-start text-red-600">
               <LogOut className="mr-2 h-4 w-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import {
   Card, CardContent, CardHeader, CardTitle, CardDescription,
@@ -44,22 +44,33 @@ export function FormBuilder({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentForm, setCurrentForm] = useState<CustomForm | null>(null);
   const [formData, setFormData] = useState<{ [key: string]: any }>(initialData);
+  
+  // Use ref to track if we've already processed the initialData
+  const initialDataRef = useRef<string>('');
 
-  // Update formData when initialData changes
+  // Update formData when initialData changes - with proper dependency management
   useEffect(() => {
-    setFormData(initialData);
-  }, [initialData]);
+    const initialDataString = JSON.stringify(initialData);
+    
+    // Only update if initialData is actually different from what we've processed before
+    if (initialDataString !== initialDataRef.current) {
+      initialDataRef.current = initialDataString;
+      setFormData(initialData);
+    }
+  }, [initialData]); // Remove formData from dependencies to prevent infinite loop
 
-  const handleCreateForm = () => setIsDialogOpen(true);
-  const handleEditForm = (form: CustomForm) => {
+  const handleCreateForm = useCallback(() => setIsDialogOpen(true), []);
+  
+  const handleEditForm = useCallback((form: CustomForm) => {
     setCurrentForm(form);
     setIsDialogOpen(true);
-  };
+  }, []);
 
-  const handleDeleteForm = (formId: string) =>
+  const handleDeleteForm = useCallback((formId: string) => {
     setForms((prev) => prev.filter((form) => form.id !== formId));
+  }, []);
 
-  const handleSaveForm = (savedForm: CustomForm) => {
+  const handleSaveForm = useCallback((savedForm: CustomForm) => {
     if (forms.some((f) => f.id === savedForm.id)) {
       setForms((prev) =>
         prev.map((f) => (f.id === savedForm.id ? savedForm : f))
@@ -67,18 +78,18 @@ export function FormBuilder({
     } else {
       setForms((prev) => [...prev, { ...savedForm, fields: [] }]);
     }
-  };
+  }, [forms]);
 
-  const handleInputChange = (fieldId: string, value: any) => {
+  const handleInputChange = useCallback((fieldId: string, value: any) => {
     if (!readonly) {
       setFormData((prev) => ({ ...prev, [fieldId]: value }));
     }
-  };
+  }, [readonly]);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = useCallback((event: React.FormEvent) => {
     event.preventDefault();
     if (onSubmit && !readonly) onSubmit(formData);
-  };
+  }, [onSubmit, readonly, formData]);
 
   // 🔘 Render Dynamic Form if `form` is passed
   if (form) {
@@ -112,6 +123,8 @@ export function FormBuilder({
                 <Select 
                   onValueChange={(value) => handleInputChange(field.id, value)}
                   disabled={readonly || field.readonly}
+                  value={formData[field.id] || ""}
+                  key={field.id}
                 >
                   <SelectTrigger className={readonly || field.readonly ? "bg-gray-50 cursor-not-allowed" : ""}>
                     <SelectValue placeholder="Select..." />
@@ -251,6 +264,7 @@ export function FormBuilder({
       </Card>
 
       <CreateEditFormDialog
+        key={`form-dialog-${isDialogOpen ? 'open' : 'closed'}`}
         isOpen={isDialogOpen}
         setIsOpen={setIsDialogOpen}
         form={currentForm}

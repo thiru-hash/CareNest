@@ -9,6 +9,7 @@ import { Bell, Settings, LogOut, User, Search } from 'lucide-react';
 import { NoticeDropdown } from './NoticeDropdown';
 import { mockNotices } from '@/lib/data';
 import type { Staff } from '@/lib/types';
+import Link from 'next/link';
 
 interface HeaderProps {
   currentUser: Staff;
@@ -48,7 +49,7 @@ export function Header({ currentUser }: HeaderProps) {
         </div>
 
         {/* Right side - User menu and notifications */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        <div className="flex items-center gap-2">
           {/* Notifications */}
           <NoticeDropdown notices={publishedNotices} />
           
@@ -57,14 +58,14 @@ export function Header({ currentUser }: HeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                 <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border-2 border-gray-200 dark:border-gray-700">
-                  <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                  <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
                   <AvatarFallback className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 font-semibold text-xs sm:text-sm">
                     {currentUser.name.split(' ').map(n => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-64" align="end" forceMount>
+            <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-semibold leading-none text-gray-900 dark:text-white">
@@ -79,13 +80,17 @@ export function Header({ currentUser }: HeaderProps) {
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+              <DropdownMenuItem asChild className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                <Link href={`/staff/${currentUser.id}`}>
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
+              <DropdownMenuItem asChild className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                <Link href="/settings">
+                  <Settings className="mr-2 h-4 w-4" />
+                  <span>Settings</span>
+                </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">

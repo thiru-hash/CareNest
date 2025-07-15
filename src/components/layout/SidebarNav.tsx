@@ -14,7 +14,10 @@ import {
   MapPin, 
   Settings,
   FileText,
-  Building2
+  Building2,
+  Clock,
+  Shield,
+  UserCheck
 } from 'lucide-react';
 
 const sidebarNavItems = [
@@ -24,9 +27,14 @@ const sidebarNavItems = [
     icon: LayoutDashboard,
   },
   {
+    title: 'People We Support',
+    href: '/people',
+    icon: Users,
+  },
+  {
     title: 'Staff',
     href: '/staff',
-    icon: Users,
+    icon: UserCheck,
   },
   {
     title: 'Roster',
@@ -34,9 +42,19 @@ const sidebarNavItems = [
     icon: Calendar,
   },
   {
+    title: 'Timesheets',
+    href: '/timesheets',
+    icon: Clock,
+  },
+  {
     title: 'Finance',
     href: '/finance',
     icon: DollarSign,
+  },
+  {
+    title: 'Compliance',
+    href: '/compliance',
+    icon: Shield,
   },
   {
     title: 'Locations',

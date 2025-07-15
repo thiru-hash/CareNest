@@ -13,21 +13,56 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, UserPlus, ArrowRight } from "lucide-react";
-import type { Staff, UserRole } from "@/lib/types"; // Assuming Staff type is in types.ts
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"; // Assuming DropdownMenu is a client component
-import { AddStaffFormModal } from "@/components/staff/AddStaffFormModal"; // Assuming AddStaffFormModal is a client component
-
+import { Badge } from "@/components/ui/badge";
+import { MoreHorizontal, UserPlus, ArrowRight, Mail, Phone, MapPin, Calendar, Building, Users } from "lucide-react";
+import type { Staff, UserRole } from "@/lib/types";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { AddStaffFormModal } from "@/components/staff/AddStaffFormModal";
 
 interface StaffTableClientProps {
- staffToDisplay: Staff[];
- currentUser: { id: string; name: string; email: string; role: UserRole };
+  staffToDisplay: Staff[];
+  currentUser: { id: string; name: string; email: string; role: UserRole };
 }
 
 export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClientProps) {
   const [isAddStaffModalOpen, setIsAddStaffModalOpen] = useState(false);
 
-  // staffToDisplay is now received as a prop
+  const getStatusBadge = (staff: Staff) => {
+    // Determine status based on employment details
+    const hasActiveEmployment = staff.employmentDetails?.startDate && 
+      (!staff.employmentDetails.endDate || staff.employmentDetails.endDate > new Date());
+    
+    if (hasActiveEmployment) {
+      return <Badge className="bg-green-100 text-green-800">Active</Badge>;
+    } else {
+      return <Badge variant="secondary">Inactive</Badge>;
+    }
+  };
+
+  const getEmploymentTypeBadge = (staff: Staff) => {
+    const type = staff.employmentDetails?.employmentType || 'Unknown';
+    const colorMap = {
+      'Full-time': 'bg-blue-100 text-blue-800',
+      'Part-time': 'bg-yellow-100 text-yellow-800',
+      'Casual': 'bg-purple-100 text-purple-800',
+      'Contract': 'bg-orange-100 text-orange-800'
+    };
+    
+    return (
+      <Badge className={colorMap[type as keyof typeof colorMap] || 'bg-gray-100 text-gray-800'}>
+        {type}
+      </Badge>
+    );
+  };
+
+  const formatDate = (date: Date | undefined) => {
+    if (!date) return 'Not specified';
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    }).format(date);
+  };
 
   return (
     <>
@@ -36,7 +71,10 @@ export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClie
           <div className="flex justify-between items-start">
             <div>
               <CardTitle>Staff Members</CardTitle>
-              <CardDescription>View and manage staff members in the system.</CardDescription>
+              <CardDescription>
+                View and manage staff members in the system. 
+                {currentUser.role === 'System Admin' && ' You can add new staff members and manage all records.'}
+              </CardDescription>
             </div>
             {currentUser.role === 'System Admin' && (
               <Button onClick={() => setIsAddStaffModalOpen(true)}>
@@ -50,10 +88,13 @@ export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClie
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Role</TableHead>
+                <TableHead>Staff Member</TableHead>
+                <TableHead>Role & Status</TableHead>
                 <TableHead>Contact</TableHead>
-                <TableHead><span className="sr-only">Actions</span></TableHead>
+                <TableHead>Employment</TableHead>
+                <TableHead>
+                  <span className="sr-only">Actions</span>
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -66,13 +107,49 @@ export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClie
                         <AvatarFallback>{staffMember.name.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div>
-                        <p>{staffMember.name}</p>
-                        <p className="text-sm text-muted-foreground">{staffMember.email}</p>
+                        <p className="font-semibold">{staffMember.name}</p>
+                        <p className="text-sm text-muted-foreground">ID: {staffMember.id}</p>
+                        {staffMember.personalDetails?.address && (
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
+                            <MapPin className="h-3 w-3" />
+                            <span className="truncate max-w-[200px]">{staffMember.personalDetails.address}</span>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{staffMember.role}</TableCell>
-                  <TableCell>{staffMember.phone}</TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <p className="font-medium">{staffMember.role}</p>
+                      {getStatusBadge(staffMember)}
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1 text-sm">
+                        <Mail className="h-3 w-3 text-muted-foreground" />
+                        <span className="truncate max-w-[150px]">{staffMember.email}</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-sm">
+                        <Phone className="h-3 w-3 text-muted-foreground" />
+                        <span>{staffMember.phone}</span>
+                      </div>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="space-y-1">
+                      {getEmploymentTypeBadge(staffMember)}
+                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <Calendar className="h-3 w-3" />
+                        <span>Started: {formatDate(staffMember.employmentDetails?.startDate)}</span>
+                      </div>
+                      {staffMember.employmentDetails?.payRate && (
+                        <div className="text-xs text-muted-foreground">
+                          ${staffMember.employmentDetails.payRate}/hr
+                        </div>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell className="text-right">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -81,21 +158,26 @@ export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClie
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        {/* Assuming you have an edit user modal/page */}
-                        {/* <DropdownMenuItem onClick={() => handleEditUser(staffMember)}>Edit User</DropdownMenuItem> */}
-                         <DropdownMenuItem asChild>
+                        <DropdownMenuItem asChild>
                           <Link href={`/staff/${staffMember.id}`}>
+                            <ArrowRight className="mr-2 h-4 w-4" />
                             View Profile
                           </Link>
                         </DropdownMenuItem>
                         {currentUser.role === 'System Admin' && (
-                           <DropdownMenuItem
+                          <>
+                            <DropdownMenuItem asChild>
+                              <Link href={`/staff/${staffMember.id}/edit`}>
+                                Edit Profile
+                              </Link>
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
                               className="text-destructive"
-                             // Assuming you have a delete user handler
-                              // onSelect={() => handleDeleteTrigger(staffMember)}
-                           >
-                             Delete
-                           </DropdownMenuItem>
+                              // onClick={() => handleDeleteStaff(staffMember.id)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                          </>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -103,8 +185,21 @@ export function StaffTableClient({ staffToDisplay, currentUser }: StaffTableClie
                 </TableRow>
               )) : (
                 <TableRow>
-                  <TableCell colSpan={4} className="h-24 text-center">
-                    No staff records to display.
+                  <TableCell colSpan={5} className="h-24 text-center">
+                    <div className="flex flex-col items-center gap-2">
+                      <Users className="h-8 w-8 text-muted-foreground" />
+                      <p className="text-muted-foreground">No staff records to display.</p>
+                      {currentUser.role === 'System Admin' && (
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => setIsAddStaffModalOpen(true)}
+                        >
+                          <UserPlus className="mr-2 h-4 w-4" />
+                          Add First Staff Member
+                        </Button>
+                      )}
+                    </div>
                   </TableCell>
                 </TableRow>
               )}

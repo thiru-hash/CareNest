@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -59,7 +59,7 @@ export function CreateEditFormDialog({
     }
   }, [form, isOpen]);
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!name || !linkedSectionId) {
         alert("Form Name and Linked Section are required.");
         return;
@@ -73,10 +73,22 @@ export function CreateEditFormDialog({
     };
     onSave(newFormData);
     setIsOpen(false);
-  };
+  }, [name, linkedSectionId, status, form, onSave, setIsOpen]);
+
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setName(e.target.value);
+  }, []);
+
+  const handleStatusChange = useCallback((checked: boolean) => {
+    setStatus(checked ? 'Active' : 'Inactive');
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setIsOpen(false);
+  }, [setIsOpen]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={setIsOpen} key={`dialog-${isEditMode ? 'edit' : 'create'}`}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{isEditMode ? "Edit Form" : "Create New Form"}</DialogTitle>
@@ -92,7 +104,7 @@ export function CreateEditFormDialog({
             <Input
               id="name"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={handleNameChange}
               className="col-span-3"
               placeholder="e.g. Client Intake Form"
             />
@@ -104,6 +116,7 @@ export function CreateEditFormDialog({
             <Select
               value={linkedSectionId}
               onValueChange={setLinkedSectionId}
+              key="linked-section-select"
             >
               <SelectTrigger className="col-span-3">
                 <SelectValue placeholder="Select a section" />
@@ -124,13 +137,13 @@ export function CreateEditFormDialog({
             <Switch
                 id="status"
                 checked={status === 'Active'}
-                onCheckedChange={(checked) => setStatus(checked ? 'Active' : 'Inactive')}
+                onCheckedChange={handleStatusChange}
                 className="col-span-3"
             />
           </div>
         </div>
         <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
+          <Button type="button" variant="outline" onClick={handleCancel}>Cancel</Button>
           <Button onClick={handleSave}>Save Changes</Button>
         </DialogFooter>
       </DialogContent>
