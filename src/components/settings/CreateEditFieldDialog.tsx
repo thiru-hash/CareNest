@@ -150,10 +150,7 @@ export function CreateEditFieldDialog({
                     <Combobox
                         options={fieldTypeOptions}
                         value={type}
-                        onChange={(value) => {
-                            console.log('Dialog onChange called with:', value);
-                            setType(value);
-                        }}
+                        onValueChange={setType}
                         placeholder="Select field type..."
                         searchPlaceholder="Search field types..."
                         noResultsMessage="No field type found."
