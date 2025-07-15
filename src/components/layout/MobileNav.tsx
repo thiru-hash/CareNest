@@ -12,7 +12,7 @@ import type { Staff } from '@/lib/types';
 import Link from 'next/link';
 
 interface MobileNavProps {
-  currentUser: Staff;
+  currentUser: Staff | undefined;
 }
 
 export function MobileNav({ currentUser }: MobileNavProps) {
@@ -42,9 +42,9 @@ export function MobileNav({ currentUser }: MobileNavProps) {
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-4">
             <Avatar className="h-10 w-10">
-              <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
+              <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name || 'User'} />
               <AvatarFallback className="bg-green-100 text-green-800 font-semibold">
-                {currentUser.name.split(' ').map(n => n[0]).join('')}
+                {currentUser?.name?.split(' ').map(n => n[0]).join('') || 'U'}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
@@ -52,10 +52,10 @@ export function MobileNav({ currentUser }: MobileNavProps) {
                 User Profile
               </p>
               <p className="text-sm font-medium text-gray-900 truncate">
-                {currentUser.name}
+                {currentUser?.name || 'User'}
               </p>
               <p className="text-xs text-gray-500 truncate">
-                {currentUser.email}
+                {currentUser?.email || 'user@example.com'}
               </p>
             </div>
           </div>
@@ -128,7 +128,7 @@ export function MobileNav({ currentUser }: MobileNavProps) {
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Account</p>
               <div className="space-y-1">
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href={`/staff/${currentUser.id}`}>
+                  <Link href={`/staff/${currentUser?.id || 'user'}`}>
                     <UserCheck className="mr-2 h-4 w-4" />
                     <span>My Profile</span>
                   </Link>

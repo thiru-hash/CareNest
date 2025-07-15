@@ -12,7 +12,7 @@ import type { Staff } from '@/lib/types';
 import Link from 'next/link';
 
 interface HeaderProps {
-  currentUser: Staff;
+  currentUser: Staff | undefined;
 }
 
 export function Header({ currentUser }: HeaderProps) {
@@ -58,9 +58,9 @@ export function Header({ currentUser }: HeaderProps) {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
                 <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border-2 border-gray-200 dark:border-gray-700">
-                  <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
+                  <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name || 'User'} />
                   <AvatarFallback className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 font-semibold text-xs sm:text-sm">
-                    {currentUser.name.split(' ').map(n => n[0]).join('')}
+                    {currentUser?.name?.split(' ').map(n => n[0]).join('') || 'U'}
                   </AvatarFallback>
                 </Avatar>
               </Button>
@@ -72,10 +72,10 @@ export function Header({ currentUser }: HeaderProps) {
                     User Profile
                   </p>
                   <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
-                    {currentUser.name}
+                    {currentUser?.name || 'User'}
                   </p>
                   <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
-                    {currentUser.email}
+                    {currentUser?.email || 'user@example.com'}
                   </p>
                 </div>
               </DropdownMenuLabel>
@@ -145,7 +145,7 @@ export function Header({ currentUser }: HeaderProps) {
               
               {/* Profile & Settings */}
               <DropdownMenuItem asChild>
-                <Link href={`/staff/${currentUser.id}`}>
+                <Link href={`/staff/${currentUser?.id || 'user'}`}>
                   <UserCheck className="mr-2 h-4 w-4" />
                   <span>My Profile</span>
                 </Link>
