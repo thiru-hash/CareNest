@@ -1,289 +1,434 @@
 'use client';
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, Play, Square, AlertTriangle, CheckCircle, XCircle, UserCheck, FileText, Users } from 'lucide-react';
-import { useRoster } from '@/lib/hooks/useRoster';
-import { useDashboardConfig } from '@/lib/hooks/useDashboardConfig';
-import { UserLevelSelector } from '@/components/UserLevelSelector';
-import { mockClients, mockProperties } from '@/lib/data';
+import { Button } from '@/components/ui/button';
+import { mockShifts, mockStaff, mockProperties } from '@/lib/data';
+import { format, isFuture, isPast } from 'date-fns';
+import { Clock, MapPin, Send } from 'lucide-react';
+import type { Staff, Shift, UserRole, Timesheet } from '@/lib/types';
+import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { TimesheetDialog } from '@/components/timesheet/TimesheetDialog';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { mockNotices, mockInvoices, mockPayrollRuns, mockComplianceItems } from '@/lib/data';
+import { Megaphone, AlertTriangle, Info, User, DollarSign, FileWarning, Users, CalendarCheck2, CheckCircle2, ShieldAlert } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import type { Notice } from '@/lib/types';
+import { differenceInDays } from 'date-fns';
 
-interface ComplianceItem {
-  id: string;
-  title: string;
-  status: 'completed' | 'pending' | 'overdue';
-  dueDate: string;
-  category: string;
-}
+// UpcomingShifts Component
+export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
+  const { toast } = useToast();
+  const [shiftsToShow, setShiftsToShow] = useState<Shift[]>([]);
+  const [cardTitle, setCardTitle] = useState("Upcoming Shifts");
+  const [cardDescription, setCardDescription] = useState("Loading shifts...");
+  const [clockedInShiftId, setClockedInShiftId] = useState<string | null>(null);
+  
+  const [requestedShiftIds, setRequestedShiftIds] = useState<string[]>([]);
+  const [requestingShiftId, setRequestingShiftId] = useState<string | null>(null);
+  const [requestMessage, setRequestMessage] = useState("");
 
-export default function DashboardPage() {
-  const { 
-    shifts, 
-    openShifts, 
-    loading, 
-    clockIn, 
-    clockOut, 
-    requestOpenShift,
-    getTodayShifts,
-    getTomorrowShifts,
-    getCurrentShift,
-    currentUserId 
-  } = useRoster();
+  const [shiftForTimesheet, setShiftForTimesheet] = useState<Shift | null>(null);
 
-  const { isSectionVisible, isFieldVisible } = useDashboardConfig();
+  // Mock current user for now
+  const mockCurrentUser: Staff = {
+    id: 'staff-1',
+    name: 'Sarah Johnson',
+    avatarUrl: '/avatars/sarah.jpg',
+    role: 'Support Worker',
+    email: 'sarah.johnson@carenest.com',
+    phone: '+64 21 123 4567'
+  };
 
-  const [complianceItems] = useState<ComplianceItem[]>([
-    {
-      id: '1',
-      title: 'First Aid Certification',
-      status: 'completed',
-      dueDate: '2024-01-15',
-      category: 'Training'
-    },
-    {
-      id: '2',
-      title: 'Manual Handling Training',
-      status: 'pending',
-      dueDate: '2024-02-20',
-      category: 'Training'
-    },
-    {
-      id: '3',
-      title: 'Police Check Renewal',
-      status: 'overdue',
-      dueDate: '2024-01-10',
-      category: 'Background Check'
-    },
-    {
-      id: '4',
-      title: 'COVID-19 Vaccination',
-      status: 'completed',
-      dueDate: '2023-12-01',
-      category: 'Health'
+  const privilegedRoles: UserRole[] = ['System Admin', 'Support Manager', 'Roster Admin'];
+  const isPrivilegedUser = privilegedRoles.includes(mockCurrentUser.role);
+  
+  useEffect(() => {
+    let upcomingShifts: Shift[];
+
+    const allUpcomingShifts = mockShifts
+      .filter(s => isFuture(s.end) && ['Assigned', 'Open', 'In Progress'].includes(s.status))
+      .sort((a, b) => a.start.getTime() - b.start.getTime());
+
+    if (isPrivilegedUser) {
+      upcomingShifts = allUpcomingShifts;
+    } else {
+      upcomingShifts = allUpcomingShifts.filter(s => s.staffId === mockCurrentUser.id || s.status === 'Open');
     }
-  ]);
 
-  const [openShiftRequestDialogOpen, setOpenShiftRequestDialogOpen] = useState(false);
-  const [clockOutDialogOpen, setClockOutDialogOpen] = useState(false);
-  const [selectedShift, setSelectedShift] = useState<any>(null);
-  const [selectedOpenShift, setSelectedOpenShift] = useState<any>(null);
-  const [openShiftRequestReason, setOpenShiftRequestReason] = useState('');
-  const [clockOutReason, setClockOutReason] = useState('');
+    // Update state
+    setShiftsToShow(upcomingShifts.slice(0, 5));
+    setCardTitle(isPrivilegedUser ? 'Upcoming Shifts' : 'My Shifts & Open Shifts');
+    setCardDescription(isPrivilegedUser 
+      ? 'A view of all upcoming shifts across the organisation.' 
+      : 'Your assigned shifts and available open shifts you can pick up.');
+  }, [isPrivilegedUser, mockCurrentUser.id]);
 
   const handleClockIn = (shiftId: string) => {
-    const location = getCurrentLocation();
-    const now = new Date();
-    const clockInTime = now.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    setClockedInShiftId(shiftId);
+    toast({
+      title: "Clocked In",
+      description: `You have clocked in for shift ${shiftId} at ${new Date().toLocaleTimeString()}`,
     });
-    
-    // Call the clock in function from the hook
-    clockIn(shiftId);
-    
-    // Show success feedback (you could add a toast notification here)
-    console.log(`Successfully clocked in at ${clockInTime} from ${location.address}`);
   };
 
-  const handleClockOut = (shiftId: string) => {
-    const location = getCurrentLocation();
-    const now = new Date();
-    const clockOutTime = now.toLocaleTimeString('en-US', { 
-      hour12: false, 
-      hour: '2-digit', 
-      minute: '2-digit' 
+  const handleClockOut = (shift: Shift) => {
+    setClockedInShiftId(null);
+    setShiftForTimesheet(shift);
+  };
+  
+  const handleSendRequest = (shift: Shift, message: string) => {
+    console.log(`[Notification Sent] User ${mockCurrentUser.name} (${mockCurrentUser.id}) requested open shift ${shift.id} for "${shift.title}" with message: "${message}"`);
+    toast({
+        title: "Request Sent",
+        description: `Your request for the "${shift.title}" shift has been sent.`,
     });
-    
-    if (selectedShift && isShiftEarly(selectedShift)) {
-      setClockOutDialogOpen(true);
-    } else {
-      // Direct clock out without timesheet dialog
-      clockOut(shiftId);
-      console.log(`Successfully clocked out at ${clockOutTime} from ${location.address}`);
-    }
+    setRequestedShiftIds(prev => [...prev, shift.id]);
+    setRequestingShiftId(null);
+    setRequestMessage("");
   };
 
-  const confirmClockOut = () => {
-    if (selectedShift) {
-      clockOut(selectedShift.id);
-      setClockOutDialogOpen(false);
-      setClockOutReason('');
-      setSelectedShift(null);
-      console.log('Clock out confirmed with reason:', clockOutReason);
-    }
+  const handleRequestClick = (shiftId: string) => {
+    setRequestingShiftId(shiftId);
+    setRequestMessage("");
   };
 
-  const isShiftAboutToStart = (shift: any) => {
-    const now = new Date();
-    const shiftStart = new Date();
-    const [hours, minutes] = shift.startTime.split(':');
-    shiftStart.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-    
-    // Check if shift is today and within 1 minute of start time (your business logic)
-    const today = new Date();
-    const shiftDate = new Date(shift.date);
-    const isToday = today.toDateString() === shiftDate.toDateString();
-    
-    if (!isToday) return false;
-    
-    const timeDiff = shiftStart.getTime() - now.getTime();
-    const oneMinute = 1 * 60 * 1000; // 1 minute in milliseconds
-    
-    return timeDiff >= -oneMinute && timeDiff <= oneMinute; // Allow 1 minute before and after
-  };
-
-  const isShiftInProgress = (shift: any) => {
-    const now = new Date();
-    const shiftStart = new Date();
-    const shiftEnd = new Date();
-    const [startHours, startMinutes] = shift.startTime.split(':');
-    const [endHours, endMinutes] = shift.endTime.split(':');
-    
-    const today = new Date();
-    const shiftDate = new Date(shift.date);
-    const isToday = today.toDateString() === shiftDate.toDateString();
-    
-    if (!isToday) return false;
-    
-    shiftStart.setHours(parseInt(startHours), parseInt(startMinutes), 0, 0);
-    shiftEnd.setHours(parseInt(endHours), parseInt(endMinutes), 0, 0);
-    
-    return now >= shiftStart && now <= shiftEnd;
-  };
-
-  const isShiftEarly = (shift: any) => {
-    const now = new Date();
-    const shiftEnd = new Date();
-    const [endHours, endMinutes] = shift.endTime.split(':');
-    
-    const today = new Date();
-    const shiftDate = new Date(shift.date);
-    const isToday = today.toDateString() === shiftDate.toDateString();
-    
-    if (!isToday) return false;
-    
-    shiftEnd.setHours(parseInt(endHours), parseInt(endMinutes), 0, 0);
-    return now < shiftEnd;
-  };
-
-  const getCurrentLocation = () => {
-    // Mock location - in real app this would use browser geolocation API
-    return {
-      latitude: -41.2866,
-      longitude: 174.7756,
-      address: "Wellington, New Zealand"
-    };
-  };
-
-  // Check if client/property details should be visible (only when clocked in)
-  const shouldShowClientDetails = (shift: any) => {
-    return shift.status === 'clocked-in';
-  };
-
-  const getStatusBadge = (shift: any) => {
-    switch (shift.status) {
-      case 'clocked-in':
-        return <Badge className="bg-success/10 text-success border-success/20">In Progress</Badge>;
-      case 'clocked-out':
-        return <Badge className="bg-muted text-muted-foreground">Completed</Badge>;
-      case 'assigned':
-        return <Badge className="bg-info/10 text-info border-info/20">Ready</Badge>;
-      case 'scheduled':
-        return <Badge className="bg-warning/10 text-warning border-warning/20">Upcoming</Badge>;
-      default:
-        return <Badge className="bg-muted text-muted-foreground">Completed</Badge>;
-    }
-  };
-
-  const getUrgencyBadge = (urgency: string) => {
-    switch (urgency) {
-      case 'high':
-        return <Badge className="bg-destructive/10 text-destructive border-destructive/20">High Priority</Badge>;
-      case 'medium':
-        return <Badge className="bg-warning/10 text-warning border-warning/20">Medium Priority</Badge>;
-      case 'low':
-        return <Badge className="bg-success/10 text-success border-success/20">Low Priority</Badge>;
-      default:
-        return <Badge className="bg-muted text-muted-foreground">Standard</Badge>;
-    }
-  };
-
-  const getComplianceStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return <CheckCircle className="h-4 w-4 text-success" />;
-      case 'pending':
-        return <AlertTriangle className="h-4 w-4 text-warning" />;
-      case 'overdue':
-        return <XCircle className="h-4 w-4 text-destructive" />;
-      default:
-        return null;
-    }
-  };
-
-  const handleRequestOpenShift = (openShift: any) => {
-    setSelectedOpenShift(openShift);
-    setOpenShiftRequestDialogOpen(true);
-  };
-
-  const submitOpenShiftRequest = () => {
-    if (selectedOpenShift && openShiftRequestReason.trim()) {
-      requestOpenShift(selectedOpenShift.id, openShiftRequestReason);
-      setOpenShiftRequestDialogOpen(false);
-      setOpenShiftRequestReason('');
-      setSelectedOpenShift(null);
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    if (date.toDateString() === today.toDateString()) {
-      return 'Today';
-    } else if (date.toDateString() === tomorrow.toDateString()) {
-      return 'Tomorrow';
-    } else {
-      return date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'short' });
-    }
-  };
-
-  const isToday = (dateString: string) => {
-    const date = new Date(dateString);
-    const today = new Date();
-    return date.toDateString() === today.toDateString();
-  };
-
-  const isTomorrow = (dateString: string) => {
-    const date = new Date(dateString);
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return date.toDateString() === tomorrow.toDateString();
-  };
-
-  if (loading) {
-  return (
-      <div className="min-h-screen flex items-center justify-center bg-muted">
-        <div className="w-full max-w-3xl mx-auto p-6">
-          <div className="animate-pulse bg-white rounded-2xl shadow-md p-8">
-            <h1 className="text-2xl font-bold text-left mb-2">Dashboard</h1>
-            <p className="text-muted-foreground text-left">Loading your dashboard...</p>
-          </div>
-        </div>
-      </div>
-    );
+  const handleCancelRequest = () => {
+    setRequestingShiftId(null);
+    setRequestMessage("");
+  }
+  
+  const canClockIn = (shift: Shift) => {
+    return !isPast(shift.end);
   }
 
-    return (
+  const handleSaveTimesheet = (timesheetData: Omit<Timesheet, 'id' | 'staffId'>) => {
+    console.log("Timesheet submitted:", { ...timesheetData, staffId: mockCurrentUser.id });
+    toast({
+      title: "Timesheet Submitted",
+      description: `Your timesheet for shift ${timesheetData.shiftId} has been submitted for approval.`,
+    });
+    setShiftForTimesheet(null);
+  };
+
+  return (
+    <>
+      <Card>
+        <CardHeader>
+          <CardTitle>{cardTitle}</CardTitle>
+          <CardDescription>{cardDescription}</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-2">
+            {shiftsToShow.length > 0 ? shiftsToShow.map((shift) => {
+              const staff = mockStaff.find(s => s.id === shift.staffId);
+              const property = mockProperties.find(p => p.id === shift.propertyId);
+              const isThisShiftClockedIn = clockedInShiftId === shift.id;
+              const isAnyShiftClockedIn = clockedInShiftId !== null;
+              const canThisShiftBeClockedIn = canClockIn(shift);
+              const hasBeenRequested = requestedShiftIds.includes(shift.id);
+              const isRequestFormOpen = requestingShiftId === shift.id;
+
+              return (
+                <div key={shift.id} className="flex flex-col gap-3 p-3 rounded-lg border bg-card hover:bg-muted/50">
+                  <div className="flex items-start gap-4">
+                    <div className="flex flex-col items-center w-12">
+                        <div className="font-bold text-lg">{format(shift.start, "dd")}</div>
+                        <div className="text-sm text-muted-foreground">{format(shift.start, "MMM")}</div>
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">{shift.title}</p>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                        <Clock className="h-4 w-4" />
+                        <span>{format(shift.start, "p")} - {format(shift.end, "p")}</span>
+                      </div>
+                      <div className="text-sm text-muted-foreground flex items-center gap-2">
+                        <MapPin className="h-4 w-4" />
+                        <span>{property?.name || "N/A"}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                      {staff ? (
+                         <Avatar className="h-8 w-8">
+                           <AvatarImage src={staff.avatarUrl} alt={staff.name} />
+                           <AvatarFallback>{staff.name.charAt(0)}</AvatarFallback>
+                         </Avatar>
+                      ) : (
+                        <Badge variant={shift.status === 'Open' ? 'destructive' : 'secondary'}>{shift.status}</Badge>
+                      )}
+                    </div>
+                  </div>
+
+                  {shift.staffId === mockCurrentUser.id && canThisShiftBeClockedIn && (
+                    <div className="w-full">
+                      {isThisShiftClockedIn ? (
+                        <Button onClick={() => handleClockOut(shift)} className="w-full bg-destructive hover:bg-destructive/90">
+                          <Clock className="mr-2" /> Clock Out & End Shift
+                        </Button>
+                      ) : (
+                        <Button onClick={() => handleClockIn(shift.id)} disabled={isAnyShiftClockedIn} className="w-full">
+                          <Clock className="mr-2" /> Clock In & Start Shift
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                  
+                  {shift.status === 'Open' && !isRequestFormOpen && (
+                     <div className="w-full">
+                       <Button 
+                         onClick={() => handleRequestClick(shift.id)} 
+                         variant="outline" 
+                         className="w-full"
+                         disabled={hasBeenRequested}
+                       >
+                         <Send className="mr-2" />
+                         {hasBeenRequested ? 'Request Sent' : 'Request Shift'}
+                       </Button>
+                     </div>
+                  )}
+
+                  {isRequestFormOpen && (
+                    <div className="mt-2 space-y-2 border-t pt-3">
+                      <Label htmlFor={`request-message-${shift.id}`}>Optional Message</Label>
+                      <Textarea
+                        id={`request-message-${shift.id}`}
+                        placeholder="Add a message for the rostering team..."
+                        value={requestMessage}
+                        onChange={(e) => setRequestMessage(e.target.value)}
+                      />
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={handleCancelRequest}>Cancel</Button>
+                        <Button onClick={() => handleSendRequest(shift, requestMessage)}>
+                          <Send className="mr-2" /> Send Request
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            }) : (
+              <p className="text-sm text-muted-foreground text-center py-4">No upcoming shifts to display.</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+      {shiftForTimesheet && (
+        <TimesheetDialog 
+            shift={shiftForTimesheet}
+            isOpen={!!shiftForTimesheet}
+            setIsOpen={(isOpen) => !isOpen && setShiftForTimesheet(null)}
+            onSave={handleSaveTimesheet}
+        />
+      )}
+    </>
+  );
+}
+
+// NoticeBoard Component
+const noticeConfig: Record<Notice['type'], { icon: React.ElementType, color: string }> = {
+    Urgent: { icon: Megaphone, color: 'border-destructive' },
+    Warning: { icon: AlertTriangle, color: 'border-yellow-500' },
+    Info: { icon: Info, color: 'border-primary' },
+};
+
+export function NoticeBoard() {
+  const publishedNotices = mockNotices.filter(n => n.status === 'Published').sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const allStaff = [...mockStaff];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Notice Board</CardTitle>
+        <CardDescription>Important announcements and updates for all staff.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {publishedNotices.length > 0 ? (
+          <Accordion type="single" collapsible className="w-full">
+            {publishedNotices.map((notice, index) => {
+              const config = noticeConfig[notice.type];
+              const Icon = config.icon;
+              const author = allStaff.find(s => s.id === notice.authorId);
+
+              return (
+                <AccordionItem key={notice.id} value={notice.id}>
+                  <AccordionTrigger className="hover:no-underline">
+                    <div className="flex items-center gap-4 w-full">
+                      <Icon className={cn("h-6 w-6", config.color.replace('border-', 'text-'))} />
+                      <div className="flex-1 text-left">
+                        <p className="font-semibold">{notice.title}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                          <Avatar className="h-5 w-5">
+                             <AvatarImage src={author?.avatarUrl} alt={author?.name} />
+                             <AvatarFallback className="text-xs">{author?.name.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <span>{author?.name || 'System'}</span>
+                          <span>&bull;</span>
+                          <span>{format(notice.createdAt, "dd MMM yyyy")}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="prose prose-sm max-w-none text-muted-foreground pl-14">
+                    {notice.content}
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+        ) : (
+          <p className="text-sm text-muted-foreground text-center py-4">No notices to display.</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
+// FinanceOverview Component
+export function FinanceOverview() {
+  const totalInvoiced = mockInvoices.reduce((acc, inv) => acc + inv.amount, 0);
+  const totalOverdue = mockInvoices
+    .filter(inv => inv.status === 'Overdue')
+    .reduce((acc, inv) => acc + inv.amount, 0);
+  
+  const nextPayroll = mockPayrollRuns
+    .filter(run => run.status === 'Pending')
+    .reduce((acc, run) => acc + run.netPay, 0);
+
+  const upcomingInvoiceDue = mockInvoices
+    .filter(inv => inv.status === 'Pending' && differenceInDays(inv.dueDate, new Date()) >= 0)
+    .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())[0];
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Finance Overview</CardTitle>
+        <CardDescription>A quick summary of key financial metrics.</CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Invoiced</CardTitle>
+            <DollarSign className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${totalInvoiced.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Across all clients</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Total Overdue</CardTitle>
+            <FileWarning className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive">${totalOverdue.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">Invoices &gt;30 days past due</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Next Payroll Due</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">${nextPayroll.toLocaleString()}</div>
+            <p className="text-xs text-muted-foreground">For pending payroll runs</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between pb-2">
+            <CardTitle className="text-sm font-medium">Next Invoice Due</CardTitle>
+            <CalendarCheck2 className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">
+              {upcomingInvoiceDue ? `$${upcomingInvoiceDue.amount.toLocaleString()}`: 'N/A'}
+            </div>
+            <p className="text-xs text-muted-foreground">
+              {upcomingInvoiceDue ? `Due on ${format(upcomingInvoiceDue.dueDate, 'dd MMM')}` : 'No upcoming invoices'}
+            </p>
+          </CardContent>
+        </Card>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ComplianceRenewals Component
+const statusConfig = {
+    Overdue: { icon: AlertTriangle, color: 'text-destructive', badge: 'destructive' },
+    'Expiring Soon': { icon: ShieldAlert, color: 'text-yellow-500', badge: 'secondary' },
+    Compliant: { icon: CheckCircle2, color: 'text-green-500', badge: 'default' }
+} as const;
+
+export function ComplianceRenewals({ currentUser }: { currentUser: Staff }) {
+  const hrRoles: UserRole[] = ['System Admin', 'Human Resources Manager', 'HR Admin', 'HR'];
+  const isHR = hrRoles.includes(currentUser.role);
+  
+  const renewals = mockComplianceItems
+    .filter(item => {
+        if (isHR) {
+            return item.status !== 'Compliant';
+        }
+        return item.staffId === currentUser.id && item.status !== 'Compliant';
+    })
+    .slice(0, 4);
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>Compliance Renewals</CardTitle>
+        <CardDescription>
+          {isHR ? "Items needing attention across the organisation." : "Your items needing attention soon."}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {renewals.map((item) => {
+            const staff = mockStaff.find(s => s.id === item.staffId);
+            const config = statusConfig[item.status];
+            const Icon = config.icon;
+            return (
+              <div key={item.id} className="flex items-center gap-4">
+                <Icon className={cn("h-6 w-6", config.color)} />
+                <Avatar className="h-9 w-9">
+                  <AvatarImage src={staff?.avatarUrl} alt={staff?.name} />
+                  <AvatarFallback>{staff?.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="font-semibold">{item.title}</p>
+                  <p className="text-sm text-muted-foreground">{staff?.name}</p>
+                </div>
+                <div className="text-right">
+                    <p className="text-sm font-medium">{format(item.renewalDate, "dd MMM yyyy")}</p>
+                    <Badge variant={config.badge as any} className="mt-1">{item.status}</Badge>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// Main Dashboard Component
+export default function DashboardPage() {
+  // Mock current user
+  const currentUser: Staff = {
+    id: 'staff-1',
+    name: 'Sarah Johnson',
+    avatarUrl: '/avatars/sarah.jpg',
+    role: 'Support Worker',
+    email: 'sarah.johnson@carenest.com',
+    phone: '+64 21 123 4567'
+  };
+
+  return (
     <div className="min-h-screen bg-muted">
       <div className="w-full h-full p-4 lg:p-6 space-y-6">
         {/* Header */}
@@ -294,332 +439,23 @@ export default function DashboardPage() {
             Current Time: {new Date().toLocaleTimeString()} | 
             Today: {new Date().toISOString().split('T')[0]}
           </div>
+        </div>
+
+        {/* Main Dashboard Grid */}
+        <div className="grid gap-6 md:grid-cols-2">
+          {/* Left Column */}
+          <div className="space-y-6">
+            <UpcomingShifts currentUser={currentUser} />
+            <NoticeBoard />
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            <FinanceOverview />
+            <ComplianceRenewals currentUser={currentUser} />
+          </div>
+        </div>
       </div>
-
-        {/* People We Support Section */}
-        {isSectionVisible('people-we-support') && (
-          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-left">
-                <Users className="h-5 w-5 text-primary" /> People We Support
-              </h2>
-              <Button size="sm" variant="outline" asChild>
-                <a href="/people">View All</a>
-              </Button>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {mockClients.slice(0, 3).map((client) => {
-                const property = mockProperties.find(p => p.id === client.propertyId);
-                return (
-                  <Card key={client.id} className="hover:shadow-md transition-shadow">
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                          <span className="text-primary font-semibold">
-                            {client.name.charAt(0)}
-                          </span>
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-sm">{client.name}</h3>
-                          <p className="text-xs text-muted-foreground">{property?.name || 'N/A'}</p>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Badge 
-                          variant={client.status === 'Active' ? 'default' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {client.status}
-                        </Badge>
-                        <Button size="sm" variant="ghost" asChild>
-                          <a href={`/people/${client.id}`}>View</a>
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* My Shifts Section */}
-        {isSectionVisible('my-shifts') && (
-          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-left">
-                <Calendar className="h-5 w-5 text-primary" /> My Shifts
-              </h2>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">List</Button>
-                <Button size="sm" variant="ghost">Week</Button>
-                <Button size="sm" variant="ghost">Day</Button>
-              </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left">
-                <thead>
-                  <tr className="text-xs text-muted-foreground border-b">
-                    <th className="py-2 px-2">Shift</th>
-                    {isFieldVisible('my-shifts-client') && <th className="py-2 px-2 hidden md:table-cell">Client</th>}
-                    <th className="py-2 px-2">Time</th>
-                    {isFieldVisible('my-shifts-status') && <th className="py-2 px-2 hidden sm:table-cell">Status</th>}
-                    {isFieldVisible('my-shifts-actions') && <th className="py-2 px-2">Actions</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {shifts.filter(shift => shift.status !== 'completed' && shift.status !== 'cancelled').map((shift, idx) => (
-                    <tr key={shift.id} className={
-                      `align-middle ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} border-b last:border-0`
-                    }>
-                      <td className="py-2 px-2">
-                        <div className="font-medium text-gray-900">{shift.area}</div>
-                        <div className="text-xs text-muted-foreground">{shift.notes}</div>
-                        {isFieldVisible('my-shifts-client') && shouldShowClientDetails(shift) && (
-                          <div className="text-xs text-muted-foreground md:hidden">{shift.client}</div>
-                        )}
-                        {isFieldVisible('my-shifts-client') && !shouldShowClientDetails(shift) && (
-                          <div className="text-xs text-muted-foreground md:hidden">Client details hidden until clocked in</div>
-                        )}
-                        <div className="text-xs text-blue-600">
-                          Status: {shift.status} | 
-                          Time: {shift.startTime}-{shift.endTime} | 
-                          Date: {shift.date}
-                        </div>
-                      </td>
-                      {isFieldVisible('my-shifts-client') && (
-                        <td className="py-2 px-2 hidden md:table-cell">
-                          {shouldShowClientDetails(shift) ? (
-                            shift.client
-                          ) : (
-                            <span className="text-muted-foreground">Hidden until clocked in</span>
-                          )}
-                        </td>
-                      )}
-                      <td className="py-2 px-2">
-                        <span className="font-semibold">{shift.startTime}</span> - <span className="font-semibold">{shift.endTime}</span>
-                        <div className="text-xs text-muted-foreground">{formatDate(shift.date)}</div>
-                      </td>
-                      {isFieldVisible('my-shifts-status') && <td className="py-2 px-2 hidden sm:table-cell">{getStatusBadge(shift)}</td>}
-                      {isFieldVisible('my-shifts-actions') && (
-                        <td className="py-2 px-2">
-                          <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
-                            
-                            {(shift.status === 'assigned' || shift.status === 'scheduled') && isShiftAboutToStart(shift) && (
-                              <Button 
-                                size="sm" 
-                                className="bg-primary text-white text-xs"
-                                onClick={() => handleClockIn(shift.id)}
-                              >
-                                <Play className="h-3 w-3 mr-1" /> Clock In
-                              </Button>
-                            )}
-                            {(shift.status === 'assigned' || shift.status === 'scheduled') && !isShiftAboutToStart(shift) && (
-                              <span className="text-xs text-muted-foreground">
-                                Clock in available 1 min before shift
-                              </span>
-                            )}
-                            {shift.status === 'clocked-in' && (
-                              <Button 
-                                size="sm" 
-                                variant="destructive" 
-                                onClick={() => { setSelectedShift(shift); handleClockOut(shift.id); }} 
-                                className="text-xs"
-                              >
-                                <Square className="h-3 w-3 mr-1" /> Clock Out
-                              </Button>
-                            )}
-                            {shift.status === 'clocked-out' && (
-                              <span className="text-xs text-muted-foreground">Completed</span>
-                            )}
-                            {(shift.status === 'completed' || shift.status === 'cancelled') && (
-                              <span className="text-xs text-muted-foreground">No actions</span>
-                            )}
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Open Shifts Section */}
-        {isSectionVisible('open-shifts') && (
-          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold flex items-center gap-2 text-left">
-                <Users className="h-5 w-5 text-info" /> Open Shifts
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-left">
-                <thead>
-                  <tr className="text-xs text-muted-foreground border-b">
-                    <th className="py-2 px-2">Shift</th>
-                    {isFieldVisible('open-shifts-client') && <th className="py-2 px-2 hidden lg:table-cell">Client</th>}
-                    <th className="py-2 px-2">Time</th>
-                    {isFieldVisible('open-shifts-role') && <th className="py-2 px-2 hidden md:table-cell">Role</th>}
-                    {isFieldVisible('open-shifts-pay') && <th className="py-2 px-2 hidden xl:table-cell">Pay</th>}
-                    {isFieldVisible('open-shifts-priority') && <th className="py-2 px-2 hidden sm:table-cell">Priority</th>}
-                    {isFieldVisible('open-shifts-actions') && <th className="py-2 px-2">Actions</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {openShifts.filter(shift => shift.status === 'open').map((shift, idx) => (
-                    <tr key={shift.id} className={
-                      `align-middle ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} border-b last:border-0`
-                    }>
-                      <td className="py-2 px-2">
-                        <div className="font-medium text-gray-900">{shift.area}</div>
-                        <div className="text-xs text-muted-foreground">{shift.description}</div>
-                        {isFieldVisible('open-shifts-client') && <div className="text-xs text-muted-foreground lg:hidden">{shift.client}</div>}
-                      </td>
-                      {isFieldVisible('open-shifts-client') && <td className="py-2 px-2 hidden lg:table-cell">{shift.client}</td>}
-                      <td className="py-2 px-2">
-                        <span className="font-semibold">{shift.startTime}</span> - <span className="font-semibold">{shift.endTime}</span>
-                        <div className="text-xs text-muted-foreground">{formatDate(shift.date)}</div>
-                      </td>
-                      {isFieldVisible('open-shifts-role') && <td className="py-2 px-2 hidden md:table-cell">{shift.requiredRole}</td>}
-                      {isFieldVisible('open-shifts-pay') && <td className="py-2 px-2 hidden xl:table-cell text-success">{shift.payRate}</td>}
-                      {isFieldVisible('open-shifts-priority') && <td className="py-2 px-2 hidden sm:table-cell">{getUrgencyBadge(shift.urgency)}</td>}
-                      {isFieldVisible('open-shifts-actions') && (
-                        <td className="py-2 px-2">
-                          <Button size="sm" variant="outline" onClick={() => handleRequestOpenShift(shift)} className="text-xs">
-                            <FileText className="h-3 w-3 mr-1" /> Request
-                          </Button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* Compliance Section */}
-        {isSectionVisible('compliance') && (
-          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
-            <div className="flex items-center mb-4">
-              <UserCheck className="h-5 w-5 text-warning mr-2" />
-              <h2 className="text-xl font-semibold text-left">Compliance & Training</h2>
-            </div>
-            <div className="divide-y">
-              {complianceItems.map((item, idx) => (
-                <div key={item.id} className="flex items-center justify-between py-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    {getComplianceStatusIcon(item.status)}
-                    <div className="min-w-0">
-                      <p className="font-medium text-sm text-gray-900 truncate">{item.title}</p>
-                      <p className="text-xs text-muted-foreground">{item.category}</p>
-                    </div>
-                  </div>
-                  <div className="flex flex-col items-end ml-3">
-                    <Badge variant={item.status === 'completed' ? 'default' : item.status === 'overdue' ? 'destructive' : 'secondary'} className="text-xs">
-                      {item.status}
-                    </Badge>
-                    <p className="text-xs text-muted-foreground">Due: {item.dueDate}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Dialogs */}
-        {/* Open Shift Request Dialog */}
-        <Dialog open={openShiftRequestDialogOpen} onOpenChange={setOpenShiftRequestDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Request Open Shift</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="open-shift-details">Shift Details</Label>
-                <div className="mt-2 p-4 bg-muted rounded-lg">
-                  <p className="font-semibold text-foreground">{selectedOpenShift?.area} ({selectedOpenShift?.client})</p>
-                  <p className="text-sm text-muted-foreground">
-                    {selectedOpenShift?.date} - {selectedOpenShift?.startTime} to {selectedOpenShift?.endTime}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Required: {selectedOpenShift?.requiredRole} • Pay: {selectedOpenShift?.payRate}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    {selectedOpenShift?.description}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="open-shift-reason">Why are you suitable for this shift?</Label>
-                <Textarea
-                  id="open-shift-reason"
-                  placeholder="Please explain your qualifications, experience, and why you can handle this shift effectively..."
-                  value={openShiftRequestReason}
-                  onChange={(e) => setOpenShiftRequestReason(e.target.value)}
-                  className="mt-2"
-                  rows={4}
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setOpenShiftRequestDialogOpen(false)}>
-                  Cancel
-                </Button>
-                <Button onClick={submitOpenShiftRequest} disabled={!openShiftRequestReason.trim()}>
-                  Submit Request
-                </Button>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-
-        {/* Clock Out Early Dialog */}
-        <Dialog open={clockOutDialogOpen} onOpenChange={setClockOutDialogOpen}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Early Clock Out</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-            <div className="flex items-center space-x-2">
-                  <AlertTriangle className="h-4 w-4 text-warning" />
-                  <p className="text-sm font-medium text-warning">
-                    You are clocking out before your scheduled shift end time.
-                  </p>
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="clockout-reason">Reason for early clock out</Label>
-                <Textarea
-                  id="clockout-reason"
-                  placeholder="Please explain why you need to clock out early..."
-                  value={clockOutReason}
-                  onChange={(e) => setClockOutReason(e.target.value)}
-                  className="mt-2"
-                  rows={3}
-                />
-              </div>
-              <div className="flex justify-end space-x-2">
-                <Button variant="outline" onClick={() => setClockOutDialogOpen(false)}>
-                  Cancel
-              </Button>
-                <Button 
-                  variant="destructive" 
-                  onClick={confirmClockOut}
-                  disabled={!clockOutReason.trim()}
-                >
-                  Confirm Clock Out
-              </Button>
-            </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-        
-        {/* User Level Selector for Testing */}
-        <UserLevelSelector />
-          </div>
     </div>
   );
 }
