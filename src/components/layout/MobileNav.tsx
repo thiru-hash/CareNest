@@ -6,8 +6,8 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 import { Menu, X } from 'lucide-react';
 import { SidebarNav } from './SidebarNav';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
+import { User, Settings, LogOut, LayoutDashboard, Clock, Calendar, Shield, Mail, Key, FileText, UserCheck, CalendarDays } from 'lucide-react';
 import type { Staff } from '@/lib/types';
 import Link from 'next/link';
 
@@ -38,6 +38,7 @@ export function MobileNav({ currentUser }: MobileNavProps) {
           <SidebarNav />
         </div>
         
+        {/* User Profile Section */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-4">
             <Avatar className="h-10 w-10">
@@ -48,34 +49,106 @@ export function MobileNav({ currentUser }: MobileNavProps) {
             </Avatar>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-gray-900 truncate">
+                User Profile
+              </p>
+              <p className="text-sm font-medium text-gray-900 truncate">
                 {currentUser.name}
               </p>
               <p className="text-xs text-gray-500 truncate">
                 {currentUser.email}
               </p>
-              <p className="text-xs text-gray-500 truncate">
-                {currentUser.role}
-              </p>
             </div>
           </div>
           
           <div className="space-y-1">
-            <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-              <Link href={`/staff/${currentUser.id}`}>
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </Link>
-            </Button>
-            <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-              <Link href="/settings">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Settings</span>
-              </Link>
-            </Button>
-            <Button variant="ghost" size="sm" className="w-full justify-start text-red-600">
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </Button>
+            {/* General Section */}
+            <div className="mb-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">General</p>
+              <div className="space-y-1">
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/dashboard">
+                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/timesheets">
+                    <Clock className="mr-2 h-4 w-4" />
+                    <span>Timesheet</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/roster">
+                    <Calendar className="mr-2 h-4 w-4" />
+                    <span>Roster</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/availability">
+                    <CalendarDays className="mr-2 h-4 w-4" />
+                    <span>My Availability</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/two-factor">
+                    <Shield className="mr-2 h-4 w-4" />
+                    <span>Two-factor Auth.</span>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="mb-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Quick Actions</p>
+              <div className="space-y-1">
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/leave-request">
+                    <FileText className="mr-2 h-4 w-4" />
+                    <span>Leave Request</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/inbox">
+                    <Mail className="mr-2 h-4 w-4" />
+                    <span>Inbox</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/change-password">
+                    <Key className="mr-2 h-4 w-4" />
+                    <span>Change Password</span>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Profile & Settings */}
+            <div className="mb-3">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Account</p>
+              <div className="space-y-1">
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href={`/staff/${currentUser.id}`}>
+                    <UserCheck className="mr-2 h-4 w-4" />
+                    <span>My Profile</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/settings">
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Logout */}
+            <div className="pt-2 border-t border-gray-200">
+              <Button variant="ghost" size="sm" className="w-full justify-start text-red-600">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </Button>
+            </div>
           </div>
           
           <div className="mt-4 pt-4 border-t border-gray-200">

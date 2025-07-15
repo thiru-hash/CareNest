@@ -4,8 +4,8 @@
 
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Bell, Settings, LogOut, User, Search } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
+import { Bell, Settings, LogOut, User, Search, LayoutDashboard, Clock, Calendar, Shield, Mail, Key, FileText, UserCheck, CalendarDays } from 'lucide-react';
 import { NoticeDropdown } from './NoticeDropdown';
 import { mockNotices } from '@/lib/data';
 import type { Staff } from '@/lib/types';
@@ -65,33 +65,98 @@ export function Header({ currentUser }: HeaderProps) {
                 </Avatar>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuContent align="end" className="w-64">
               <DropdownMenuLabel className="font-normal">
                 <div className="flex flex-col space-y-1">
                   <p className="text-sm font-semibold leading-none text-gray-900 dark:text-white">
+                    User Profile
+                  </p>
+                  <p className="text-sm font-medium leading-none text-gray-900 dark:text-white">
                     {currentUser.name}
                   </p>
                   <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
                     {currentUser.email}
                   </p>
-                  <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
-                    {currentUser.role}
-                  </p>
                 </div>
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem asChild className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
-                <Link href={`/staff/${currentUser.id}`}>
+              
+              {/* General Section */}
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger>
                   <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
+                  <span>General</span>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent>
+                  <DropdownMenuItem asChild>
+                    <Link href="/dashboard">
+                      <LayoutDashboard className="mr-2 h-4 w-4" />
+                      <span>Dashboard</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/timesheets">
+                      <Clock className="mr-2 h-4 w-4" />
+                      <span>Timesheet</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/roster">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      <span>Roster</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/availability">
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      <span>My Availability</span>
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/two-factor">
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Two-factor Auth.</span>
+                    </Link>
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+
+              {/* Quick Actions */}
+              <DropdownMenuItem asChild>
+                <Link href="/leave-request">
+                  <FileText className="mr-2 h-4 w-4" />
+                  <span>Leave Request</span>
                 </Link>
               </DropdownMenuItem>
-              <DropdownMenuItem asChild className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+              <DropdownMenuItem asChild>
+                <Link href="/inbox">
+                  <Mail className="mr-2 h-4 w-4" />
+                  <span>Inbox</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/change-password">
+                  <Key className="mr-2 h-4 w-4" />
+                  <span>Change Password</span>
+                </Link>
+              </DropdownMenuItem>
+              
+              <DropdownMenuSeparator />
+              
+              {/* Profile & Settings */}
+              <DropdownMenuItem asChild>
+                <Link href={`/staff/${currentUser.id}`}>
+                  <UserCheck className="mr-2 h-4 w-4" />
+                  <span>My Profile</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/settings">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>Settings</span>
                 </Link>
               </DropdownMenuItem>
+              
               <DropdownMenuSeparator />
               <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
                 <LogOut className="mr-2 h-4 w-4" />
