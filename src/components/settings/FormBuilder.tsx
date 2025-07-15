@@ -29,9 +29,16 @@ type FormBuilderProps = {
   onSubmit?: (formData: { [key: string]: any }) => void;
   initialData?: { [key: string]: any };
   readonly?: boolean;
+  onDatabaseCreation?: (sectionName: string, formData: any) => Promise<void>;
 };
 
-export function FormBuilder({ form, onSubmit, initialData = {}, readonly = false }: FormBuilderProps) {
+export function FormBuilder({ 
+  form, 
+  onSubmit, 
+  initialData = {}, 
+  readonly = false,
+  onDatabaseCreation 
+}: FormBuilderProps) {
   const [forms, setForms] = useState<CustomForm[]>(mockForms);
   const [sections, setSections] = useState<AppSection[]>(mockSections);
   const [isDialogOpen, setIsDialogOpen] = useState(false);

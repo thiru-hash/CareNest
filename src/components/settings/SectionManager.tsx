@@ -95,7 +95,11 @@ const defaultSections: Section[] = [
   }
 ];
 
-export function SectionManager() {
+interface SectionManagerProps {
+  onDatabaseCreation?: (sectionName: string, formData: any) => Promise<void>;
+}
+
+export function SectionManager({ onDatabaseCreation }: SectionManagerProps) {
   const [sections, setSections] = useState<Section[]>(defaultSections);
   const [editingSection, setEditingSection] = useState<Section | null>(null);
 

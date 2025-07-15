@@ -418,7 +418,6 @@ export default function DashboardPage() {
               <table className="min-w-full text-left">
                 <thead>
                   <tr className="text-xs text-muted-foreground border-b">
-                    <th className="py-2 px-2"><input type="checkbox" /></th>
                     <th className="py-2 px-2">Shift</th>
                     {isFieldVisible('my-shifts-client') && <th className="py-2 px-2 hidden md:table-cell">Client</th>}
                     <th className="py-2 px-2">Time</th>
@@ -431,7 +430,6 @@ export default function DashboardPage() {
                     <tr key={shift.id} className={
                       `align-middle ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} border-b last:border-0`
                     }>
-                      <td className="py-2 px-2"><input type="checkbox" /></td>
                       <td className="py-2 px-2">
                         <div className="font-medium text-gray-900">{shift.area}</div>
                         <div className="text-xs text-muted-foreground">{shift.notes}</div>
@@ -518,7 +516,6 @@ export default function DashboardPage() {
               <table className="min-w-full text-left">
                 <thead>
                   <tr className="text-xs text-muted-foreground border-b">
-                    <th className="py-2 px-2"><input type="checkbox" /></th>
                     <th className="py-2 px-2">Shift</th>
                     {isFieldVisible('open-shifts-client') && <th className="py-2 px-2 hidden lg:table-cell">Client</th>}
                     <th className="py-2 px-2">Time</th>
@@ -533,7 +530,6 @@ export default function DashboardPage() {
                     <tr key={shift.id} className={
                       `align-middle ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} border-b last:border-0`
                     }>
-                      <td className="py-2 px-2"><input type="checkbox" /></td>
                       <td className="py-2 px-2">
                         <div className="font-medium text-gray-900">{shift.area}</div>
                         <div className="text-xs text-muted-foreground">{shift.description}</div>
