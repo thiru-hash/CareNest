@@ -16,6 +16,8 @@ import {
   Shield,
   Zap,
   Landmark,
+  ShieldAlert,
+  UsersRound,
   type LucideIcon
 } from 'lucide-react';
 
@@ -42,7 +44,7 @@ export const iconMap: { [key: string]: LucideIcon } = {
   'LayoutDashboard': LayoutDashboard,
   'Calendar': Calendar,
   'Users': Users,
-  'UsersRound': UserCheck,
+  'UsersRound': UsersRound,
   'MapPin': MapPin,
   'Settings': Settings,
   'FileText': FileText,
@@ -54,6 +56,7 @@ export const iconMap: { [key: string]: LucideIcon } = {
   'Shield': Shield,
   'Zap': Zap,
   'Landmark': Landmark,
+  'ShieldAlert': ShieldAlert,
 };
 
 // Function to get icon component by name

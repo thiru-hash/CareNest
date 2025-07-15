@@ -220,6 +220,7 @@ export interface SectionTab {
     name: string;
     order: number;
     formId: string;
+    description?: string;
 }
 
 export interface AppSection {
@@ -230,15 +231,31 @@ export interface AppSection {
     order: number;
     status: 'Active' | 'Inactive';
     tabs?: SectionTab[];
+    description?: string;
+    visibleRoles?: string[];
 }
 
 export type FormFieldType = 
-    | 'text' | 'textbox' | 'textbox-full' | 'richtext' 
-    | 'dropdown' | 'multi-select-dropdown' | 'dual-select'
-    | 'date' | 'dob' | 'radio' | 'time' | 'checkbox'
-    | 'number-whole' | 'number-decimal' | 'currency'
-    | 'service-item' | 'file-upload' | 'headline' | 'sub-headline'
-    | 'signature' | 'infobox' | 'infobox-full' | 'spacer';
+    // Text-Based Fields
+    | 'text' | 'textbox' | 'textbox-full' | 'richtext' | 'email' | 'url' | 'password'
+    // Numeric Fields
+    | 'number-whole' | 'number-decimal' | 'currency' | 'percent' | 'auto_number' | 'rating'
+    // Date & Time Fields
+    | 'date' | 'dob' | 'time' | 'datetime' | 'daterange'
+    // Choice / Boolean Fields
+    | 'dropdown' | 'multi-select-dropdown' | 'dual-select' | 'radio' | 'checkbox' | 'toggle' | 'tags'
+    // Relational & Reference Fields
+    | 'lookup' | 'user' | 'reference' | 'foreign_key' | 'external_select'
+    // Computed / Formula Fields
+    | 'formula' | 'rollup' | 'datecalc' | 'conditional_text'
+    // Location & File Upload Fields
+    | 'file-upload' | 'image' | 'signature' | 'geolocation' | 'address'
+    // Smart / Dynamic Fields
+    | 'condition_field' | 'stepper' | 'progress_bar' | 'json_editor' | 'barcode_scanner' | 'color_picker'
+    // System/Internal Fields
+    | 'created_at' | 'updated_at' | 'created_by' | 'record_id' | 'status'
+    // Service & Specialized Fields
+    | 'service-item' | 'headline' | 'sub-headline' | 'infobox' | 'infobox-full' | 'spacer';
 
 export interface FormField {
     id: string;
@@ -247,6 +264,8 @@ export interface FormField {
     order: number;
     tooltip?: string;
     required?: boolean;
+    status?: 'Active' | 'Inactive';
+    visibleRoles?: string[];
 }
 
 export interface CustomForm {

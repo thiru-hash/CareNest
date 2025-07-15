@@ -199,7 +199,7 @@ export default function SettingsPage() {
       </Alert>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-9">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-8">
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="groups">Groups</TabsTrigger>
           <TabsTrigger value="roles">Roles</TabsTrigger>
@@ -207,7 +207,6 @@ export default function SettingsPage() {
           <TabsTrigger value="sections">Sections</TabsTrigger>
           <TabsTrigger value="forms">Forms</TabsTrigger>
           <TabsTrigger value="notices">Notices</TabsTrigger>
-          <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
         
@@ -231,9 +230,6 @@ export default function SettingsPage() {
         </TabsContent>
         <TabsContent value="notices">
           <NoticeManagement />
-        </TabsContent>
-        <TabsContent value="dashboard">
-          <DashboardCustomization />
         </TabsContent>
         <TabsContent value="system">
           <SystemSettings />

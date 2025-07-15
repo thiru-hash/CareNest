@@ -11,6 +11,7 @@ import { fieldTypes } from "@/lib/data";
 import type { CustomForm, FormField } from "@/lib/types";
 import { CreateEditFieldDialog } from "./CreateEditFieldDialog";
 import React from "react";
+import { Badge } from "@/components/ui/badge";
 
 export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
     const [fields, setFields] = useState<FormField[]>((initialForm.fields || []).slice().sort((a, b) => a.order - b.order));
@@ -26,6 +27,8 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
             order: maxOrder + 10,
             required: false,
             tooltip: '',
+            status: 'Active',
+            visibleRoles: [],
         });
         setIsDialogOpen(true);
     };
@@ -37,6 +40,14 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
 
     const handleDeleteField = (fieldId: string) => {
         setFields(prev => prev.filter(field => field.id !== fieldId));
+    };
+
+    const handleInactivateField = (fieldId: string) => {
+        setFields(prev => prev.map(field => field.id === fieldId ? { ...field, status: 'Inactive' } : field));
+    };
+
+    const handleActivateField = (fieldId: string) => {
+        setFields(prev => prev.map(field => field.id === fieldId ? { ...field, status: 'Active' } : field));
     };
 
     const handleSaveField = (savedField: FormField) => {
@@ -76,6 +87,8 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
                                 <TableHead>Order</TableHead>
                                 <TableHead>Field Name</TableHead>
                                 <TableHead>Type</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>Visibility</TableHead>
                                 <TableHead><span className="sr-only">Actions</span></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -95,6 +108,16 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
                                                 <span>{getFieldTypeName(field.type)}</span>
                                             </div>
                                         </TableCell>
+                                        <TableCell>
+                                            <Badge variant={field.status === 'Active' ? 'default' : 'secondary'}>
+                                                {field.status || 'Active'}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>
+                                            {field.visibleRoles && field.visibleRoles.length > 0
+                                                ? field.visibleRoles.join(', ')
+                                                : <span className="text-muted-foreground">All</span>}
+                                        </TableCell>
                                         <TableCell className="text-right">
                                             <DropdownMenu>
                                                 <DropdownMenuTrigger asChild>
@@ -104,6 +127,11 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem onClick={() => handleEditField(field)}>Edit Field</DropdownMenuItem>
+                                                    {field.status === 'Active' ? (
+                                                        <DropdownMenuItem onClick={() => handleInactivateField(field.id)}>Inactivate</DropdownMenuItem>
+                                                    ) : (
+                                                        <DropdownMenuItem onClick={() => handleActivateField(field.id)}>Activate</DropdownMenuItem>
+                                                    )}
                                                     <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteField(field.id)}>Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -112,7 +140,7 @@ export function FormFieldManager({ form: initialForm }: { form: CustomForm }) {
                                 );
                             }) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="h-24 text-center">
+                                    <TableCell colSpan={6} className="h-24 text-center">
                                         No fields created yet.
                                     </TableCell>
                                 </TableRow>

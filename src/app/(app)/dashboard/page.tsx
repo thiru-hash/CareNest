@@ -145,12 +145,12 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
                       <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
                         <Clock className="h-4 w-4" />
                         <span>{format(shift.start, "p")} - {format(shift.end, "p")}</span>
-                      </div>
+      </div>
                       <div className="text-sm text-muted-foreground flex items-center gap-2">
                         <MapPin className="h-4 w-4" />
                         <span>{property?.name || "N/A"}</span>
-                      </div>
-                    </div>
+              </div>
+            </div>
                     <div className="flex flex-col items-end gap-2">
                       {staff ? (
                          <Avatar className="h-8 w-8">
@@ -160,8 +160,8 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
                       ) : (
                         <Badge variant={shift.status === 'Open' ? 'destructive' : 'secondary'}>{shift.status}</Badge>
                       )}
-                    </div>
-                  </div>
+              </div>
+            </div>
 
                   {shift.staffId === mockCurrentUser.id && canThisShiftBeClockedIn && (
                     <div className="w-full">
@@ -205,17 +205,17 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
                         <Button onClick={() => handleSendRequest(shift, requestMessage)}>
                           <Send className="mr-2" /> Send Request
                         </Button>
-                      </div>
-                    </div>
+              </div>
+            </div>
                   )}
-                </div>
+              </div>
               );
             }) : (
               <p className="text-sm text-muted-foreground text-center py-4">No upcoming shifts to display.</p>
             )}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          </CardContent>
+        </Card>
       {shiftForTimesheet && (
         <TimesheetDialog 
             shift={shiftForTimesheet}
@@ -240,11 +240,11 @@ export function NoticeBoard() {
   const allStaff = [...mockStaff];
 
   return (
-    <Card>
-      <CardHeader>
+        <Card>
+          <CardHeader>
         <CardTitle>Notice Board</CardTitle>
         <CardDescription>Important announcements and updates for all staff.</CardDescription>
-      </CardHeader>
+          </CardHeader>
       <CardContent>
         {publishedNotices.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
@@ -270,7 +270,7 @@ export function NoticeBoard() {
                           <span>{format(notice.createdAt, "dd MMM yyyy")}</span>
                         </div>
                       </div>
-                    </div>
+            </div>
                   </AccordionTrigger>
                   <AccordionContent className="prose prose-sm max-w-none text-muted-foreground pl-14">
                     {notice.content}
@@ -282,8 +282,8 @@ export function NoticeBoard() {
         ) : (
           <p className="text-sm text-muted-foreground text-center py-4">No notices to display.</p>
         )}
-      </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
   );
 }
 
@@ -303,11 +303,11 @@ export function FinanceOverview() {
     .sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime())[0];
 
   return (
-    <Card>
-      <CardHeader>
+        <Card>
+          <CardHeader>
         <CardTitle>Finance Overview</CardTitle>
         <CardDescription>A quick summary of key financial metrics.</CardDescription>
-      </CardHeader>
+          </CardHeader>
       <CardContent className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -379,15 +379,15 @@ export function ComplianceRenewals({ currentUser }: { currentUser: Staff }) {
     .slice(0, 4);
 
   return (
-    <Card>
-      <CardHeader>
+      <Card>
+        <CardHeader>
         <CardTitle>Compliance Renewals</CardTitle>
         <CardDescription>
           {isHR ? "Items needing attention across the organisation." : "Your items needing attention soon."}
         </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
           {renewals.map((item) => {
             const staff = mockStaff.find(s => s.id === item.staffId);
             const config = statusConfig[item.status];
@@ -410,7 +410,7 @@ export function ComplianceRenewals({ currentUser }: { currentUser: Staff }) {
               </div>
             );
           })}
-        </div>
+              </div>
       </CardContent>
     </Card>
   );
@@ -438,8 +438,8 @@ export default function DashboardPage() {
           <div className="text-xs text-muted-foreground">
             Current Time: {new Date().toLocaleTimeString()} | 
             Today: {new Date().toISOString().split('T')[0]}
-          </div>
-        </div>
+                </div>
+              </div>
 
         {/* Main Dashboard Grid */}
         <div className="grid gap-6 md:grid-cols-2">
@@ -447,7 +447,7 @@ export default function DashboardPage() {
           <div className="space-y-6">
             <UpcomingShifts currentUser={currentUser} />
             <NoticeBoard />
-          </div>
+              </div>
 
           {/* Right Column */}
           <div className="space-y-6">

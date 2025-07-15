@@ -27,6 +27,33 @@ import {
   RectangleHorizontal,
   Landmark,
   Zap,
+  Link,
+  Lock,
+  Percent,
+  Star,
+  Calendar,
+  CalendarRange,
+  ToggleLeft,
+  Tag,
+  Search,
+  Users,
+  Link2,
+  Database,
+  Globe,
+  Calculator,
+  TrendingUp,
+  CalendarPlus,
+  Image,
+  MapPin,
+  Eye,
+  ListOrdered,
+  BarChart3,
+  Code,
+  QrCode,
+  Palette,
+  RefreshCw,
+  User,
+  Activity,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -358,17 +385,17 @@ export const mockForms: CustomForm[] = [
     { 
       id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', status: 'Inactive',
       fields: [
-        { id: 'field-1-1', name: 'First Name', type: 'text', order: 1, required: true, tooltip: "Client's legal first name." },
-        { id: 'field-1-2', name: 'Last Name', type: 'text', order: 2, required: true },
-        { id: 'field-1-3', name: 'Date of Birth', type: 'dob', order: 3 },
+        { id: 'field-1-1', name: 'First Name', type: 'text', order: 1, required: true, tooltip: "Client's legal first name.", status: 'Active', visibleRoles: [] },
+        { id: 'field-1-2', name: 'Last Name', type: 'text', order: 2, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-1-3', name: 'Date of Birth', type: 'dob', order: 3, status: 'Active', visibleRoles: [] },
       ]
     },
     { 
       id: 'form-2', name: 'Incident Report Form', linkedSectionId: 'sec-inc', status: 'Inactive',
       fields: [
-        { id: 'field-2-1', name: 'Incident Date', type: 'date', order: 1, required: true },
-        { id: 'field-2-2', name: 'Incident Time', type: 'time', order: 2, required: true },
-        { id: 'field-2-3', name: 'Detailed Description', type: 'richtext', order: 3 },
+        { id: 'field-2-1', name: 'Incident Date', type: 'date', order: 1, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-2-2', name: 'Incident Time', type: 'time', order: 2, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-2-3', name: 'Detailed Description', type: 'richtext', order: 3, status: 'Active', visibleRoles: [] },
       ]
     },
     { 
@@ -378,113 +405,113 @@ export const mockForms: CustomForm[] = [
     { 
       id: 'form-4', name: 'Progress Note Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-4-1', name: 'Date', type: 'date', order: 10, required: true },
-        { id: 'field-4-2', name: 'Note', type: 'richtext', order: 20, required: true },
+        { id: 'field-4-1', name: 'Date', type: 'date', order: 10, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-4-2', name: 'Note', type: 'richtext', order: 20, required: true, status: 'Active', visibleRoles: [] },
       ]
     },
     { 
       id: 'form-5', name: 'Medication Chart Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-          { id: 'field-5-1', name: 'Medication Name', type: 'text', order: 10, required: true },
-          { id: 'field-5-2', name: 'Dosage', type: 'text', order: 20, required: true },
-          { id: 'field-5-3', name: 'Time Administered', type: 'time', order: 30, required: true },
-          { id: 'field-5-4', name: 'Administered By', type: 'text', order: 40, required: true },
+          { id: 'field-5-1', name: 'Medication Name', type: 'text', order: 10, required: true, status: 'Active', visibleRoles: [] },
+          { id: 'field-5-2', name: 'Dosage', type: 'text', order: 20, required: true, status: 'Active', visibleRoles: [] },
+          { id: 'field-5-3', name: 'Time Administered', type: 'time', order: 30, required: true, status: 'Active', visibleRoles: [] },
+          { id: 'field-5-4', name: 'Administered By', type: 'text', order: 40, required: true, status: 'Active', visibleRoles: [] },
       ]
     },
     // New Forms for PWS Tabs
     {
       id: 'form-pws-info', name: 'PWS Basic Information', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-pi-1', name: 'Profile Picture', type: 'file-upload', order: 10 },
-        { id: 'field-pi-2', name: 'PWS Basic Information', type: 'headline', order: 20 },
-        { id: 'field-pi-3', name: 'First Name', type: 'text', order: 30, required: true },
-        { id: 'field-pi-4', name: 'Last Name', type: 'text', order: 40, required: true, tooltip: "Please type last name in UPPER CASE" },
-        { id: 'field-pi-5', name: 'Middle Name', type: 'text', order: 50 },
-        { id: 'field-pi-6', name: 'Preferred Name', type: 'text', order: 60 },
-        { id: 'field-pi-7', name: 'Gender', type: 'dropdown', order: 70 },
-        { id: 'field-pi-8', name: 'Date of Birth', type: 'dob', order: 80, required: true },
-        { id: 'field-pi-9', name: 'Address', type: 'headline', order: 90, },
-        { id: 'field-pi-10', name: 'Home Address', type: 'textbox', order: 100 },
-        { id: 'field-pi-11', name: 'Phone', type: 'text', order: 110 },
+        { id: 'field-pi-1', name: 'Profile Picture', type: 'file-upload', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-2', name: 'PWS Basic Information', type: 'headline', order: 20, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-3', name: 'First Name', type: 'text', order: 30, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-4', name: 'Last Name', type: 'text', order: 40, required: true, tooltip: "Please type last name in UPPER CASE", status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-5', name: 'Middle Name', type: 'text', order: 50, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-6', name: 'Preferred Name', type: 'text', order: 60, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-7', name: 'Gender', type: 'dropdown', order: 70, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-8', name: 'Date of Birth', type: 'dob', order: 80, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-9', name: 'Address', type: 'headline', order: 90, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-10', name: 'Home Address', type: 'textbox', order: 100, status: 'Active', visibleRoles: [] },
+        { id: 'field-pi-11', name: 'Phone', type: 'text', order: 110, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-contacts', name: 'Contacts & Schedule', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-cs-1', name: 'Next of Kin Name', type: 'text', order: 10 },
-        { id: 'field-cs-2', name: 'Next of Kin Contact', type: 'text', order: 20 },
-        { id: 'field-cs-3', name: 'Activity Schedule', type: 'richtext', order: 30 },
+        { id: 'field-cs-1', name: 'Next of Kin Name', type: 'text', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-cs-2', name: 'Next of Kin Contact', type: 'text', order: 20, status: 'Active', visibleRoles: [] },
+        { id: 'field-cs-3', name: 'Activity Schedule', type: 'richtext', order: 30, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-comm', name: 'Communication Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-co-1', name: 'Communication Needs', type: 'richtext', order: 10 },
-        { id: 'field-co-2', name: 'Preferred Method', type: 'dropdown', order: 20 },
+        { id: 'field-co-1', name: 'Communication Needs', type: 'richtext', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-co-2', name: 'Preferred Method', type: 'dropdown', order: 20, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-goals', name: 'Goals Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-g-1', name: 'Personal Goal', type: 'text', order: 10 },
-        { id: 'field-g-2', name: 'Steps to Achieve', type: 'richtext', order: 20 },
+        { id: 'field-g-1', name: 'Personal Goal', type: 'text', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-g-2', name: 'Steps to Achieve', type: 'richtext', order: 20, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-ot', name: 'Oranga Tamariki Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-ot-1', name: 'Event Type', type: 'text', order: 10 },
-        { id: 'field-ot-2', name: 'Event Date', type: 'date', order: 20 },
+        { id: 'field-ot-1', name: 'Event Type', type: 'text', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-ot-2', name: 'Event Date', type: 'date', order: 20, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-diary', name: 'Daily Diary Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-dd-1', name: 'Date', type: 'date', order: 10, required: true },
-        { id: 'field-dd-2', name: 'Shift Notes', type: 'richtext', order: 20, required: true },
-        { id: 'field-dd-3', name: 'Mood', type: 'dropdown', order: 30 },
+        { id: 'field-dd-1', name: 'Date', type: 'date', order: 10, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-dd-2', name: 'Shift Notes', type: 'richtext', order: 20, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-dd-3', name: 'Mood', type: 'dropdown', order: 30, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-docs', name: 'Documents Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-doc-1', name: 'Document Upload', type: 'file-upload', order: 10 },
-        { id: 'field-doc-2', name: 'Document Type', type: 'dropdown', order: 20 },
+        { id: 'field-doc-1', name: 'Document Upload', type: 'file-upload', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-doc-2', name: 'Document Type', type: 'dropdown', order: 20, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-health', name: 'Health Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-h-1', name: 'Allergies', type: 'richtext', order: 10 },
-        { id: 'field-h-2', name: 'Medications', type: 'richtext', order: 20 },
-        { id: 'field-h-3', name: 'Health Provider Name', type: 'text', order: 30 },
+        { id: 'field-h-1', name: 'Allergies', type: 'richtext', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-h-2', name: 'Medications', type: 'richtext', order: 20, status: 'Active', visibleRoles: [] },
+        { id: 'field-h-3', name: 'Health Provider Name', type: 'text', order: 30, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-financials', name: 'Financials Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-f-1', name: 'Bank Account Details', type: 'text', order: 10 },
-        { id: 'field-f-2', name: 'Budget Plan', type: 'file-upload', order: 20 },
+        { id: 'field-f-1', name: 'Bank Account Details', type: 'text', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-f-2', name: 'Budget Plan', type: 'file-upload', order: 20, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-pws-report', name: 'Key Worker Report Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-r-1', name: 'Report Date', type: 'date', order: 10 },
-        { id: 'field-r-2', name: 'Summary', type: 'richtext', order: 20 },
+        { id: 'field-r-1', name: 'Report Date', type: 'date', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-r-2', name: 'Summary', type: 'richtext', order: 20, status: 'Active', visibleRoles: [] },
       ]
     },
     {
       id: 'form-staff-basic-details', name: 'Staff Basic Details', linkedSectionId: 'sec-settings', status: 'Active',
       fields: [
-        { id: 'field-sbd-1', name: 'Profile Picture', type: 'file-upload', order: 10 },
-        { id: 'field-sbd-2', name: 'Staff Basic Information', type: 'headline', order: 20 },
-        { id: 'field-sbd-3', name: 'First Name', type: 'text', order: 30, required: true },
-        { id: 'field-sbd-4', name: 'Preferred Name', type: 'text', order: 40 },
-        { id: 'field-sbd-5', name: 'Middle Name', type: 'text', order: 50 },
-        { id: 'field-sbd-6', name: 'Surname', type: 'text', order: 60, required: true },
+        { id: 'field-sbd-1', name: 'Profile Picture', type: 'file-upload', order: 10, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-2', name: 'Staff Basic Information', type: 'headline', order: 20, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-3', name: 'First Name', type: 'text', order: 30, required: true, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-4', name: 'Preferred Name', type: 'text', order: 40, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-5', name: 'Middle Name', type: 'text', order: 50, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-6', name: 'Surname', type: 'text', order: 60, required: true, status: 'Active', visibleRoles: [] },
         {
-          id: 'field-sbd-7', name: 'Sites orientated in', type: 'multi-select-dropdown', order: 70,
+          id: 'field-sbd-7', name: 'Sites orientated in', type: 'multi-select-dropdown', order: 70, status: 'Active', visibleRoles: [],
           options: [
             { value: 'site-1', label: '1 Bayswater Court' }, { value: 'site-2', label: '1 Dalmont Place' },
             { value: 'site-3', label: '1 Holly Place' }, { value: 'site-4', label: '1 Waikaka Place (46 Maggie Place)' },
@@ -514,7 +541,7 @@ export const mockForms: CustomForm[] = [
           ]
         },
         {
-          id: 'field-sbd-8', name: 'Sites currently contracted to', type: 'multi-select-dropdown', order: 80,
+          id: 'field-sbd-8', name: 'Sites currently contracted to', type: 'multi-select-dropdown', order: 80, status: 'Active', visibleRoles: [],
           options: [
              { value: 'site-1', label: '1 Bayswater Court' }, { value: 'site-2', label: '1 Dalmont Place' },
             { value: 'site-3', label: '1 Holly Place' }, { value: 'site-4', label: '1 Waikaka Place (46 Maggie Place)' },
@@ -543,10 +570,10 @@ export const mockForms: CustomForm[] = [
             { value: 'site-49', label: 'SILtest' }, { value: 'site-50', label: 'Test' }, { value: 'site-51', label: 'Volunteer' },
           ]
         },
-        { id: 'field-sbd-9', name: 'Birth Date', type: 'date', order: 90 },
-        { id: 'field-sbd-10', name: 'Gender', type: 'radio', order: 100, options: [{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }] },
+        { id: 'field-sbd-9', name: 'Birth Date', type: 'date', order: 90, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-10', name: 'Gender', type: 'radio', order: 100, status: 'Active', visibleRoles: [], options: [{ value: 'male', label: 'Male' }, { value: 'female', label: 'Female' }] },
         {
-          id: 'field-sbd-11', name: 'Ethnicity', type: 'dropdown', order: 110,
+          id: 'field-sbd-11', name: 'Ethnicity', type: 'dropdown', order: 110, status: 'Active', visibleRoles: [],
           options: [
             { value: 'nz-european', label: 'NZ European' }, { value: 'other-european', label: 'Other European' },
             { value: 'nz-maori', label: 'NZ Maori' }, { value: 'niuean', label: 'Niuean' },
@@ -558,59 +585,59 @@ export const mockForms: CustomForm[] = [
             { value: 'other-ethnicity', label: 'Other Ethnicity' }, { value: 'not-stated', label: 'Not Stated' },
           ]
         },
-        { id: 'field-sbd-12', name: 'Contact Details', type: 'headline', order: 120 },
-        { id: 'field-sbd-13', name: 'Home Phone Number', type: 'text', order: 130 },
-        { id: 'field-sbd-14', name: 'Mobile Number', type: 'text', order: 140 },
-        { id: 'field-sbd-15', name: 'Work Number', type: 'text', order: 150 },
-        { id: 'field-sbd-16', name: 'Company Email', type: 'text', order: 160 },
-        { id: 'field-sbd-17', name: 'E-mail', type: 'text', order: 170 },
-        { id: 'field-sbd-18', name: 'Address', type: 'headline', order: 180 },
-        { id: 'field-sbd-19', name: 'Street Number', type: 'text', order: 190 },
-        { id: 'field-sbd-20', name: 'Street Name', type: 'text', order: 200 },
-        { id: 'field-sbd-21', name: 'Street Suburb', type: 'text', order: 210 },
-        { id: 'field-sbd-22', name: 'State', type: 'text', order: 220 },
-        { id: 'field-sbd-23', name: 'Postcode', type: 'text', order: 230 },
-        { id: 'field-sbd-24', name: 'Emergency Contact', type: 'headline', order: 240 },
-        { id: 'field-sbd-25', name: 'Name', type: 'text', order: 250 },
-        { id: 'field-sbd-26', name: 'Relationship to Client', type: 'text', order: 260 }, // Assuming this should be Relationship to Staff?
-        { id: 'field-sbd-27', name: 'Contact Number', type: 'text', order: 270 },
-        { id: 'field-sbd-28', name: 'Service Details', type: 'headline', order: 280 },
-        { id: 'field-sbd-29', name: 'Start Date', type: 'date', order: 290 },
-        { id: 'field-sbd-30', name: 'Finish Date', type: 'date', order: 300 },
-        { id: 'field-sbd-31', name: 'Employment Type', type: 'radio', order: 310, options: [{ value: 'casual', label: 'Casual' }, { value: 'temp', label: 'Temp' }, { value: 'full-time', label: 'Full-Time' }, { value: 'part-time', label: 'Part-Time' }, { value: 'other', label: 'Other' }] },
-        { id: 'field-sbd-32', name: 'Probation Period End', type: 'date', order: 320 },
-        { id: 'field-sbd-33', name: 'Active Status', type: 'checkbox', order: 330, label: 'Inactive' }, // Assuming checkbox for active/inactive
-        { id: 'field-sbd-34', name: 'Staff Financial Information', type: 'headline', order: 340 },
-        { id: 'field-sbd-35', name: 'Standard', type: 'sub-headline', order: 350 }, // Assuming this is a sub-section title
-        { id: 'field-sbd-36', name: 'Occupation', type: 'dropdown', order: 360, options: [{ value: 'select', label: 'Select form list' }] }, // Placeholder option
-        { id: 'field-sbd-37', name: 'Pay Point', type: 'dropdown', order: 370, options: [{ value: '100-admin', label: '100 - Admin' }] }, // Placeholder option
-        { id: 'field-sbd-38', name: 'Costing Code', type: 'dropdown', order: 380, options: [{ value: 'select', label: 'Select from list' }] }, // Placeholder option
-        { id: 'field-sbd-39', name: 'Employee No.', type: 'text', order: 390 },
-        { id: 'field-sbd-40', name: 'Payment', type: 'sub-headline', order: 400 }, // Assuming this is a sub-section title
-        { id: 'field-sbd-41', name: 'Pay Frequency', type: 'radio', order: 410, options: [{ value: 'weekly', label: 'Weekly' }, { value: 'fortnightly', label: 'Fortnightly' }, { value: 'monthly', label: 'Monthly' }, { value: 'half-monthly', label: 'Half Monthly' }, { value: 'four-weekly', label: 'Four Weekly' }] },
-        { id: 'field-sbd-42', name: 'Employee Type', type: 'radio', order: 420, options: [{ value: 'wage-hour', label: 'Wage [per Hour]' }, { value: 'wage-pay', label: 'Wage [per Pay]' }] },
-        { id: 'field-sbd-43', name: 'IRD Number', type: 'text', order: 430 },
-        { id: 'field-sbd-44', name: 'Tax Code', type: 'dropdown', order: 440, options: [{ value: 'm', label: 'M' }] }, // Placeholder option
-        { id: 'field-sbd-45', name: 'Payment Method', type: 'radio', order: 450, options: [{ value: 'bank', label: 'Bank' }] }, // Only Bank option provided
-        { id: 'field-sbd-46', name: 'Bank Account', type: 'text', order: 460 },
-        { id: 'field-sbd-47', name: 'Bank Ref', type: 'text', order: 470 },
-        { id: 'field-sbd-48', name: 'Bank Code', type: 'text', order: 480 }, // Assuming text input for bank code
-        { id: 'field-sbd-49', name: 'Pay Equity', type: 'dropdown', order: 490, options: [{ value: 'select', label: 'Please Select' }] }, // Placeholder option
-        { id: 'field-sbd-50', name: 'Pay Equity Qualification', type: 'file-upload', order: 500 },
-        { id: 'field-sbd-51', name: 'Long Service Details', type: 'headline', order: 510 },
-        { id: 'field-sbd-52', name: 'Long Service Start Date', type: 'date', order: 520 },
-        { id: 'field-sbd-53', name: '5 Yr Date', type: 'date', order: 530 },
-        { id: 'field-sbd-54', name: '10 Yr Date', type: 'date', order: 540 },
-        { id: 'field-sbd-55', name: '15 Yr Date', type: 'date', order: 550 },
-        { id: 'field-sbd-56', name: '20 Yr Date', type: 'date', order: 560 },
-        { id: 'field-sbd-57', name: 'KiwiSaver', type: 'headline', order: 570 },
-        { id: 'field-sbd-58', name: 'KiwiSaver Entry Status', type: 'radio', order: 580, options: [{ value: 'not-eligible', label: 'Not Eligible' }, { value: 'auto-enrol', label: 'Auto Enrol' }, { value: 'opt-in', label: 'Opt In' }, { value: 'existing', label: 'Existing' }] },
-        { id: 'field-sbd-59', name: 'KiwiSaver Opt In Date', type: 'date', order: 590 },
-        { id: 'field-sbd-60', name: 'KiwiSaver Employee Percentage', type: 'radio', order: 600, options: [{ value: '3', label: '3' }, { value: '4', label: '4' }, { value: '6', label: '6' }, { value: '8', label: '8' }, { value: '10', label: '10' }, { value: 'n/a', label: 'N/A' }] },
-        { id: 'field-sbd-61', name: 'KiwiSaver Opt Out', type: 'radio', order: 610, options: [{ value: 'yes', label: 'YES' }, { value: 'no', label: 'NO' }] },
-        { id: 'field-sbd-62', name: 'KiwiSaver Opt Out Date', type: 'date', order: 620 },
-        { id: 'field-sbd-63', name: 'General/Notes', type: 'headline', order: 630 },
-        { id: 'field-sbd-64', name: 'Notes', type: 'richtext', order: 640 },
+        { id: 'field-sbd-12', name: 'Contact Details', type: 'headline', order: 120, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-13', name: 'Home Phone Number', type: 'text', order: 130, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-14', name: 'Mobile Number', type: 'text', order: 140, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-15', name: 'Work Number', type: 'text', order: 150, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-16', name: 'Company Email', type: 'text', order: 160, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-17', name: 'E-mail', type: 'text', order: 170, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-18', name: 'Address', type: 'headline', order: 180, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-19', name: 'Street Number', type: 'text', order: 190, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-20', name: 'Street Name', type: 'text', order: 200, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-21', name: 'Street Suburb', type: 'text', order: 210, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-22', name: 'State', type: 'text', order: 220, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-23', name: 'Postcode', type: 'text', order: 230, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-24', name: 'Emergency Contact', type: 'headline', order: 240, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-25', name: 'Name', type: 'text', order: 250, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-26', name: 'Relationship to Client', type: 'text', order: 260, status: 'Active', visibleRoles: [] }, // Assuming this should be Relationship to Staff?
+        { id: 'field-sbd-27', name: 'Contact Number', type: 'text', order: 270, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-28', name: 'Service Details', type: 'headline', order: 280, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-29', name: 'Start Date', type: 'date', order: 290, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-30', name: 'Finish Date', type: 'date', order: 300, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-31', name: 'Employment Type', type: 'radio', order: 310, status: 'Active', visibleRoles: [], options: [{ value: 'casual', label: 'Casual' }, { value: 'temp', label: 'Temp' }, { value: 'full-time', label: 'Full-Time' }, { value: 'part-time', label: 'Part-Time' }, { value: 'other', label: 'Other' }] },
+        { id: 'field-sbd-32', name: 'Probation Period End', type: 'date', order: 320, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-33', name: 'Active Status', type: 'checkbox', order: 330, status: 'Active', visibleRoles: [], label: 'Inactive' }, // Assuming checkbox for active/inactive
+        { id: 'field-sbd-34', name: 'Staff Financial Information', type: 'headline', order: 340, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-35', name: 'Standard', type: 'sub-headline', order: 350, status: 'Active', visibleRoles: [] }, // Assuming this is a sub-section title
+        { id: 'field-sbd-36', name: 'Occupation', type: 'dropdown', order: 360, status: 'Active', visibleRoles: [], options: [{ value: 'select', label: 'Select form list' }] }, // Placeholder option
+        { id: 'field-sbd-37', name: 'Pay Point', type: 'dropdown', order: 370, status: 'Active', visibleRoles: [], options: [{ value: '100-admin', label: '100 - Admin' }] }, // Placeholder option
+        { id: 'field-sbd-38', name: 'Costing Code', type: 'dropdown', order: 380, status: 'Active', visibleRoles: [], options: [{ value: 'select', label: 'Select from list' }] }, // Placeholder option
+        { id: 'field-sbd-39', name: 'Employee No.', type: 'text', order: 390, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-40', name: 'Payment', type: 'sub-headline', order: 400, status: 'Active', visibleRoles: [] }, // Assuming this is a sub-section title
+        { id: 'field-sbd-41', name: 'Pay Frequency', type: 'radio', order: 410, status: 'Active', visibleRoles: [], options: [{ value: 'weekly', label: 'Weekly' }, { value: 'fortnightly', label: 'Fortnightly' }, { value: 'monthly', label: 'Monthly' }, { value: 'half-monthly', label: 'Half Monthly' }, { value: 'four-weekly', label: 'Four Weekly' }] },
+        { id: 'field-sbd-42', name: 'Employee Type', type: 'radio', order: 420, status: 'Active', visibleRoles: [], options: [{ value: 'wage-hour', label: 'Wage [per Hour]' }, { value: 'wage-pay', label: 'Wage [per Pay]' }] },
+        { id: 'field-sbd-43', name: 'IRD Number', type: 'text', order: 430, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-44', name: 'Tax Code', type: 'dropdown', order: 440, status: 'Active', visibleRoles: [], options: [{ value: 'm', label: 'M' }] }, // Placeholder option
+        { id: 'field-sbd-45', name: 'Payment Method', type: 'radio', order: 450, status: 'Active', visibleRoles: [], options: [{ value: 'bank', label: 'Bank' }] }, // Only Bank option provided
+        { id: 'field-sbd-46', name: 'Bank Account', type: 'text', order: 460, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-47', name: 'Bank Ref', type: 'text', order: 470, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-48', name: 'Bank Code', type: 'text', order: 480, status: 'Active', visibleRoles: [] }, // Assuming text input for bank code
+        { id: 'field-sbd-49', name: 'Pay Equity', type: 'dropdown', order: 490, status: 'Active', visibleRoles: [], options: [{ value: 'select', label: 'Please Select' }] }, // Placeholder option
+        { id: 'field-sbd-50', name: 'Pay Equity Qualification', type: 'file-upload', order: 500, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-51', name: 'Long Service Details', type: 'headline', order: 510, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-52', name: 'Long Service Start Date', type: 'date', order: 520, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-53', name: '5 Yr Date', type: 'date', order: 530, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-54', name: '10 Yr Date', type: 'date', order: 540, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-55', name: '15 Yr Date', type: 'date', order: 550, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-56', name: '20 Yr Date', type: 'date', order: 560, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-57', name: 'KiwiSaver', type: 'headline', order: 570, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-58', name: 'KiwiSaver Entry Status', type: 'radio', order: 580, status: 'Active', visibleRoles: [], options: [{ value: 'not-eligible', label: 'Not Eligible' }, { value: 'auto-enrol', label: 'Auto Enrol' }, { value: 'opt-in', label: 'Opt In' }, { value: 'existing', label: 'Existing' }] },
+        { id: 'field-sbd-59', name: 'KiwiSaver Opt In Date', type: 'date', order: 590, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-60', name: 'KiwiSaver Employee Percentage', type: 'radio', order: 600, status: 'Active', visibleRoles: [], options: [{ value: '3', label: '3' }, { value: '4', label: '4' }, { value: '6', label: '6' }, { value: '8', label: '8' }, { value: '10', label: '10' }, { value: 'n/a', label: 'N/A' }] },
+        { id: 'field-sbd-61', name: 'KiwiSaver Opt Out', type: 'radio', order: 610, status: 'Active', visibleRoles: [], options: [{ value: 'yes', label: 'YES' }, { value: 'no', label: 'NO' }] },
+        { id: 'field-sbd-62', name: 'KiwiSaver Opt Out Date', type: 'date', order: 620, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-63', name: 'General/Notes', type: 'headline', order: 630, status: 'Active', visibleRoles: [] },
+        { id: 'field-sbd-64', name: 'Notes', type: 'richtext', order: 640, status: 'Active', visibleRoles: [] },
       ]
     }
 ];
@@ -655,30 +682,82 @@ export const mockNotices: Notice[] = [
 ];
 
 
-export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon }[] = [
-    { value: 'text', label: 'Text', icon: CaseSensitive },
-    { value: 'textbox', label: 'Text Box', icon: FileText },
-    { value: 'textbox-full', label: 'Text Box (full width)', icon: Square },
-    { value: 'richtext', label: 'Rich Text', icon: Pilcrow },
-    { value: 'dropdown', label: 'Dropdown List', icon: ChevronDownSquare },
-    { value: 'multi-select-dropdown', label: 'Multi-Select Dropdown', icon: ListChecks },
-    { value: 'dual-select', label: 'Dual-Select List Boxes', icon: ArrowRightLeft },
-    { value: 'date', label: 'Date', icon: CalendarDays },
-    { value: 'dob', label: 'Date of Birth', icon: Cake },
-    { value: 'radio', label: 'Radio List', icon: RadioTower },
-    { value: 'time', label: 'Time', icon: Clock },
-    { value: 'checkbox', label: 'Checkbox (single)', icon: CheckSquare },
-    { value: 'number-whole', label: 'Number (whole)', icon: Hash },
-    { value: 'number-decimal', label: 'Number (decimal)', icon: Binary },
-    { value: 'currency', label: 'Currency', icon: DollarSign },
-    { value: 'service-item', label: 'Service Item', icon: Package },
-    { value: 'file-upload', label: 'File Upload', icon: Upload },
-    { value: 'headline', label: 'Headline', icon: Heading1 },
-    { value: 'sub-headline', label: 'Sub-Headline', icon: Heading2 },
-    { value: 'signature', label: 'On-screen Signature', icon: PenSquare },
-    { value: 'infobox', label: 'Info Box', icon: Info },
-    { value: 'infobox-full', label: 'Info Box (full width)', icon: Info },
-    { value: 'spacer', label: 'Single Space', icon: RectangleHorizontal },
+export const fieldTypes: { value: FormFieldType; label: string; icon: LucideIcon; description?: string }[] = [
+    // Text-Based Fields
+    { value: 'text', label: 'Text', icon: CaseSensitive, description: 'Single line text input for short text like names, titles, etc.' },
+    { value: 'textbox', label: 'Text Box', icon: FileText, description: 'Multi-line text area for longer content like descriptions, notes, etc.' },
+    { value: 'textbox-full', label: 'Text Box (full width)', icon: Square, description: 'Full-width multi-line text area for extensive content.' },
+    { value: 'richtext', label: 'Rich Text', icon: Pilcrow, description: 'Rich text editor with formatting options like bold, italic, lists, etc.' },
+    { value: 'email', label: 'Email', icon: FileText, description: 'Email input with format validation and auto-complete.' },
+    { value: 'url', label: 'URL', icon: Link, description: 'Web address input with protocol validation.' },
+    { value: 'password', label: 'Password', icon: Lock, description: 'Hidden input with strength meter and validation.' },
+    
+    // Numeric Fields
+    { value: 'number-whole', label: 'Number (whole)', icon: Hash, description: 'Numeric input for whole numbers only.' },
+    { value: 'number-decimal', label: 'Number (decimal)', icon: Binary, description: 'Numeric input for decimal numbers with precision.' },
+    { value: 'currency', label: 'Currency', icon: DollarSign, description: 'Currency input with proper formatting and validation.' },
+    { value: 'percent', label: 'Percentage', icon: Percent, description: 'Percentage input with % suffix and decimal support.' },
+    { value: 'auto_number', label: 'Auto Number', icon: Hash, description: 'Auto-increment field with prefix, padding, and start value.' },
+    { value: 'rating', label: 'Rating', icon: Star, description: 'Star or numeric rating system with customizable max value.' },
+    
+    // Date & Time Fields
+    { value: 'date', label: 'Date', icon: CalendarDays, description: 'Date picker for selecting a specific date.' },
+    { value: 'dob', label: 'Date of Birth', icon: Cake, description: 'Specialized date picker optimized for birth date selection with age calculation.' },
+    { value: 'time', label: 'Time', icon: Clock, description: 'Time picker for selecting a specific time of day.' },
+    { value: 'datetime', label: 'Date & Time', icon: Calendar, description: 'Combined date and time picker with timezone awareness.' },
+    { value: 'daterange', label: 'Date Range', icon: CalendarRange, description: 'Start and end date picker with predefined ranges.' },
+    
+    // Choice / Boolean Fields
+    { value: 'dropdown', label: 'Dropdown List', icon: ChevronDownSquare, description: 'Single selection from a predefined list of options.' },
+    { value: 'multi-select-dropdown', label: 'Multi-Select Dropdown', icon: ListChecks, description: 'Multiple selections from a predefined list of options.' },
+    { value: 'dual-select', label: 'Dual-Select List Boxes', icon: ArrowRightLeft, description: 'Two side-by-side list boxes for moving items between available and selected options.' },
+    { value: 'radio', label: 'Radio List', icon: RadioTower, description: 'Single selection from a list of radio button options.' },
+    { value: 'checkbox', label: 'Checkbox (single)', icon: CheckSquare, description: 'Single checkbox for yes/no or true/false responses.' },
+    { value: 'toggle', label: 'Toggle Switch', icon: ToggleLeft, description: 'Modern switch style checkbox with on/off labels.' },
+    { value: 'tags', label: 'Tags', icon: Tag, description: 'Select or add new labels/tags with suggestions.' },
+    
+    // Relational & Reference Fields
+    { value: 'lookup', label: 'Lookup', icon: Search, description: 'Lookup another record in the system with search functionality.' },
+    { value: 'user', label: 'User Selector', icon: Users, description: 'User selector with team and role filtering.' },
+    { value: 'reference', label: 'Reference', icon: Link2, description: 'Link to another form or object in the system.' },
+    { value: 'foreign_key', label: 'Foreign Key', icon: Database, description: 'Link to external database ID, read-only or editable.' },
+    { value: 'external_select', label: 'External Select', icon: Globe, description: 'Dropdown populated from external API endpoint.' },
+    
+    // Computed / Formula Fields
+    { value: 'formula', label: 'Formula', icon: Calculator, description: 'Auto-calculated field based on other field values.' },
+    { value: 'rollup', label: 'Rollup', icon: TrendingUp, description: 'Sum/Average from child records with aggregation types.' },
+    { value: 'datecalc', label: 'Date Calculation', icon: CalendarPlus, description: 'Date calculations like Due Date = Start + X days.' },
+    { value: 'conditional_text', label: 'Conditional Text', icon: FileText, description: 'Show text based on conditional logic rules.' },
+    
+    // Location & File Upload Fields
+    { value: 'file-upload', label: 'File Upload', icon: Upload, description: 'File upload field for documents, images, or other files.' },
+    { value: 'image', label: 'Image Upload', icon: Image, description: 'Image upload with thumbnail generation and cropping.' },
+    { value: 'signature', label: 'On-screen Signature', icon: PenSquare, description: 'Digital signature capture field for electronic signatures.' },
+    { value: 'geolocation', label: 'Geolocation', icon: MapPin, description: 'Lat/Long coordinates or map pin with auto-detect.' },
+    { value: 'address', label: 'Address', icon: MapPin, description: 'Composite address field with autocomplete integration.' },
+    
+    // Smart / Dynamic Fields
+    { value: 'condition_field', label: 'Conditional Field', icon: Eye, description: 'Show/hide field based on conditional logic.' },
+    { value: 'stepper', label: 'Stepper', icon: ListOrdered, description: 'Multi-step wizard field with step progression.' },
+    { value: 'progress_bar', label: 'Progress Bar', icon: BarChart3, description: 'Show form completion percentage based on required fields.' },
+    { value: 'json_editor', label: 'JSON Editor', icon: Code, description: 'Structured key/value editor with schema or freeform.' },
+    { value: 'barcode_scanner', label: 'Barcode Scanner', icon: QrCode, description: 'Scan QR codes or barcodes from mobile devices.' },
+    { value: 'color_picker', label: 'Color Picker', icon: Palette, description: 'Color selection with HEX, RGB format support.' },
+    
+    // System/Internal Fields
+    { value: 'created_at', label: 'Created At', icon: Clock, description: 'Auto-timestamp for record creation (read-only).' },
+    { value: 'updated_at', label: 'Updated At', icon: RefreshCw, description: 'Auto-updated timestamp on save (read-only).' },
+    { value: 'created_by', label: 'Created By', icon: User, description: 'Auto-set user who created the record (read-only).' },
+    { value: 'record_id', label: 'Record ID', icon: Hash, description: 'Unique identifier for the record (read-only).' },
+    { value: 'status', label: 'Status', icon: Activity, description: 'System status field with predefined options.' },
+    
+    // Service & Specialized Fields
+    { value: 'service-item', label: 'Service Item', icon: Package, description: 'Specialized field for selecting service items with pricing.' },
+    { value: 'headline', label: 'Headline', icon: Heading1, description: 'Section header for organizing form content into groups.' },
+    { value: 'sub-headline', label: 'Sub-Headline', icon: Heading2, description: 'Subsection header for further organizing form content.' },
+    { value: 'infobox', label: 'Info Box', icon: Info, description: 'Information display box for showing help text or important notices.' },
+    { value: 'infobox-full', label: 'Info Box (full width)', icon: Info, description: 'Full-width information display box for prominent notices.' },
+    { value: 'spacer', label: 'Single Space', icon: RectangleHorizontal, description: 'Visual spacing element to improve form layout and readability.' },
 ];
 
 export const mockTimesheets: Timesheet[] = [];

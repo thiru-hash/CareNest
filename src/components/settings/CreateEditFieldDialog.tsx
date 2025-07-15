@@ -18,6 +18,7 @@ import type { FormField, FormFieldType } from "@/lib/types";
 import { fieldTypes } from "@/lib/data";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "../ui/checkbox";
 
 interface CreateEditFieldDialogProps {
   isOpen: boolean;
@@ -26,6 +27,17 @@ interface CreateEditFieldDialogProps {
   onSave: (field: FormField) => void;
 }
 
+const availableRoles = [
+  { id: "admin", name: "System Admin" },
+  { id: "manager", name: "Support Manager" },
+  { id: "worker", name: "Support Worker" },
+  { id: "roster-admin", name: "Roster Admin" },
+  { id: "finance-admin", name: "Finance Admin" },
+  { id: "hr-manager", name: "HR Manager" },
+  { id: "ceo", name: "CEO" },
+  { id: "reception", name: "Reception" },
+];
+
 export function CreateEditFieldDialog({
   isOpen,
   setIsOpen,
@@ -33,10 +45,12 @@ export function CreateEditFieldDialog({
   onSave,
 }: CreateEditFieldDialogProps) {
   const [name, setName] = useState("");
-  const [type, setType] = useState<FormFieldType>("text");
+  const [type, setType] = useState<string>("text"); // CHANGED: string instead of FormFieldType
   const [order, setOrder] = useState(0);
   const [tooltip, setTooltip] = useState("");
   const [required, setRequired] = useState(false);
+  const [status, setStatus] = useState<'Active' | 'Inactive'>("Active");
+  const [visibleRoles, setVisibleRoles] = useState<string[]>([]);
 
   const isEditMode = !!field?.id;
 
@@ -52,14 +66,20 @@ export function CreateEditFieldDialog({
     }));
   }, []);
 
+  const fieldTypeHelp = useMemo(() => {
+    return fieldTypes.find(ft => ft.value === type)?.description || "";
+  }, [type]);
+
   useEffect(() => {
     if (isOpen) {
         if (field) {
             setName(field.name);
-            setType(field.type);
+            setType(field.type); // type is now string
             setOrder(field.order);
             setTooltip(field.tooltip || "");
             setRequired(field.required || false);
+            setStatus(field.status || 'Active');
+            setVisibleRoles(field.visibleRoles || []);
         } else {
             // Reset for new field
             setName("");
@@ -67,6 +87,8 @@ export function CreateEditFieldDialog({
             setOrder(0);
             setTooltip("");
             setRequired(false);
+            setStatus('Active');
+            setVisibleRoles([]);
         }
     }
   }, [field, isOpen]);
@@ -79,13 +101,23 @@ export function CreateEditFieldDialog({
     const newFieldData: FormField = {
       id: field?.id || '',
       name,
-      type,
+      type: type as FormFieldType, // CHANGED: cast to FormFieldType only here
       order,
       tooltip,
       required,
+      status,
+      visibleRoles,
     };
     onSave(newFieldData);
     setIsOpen(false);
+  };
+
+  const handleRoleToggle = (roleId: string) => {
+    setVisibleRoles(prev =>
+      prev.includes(roleId)
+        ? prev.filter(id => id !== roleId)
+        : [...prev, roleId]
+    );
   };
 
   return (
@@ -118,11 +150,20 @@ export function CreateEditFieldDialog({
                     <Combobox
                         options={fieldTypeOptions}
                         value={type}
-                        onChange={(value) => setType(value as FormFieldType)}
+                        onChange={(value) => {
+                            console.log('Dialog onChange called with:', value);
+                            setType(value);
+                        }}
                         placeholder="Select field type..."
                         searchPlaceholder="Search field types..."
                         noResultsMessage="No field type found."
                     />
+                    {fieldTypeHelp && (
+                      <div className="mt-2 text-xs text-muted-foreground bg-muted p-2 rounded">
+                        {fieldTypeHelp}
+                      </div>
+                    )}
+
                 </div>
             </div>
              <div className="grid grid-cols-4 items-start gap-4">
@@ -159,6 +200,39 @@ export function CreateEditFieldDialog({
                     checked={required}
                     onCheckedChange={setRequired}
                 />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="status" className="text-right">
+                    Status
+                </Label>
+                <div className="col-span-3 flex items-center gap-2">
+                  <Switch
+                    id="status"
+                    checked={status === 'Active'}
+                    onCheckedChange={(checked) => setStatus(checked ? 'Active' : 'Inactive')}
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {status === 'Active' ? 'Active' : 'Inactive'}
+                  </span>
+                </div>
+            </div>
+            <div className="grid grid-cols-4 items-start gap-4">
+                <Label className="text-right pt-2">Field Visibility</Label>
+                <div className="col-span-3 space-y-2">
+                  <div className="text-xs text-muted-foreground mb-1">Select which roles can see this field. If none selected, field is visible to all.</div>
+                  <div className="flex flex-wrap gap-2">
+                    {availableRoles.map(role => (
+                      <div key={role.id} className="flex items-center gap-1">
+                        <Checkbox
+                          id={role.id}
+                          checked={visibleRoles.includes(role.id)}
+                          onCheckedChange={() => handleRoleToggle(role.id)}
+                        />
+                        <Label htmlFor={role.id} className="text-xs cursor-pointer">{role.name}</Label>
+                      </div>
+                    ))}
+                  </div>
+                </div>
             </div>
         </div>
         <DialogFooter>
