@@ -5,7 +5,7 @@ import { createMockTenant } from './licensing';
 import type { User, Tenant } from './types';
 
 // In a real app, this would perform a database lookup.
-const adminUser = mockStaff.find(u => u.role === 'Tenant Admin')!;
+const adminUser = mockStaff.find(u => u.role === 'System Admin')!;
 
 /**
  * Retrieves the current user from the session cookie.
@@ -93,7 +93,6 @@ export function getUserPermissions(user: User): string[] {
   // Base permissions based on role
   switch (user.role) {
     case 'System Admin':
-    case 'Tenant Admin':
       permissions.push('*'); // All permissions
       break;
     case 'Manager':
