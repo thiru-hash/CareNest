@@ -2,91 +2,99 @@
 
 "use client";
 
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import { LogOut, Settings, User } from "lucide-react";
-import { useSidebar } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
-import type { UserRole, Staff, Notice } from "@/lib/types";
-import { logout } from "@/app/actions";
-import { NoticeDropdown } from "./NoticeDropdown";
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Bell, Settings, LogOut, User, Search } from 'lucide-react';
+import { NoticeDropdown } from './NoticeDropdown';
+import { mockNotices } from '@/lib/data';
+import type { Staff } from '@/lib/types';
 
-const adminRoles: UserRole[] = ["System Admin"];
+interface HeaderProps {
+  currentUser: Staff;
+}
 
-const pageTitles: { [key: string]: string } = {
-  "/dashboard": "Dashboard",
-  "/roster": "Roster Schedule",
-  "/people": "People We Support",
-  "/staff": "Staff",
-  "/locations": "Locations",
-  "/settings": "System Settings",
-};
-
-export function Header({ user, notices }: { user: Staff, notices: Notice[] }) {
-  const { isMobile } = useSidebar();
-  const pathname = usePathname();
-  
-  const getPageTitle = () => {
-    if (pathname.startsWith('/staff/')) return "Staff Profile";
-    const matchedPath = Object.keys(pageTitles).find(path => pathname.startsWith(path));
-    return matchedPath ? pageTitles[matchedPath] : "CareNest";
-  };
-
-  const isAdmin = adminRoles.includes(user.role);
+export function Header({ currentUser }: HeaderProps) {
+  const publishedNotices = mockNotices
+    .filter(n => n.status === 'Published')
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
 
   return (
-    <header className="sticky top-0 z-10 flex h-16 items-center gap-2 sm:gap-4 border-b bg-background/80 backdrop-blur-sm px-4 md:px-6">
-      {isMobile && <SidebarTrigger />}
-      <h1 className="text-lg sm:text-xl font-semibold">{getPageTitle()}</h1>
-      <div className="ml-auto flex items-center gap-2">
-        <NoticeDropdown notices={notices} />
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Avatar>
-                <AvatarImage src={user.avatarUrl} alt={user.name} />
-                <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href={`/staff/${user.id}`}>
-                <User className="mr-2" />
+    <header className="sticky top-0 z-40 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Left side - Logo/Brand */}
+        <div className="flex items-center">
+          <div className="lg:hidden">
+            <h1 className="text-lg font-bold text-gray-900 dark:text-white">CareNest</h1>
+          </div>
+          <div className="hidden lg:flex items-center gap-2">
+            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">CN</span>
+            </div>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">CareNest</span>
+          </div>
+        </div>
+
+        {/* Center - Search (hidden on mobile, shown on tablet and up) */}
+        <div className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8">
+          <div className="relative w-full">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        {/* Right side - User menu and notifications */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          {/* Notifications */}
+          <NoticeDropdown notices={publishedNotices} />
+          
+          {/* User menu */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 sm:h-9 sm:w-9 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800">
+                <Avatar className="h-8 w-8 sm:h-9 sm:w-9 border-2 border-gray-200 dark:border-gray-700">
+                  <AvatarImage src={currentUser.avatar} alt={currentUser.name} />
+                  <AvatarFallback className="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 font-semibold text-xs sm:text-sm">
+                    {currentUser.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-64" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-semibold leading-none text-gray-900 dark:text-white">
+                    {currentUser.name}
+                  </p>
+                  <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
+                    {currentUser.email}
+                  </p>
+                  <p className="text-xs leading-none text-gray-500 dark:text-gray-400">
+                    {currentUser.role}
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                <User className="mr-2 h-4 w-4" />
                 <span>Profile</span>
-              </Link>
-            </DropdownMenuItem>
-            {isAdmin && (
-                <DropdownMenuItem asChild>
-                <Link href="/settings">
-                    <Settings className="mr-2" />
-                    <span>System Settings</span>
-                </Link>
-                </DropdownMenuItem>
-            )}
-            <DropdownMenuSeparator />
-            <form action={logout}>
-              <DropdownMenuItem asChild>
-                <button type="submit" className="w-full">
-                  <LogOut className="mr-2" />
-                  <span>Logout</span>
-                </button>
               </DropdownMenuItem>
-            </form>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <DropdownMenuItem className="cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem className="cursor-pointer text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20">
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </header>
   );

@@ -29,13 +29,106 @@ export type PermissionsState = {
     }
 };
 
-export interface User {
+// ===== LICENSING & TENANT MANAGEMENT =====
+
+export type LicenseModel = 'per_user' | 'pooled' | 'unlimited';
+
+export interface TenantLicense {
+  id: string;
+  tenantId: string;
+  model: LicenseModel;
+  maxUsers: number;
+  activeUsers: number;
+  totalUsers: number;
+  startDate: Date;
+  endDate: Date;
+  isActive: boolean;
+  features: string[];
+  restrictions: {
+    maxProperties?: number;
+    maxClients?: number;
+    maxShiftsPerMonth?: number;
+    storageLimitGB?: number;
+  };
+}
+
+export interface Tenant {
   id: string;
   name: string;
-  email: string;
-  avatarUrl: string;
-  role: UserRole;
-  staffId?: string;
+  slug: string;
+  domain?: string;
+  logo?: string;
+  primaryColor?: string;
+  license: TenantLicense;
+  settings: {
+    timezone: string;
+    dateFormat: string;
+    currency: string;
+    gstEnabled: boolean;
+    gstRate: number;
+    defaultLanguage: string;
+    notifications: {
+      email: boolean;
+      sms: boolean;
+      push: boolean;
+    };
+  };
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface LicenseUsage {
+  userId: string;
+  tenantId: string;
+  sessionStart: Date;
+  sessionEnd?: Date;
+  isActive: boolean;
+  deviceInfo?: {
+    userAgent: string;
+    ipAddress: string;
+    location?: string;
+  };
+}
+
+// ===== MODULE ARCHITECTURE TYPES =====
+
+export interface ModuleConfig {
+  id: string;
+  name: string;
+  path: string;
+  icon: string;
+  isEnabled: boolean;
+  permissions: string[];
+  dependencies: string[];
+  settings: Record<string, any>;
+}
+
+export interface TabConfig {
+  id: string;
+  moduleId: string;
+  name: string;
+  path: string;
+  isEnabled: boolean;
+  permissions: string[];
+  order: number;
+}
+
+// ===== ENHANCED USER TYPES =====
+
+export interface User extends Staff {
+  tenantId: string;
+  licenseUsage?: LicenseUsage;
+  lastActive: Date;
+  loginCount: number;
+  preferences: {
+    theme: 'light' | 'dark' | 'system';
+    language: string;
+    notifications: {
+      email: boolean;
+      sms: boolean;
+      push: boolean;
+    };
+  };
 }
 
 export interface Group {

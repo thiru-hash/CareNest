@@ -1,75 +1,82 @@
 
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  Sidebar,
-  SidebarHeader,
-  SidebarContent,
-  SidebarMenu,
-  SidebarMenuItem,
-  SidebarMenuButton,
-} from "@/components/ui/sidebar";
-import { Waves, MoreHorizontal } from "lucide-react";
-import { mockSections } from "@/lib/data";
-import { iconMap } from "@/lib/icon-map";
-import type { UserRole, Staff } from "@/lib/types";
-import { useMemo } from "react";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { 
+  LayoutDashboard, 
+  Users, 
+  Calendar, 
+  DollarSign, 
+  MapPin, 
+  Settings,
+  FileText,
+  Building2
+} from 'lucide-react';
 
-const adminRoles: UserRole[] = ["System Admin"];
+const sidebarNavItems = [
+  {
+    title: 'Dashboard',
+    href: '/dashboard',
+    icon: LayoutDashboard,
+  },
+  {
+    title: 'Staff',
+    href: '/staff',
+    icon: Users,
+  },
+  {
+    title: 'Roster',
+    href: '/roster',
+    icon: Calendar,
+  },
+  {
+    title: 'Finance',
+    href: '/finance',
+    icon: DollarSign,
+  },
+  {
+    title: 'Locations',
+    href: '/locations',
+    icon: MapPin,
+  },
+  {
+    title: 'Settings',
+    href: '/settings',
+    icon: Settings,
+  },
+];
 
-export function SidebarNav({ user }: { user: Staff }) {
+interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
+  items?: typeof sidebarNavItems;
+}
+
+export function SidebarNav({ className, items = sidebarNavItems, ...props }: SidebarNavProps) {
   const pathname = usePathname();
-  
-  const userNavItems = useMemo(() => {
-    // In a real app, this data would likely be fetched or come from a context.
-    // For now, we filter and sort the mock data.
-    let sectionsToShow = mockSections
-        .filter(section => section.status === 'Active')
-        .sort((a, b) => a.order - b.order);
-
-    if (!adminRoles.includes(user.role)) {
-        // Filter out admin-only sections for non-admins
-        sectionsToShow = sectionsToShow.filter(section => section.path !== '/settings');
-    }
-    
-    return sectionsToShow;
-  }, [user.role]);
 
   return (
-    <Sidebar collapsible="icon" variant="sidebar" side="left">
-      <SidebarHeader>
-        <div className="flex items-center gap-2 p-2 justify-center group-data-[collapsible=icon]:justify-center">
-            <div className="bg-primary text-primary-foreground p-2 rounded-lg">
-                <Waves className="h-6 w-6" />
-            </div>
-            <span className="text-lg font-semibold group-data-[collapsible=icon]:hidden">
-            CareNest
-            </span>
-        </div>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarMenu>
-          {userNavItems.map((item) => {
-            const Icon = iconMap[item.iconName] || MoreHorizontal;
-            return (
-              <SidebarMenuItem key={item.id}>
-                <SidebarMenuButton
-                  asChild
-                  isActive={pathname.startsWith(item.path)}
-                  tooltip={{ children: item.name }}
-                >
-                  <Link href={item.path}>
-                    <Icon />
-                    <span>{item.name}</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            );
-          })}
-        </SidebarMenu>
-      </SidebarContent>
-    </Sidebar>
+    <nav className={cn('flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1', className)} {...props}>
+      <ScrollArea className="h-[300px] w-full lg:h-[400px]">
+        {items.map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex items-center space-x-2 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent hover:text-accent-foreground',
+                pathname === item.href ? 'bg-accent text-accent-foreground' : 'transparent'
+              )}
+            >
+              <Icon className="h-4 w-4" />
+              <span>{item.title}</span>
+            </Link>
+          );
+        })}
+      </ScrollArea>
+    </nav>
   );
 }

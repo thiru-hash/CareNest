@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Card, CardContent, CardHeader, CardTitle, CardDescription,
@@ -27,14 +27,21 @@ import {
 type FormBuilderProps = {
   form?: CustomForm;
   onSubmit?: (formData: { [key: string]: any }) => void;
+  initialData?: { [key: string]: any };
+  readonly?: boolean;
 };
 
-export function FormBuilder({ form, onSubmit }: FormBuilderProps) {
+export function FormBuilder({ form, onSubmit, initialData = {}, readonly = false }: FormBuilderProps) {
   const [forms, setForms] = useState<CustomForm[]>(mockForms);
   const [sections, setSections] = useState<AppSection[]>(mockSections);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentForm, setCurrentForm] = useState<CustomForm | null>(null);
-  const [formData, setFormData] = useState<{ [key: string]: any }>({});
+  const [formData, setFormData] = useState<{ [key: string]: any }>(initialData);
+
+  // Update formData when initialData changes
+  useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
 
   const handleCreateForm = () => setIsDialogOpen(true);
   const handleEditForm = (form: CustomForm) => {
@@ -56,12 +63,14 @@ export function FormBuilder({ form, onSubmit }: FormBuilderProps) {
   };
 
   const handleInputChange = (fieldId: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [fieldId]: value }));
+    if (!readonly) {
+      setFormData((prev) => ({ ...prev, [fieldId]: value }));
+    }
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault();
-    if (onSubmit) onSubmit(formData);
+    if (onSubmit && !readonly) onSubmit(formData);
   };
 
   // 🔘 Render Dynamic Form if `form` is passed
@@ -88,10 +97,16 @@ export function FormBuilder({ form, onSubmit }: FormBuilderProps) {
                   }
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  disabled={readonly || field.readonly}
+                  className={readonly || field.readonly ? "bg-gray-50 cursor-not-allowed" : ""}
+                  placeholder={field.placeholder}
                 />
               ) : field.type === "dropdown" ? (
-                <Select onValueChange={(value) => handleInputChange(field.id, value)}>
-                  <SelectTrigger>
+                <Select 
+                  onValueChange={(value) => handleInputChange(field.id, value)}
+                  disabled={readonly || field.readonly}
+                >
+                  <SelectTrigger className={readonly || field.readonly ? "bg-gray-50 cursor-not-allowed" : ""}>
                     <SelectValue placeholder="Select..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -109,14 +124,18 @@ export function FormBuilder({ form, onSubmit }: FormBuilderProps) {
                   type="date"
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
+                  disabled={readonly || field.readonly}
+                  className={readonly || field.readonly ? "bg-gray-50 cursor-not-allowed" : ""}
                 />
               ) : field.type === "richtext" ? (
                 <textarea
                   id={field.id}
                   value={formData[field.id] || ""}
                   onChange={(e) => handleInputChange(field.id, e.target.value)}
-                  className="border rounded p-2 w-full"
+                  className={`border rounded p-2 w-full ${readonly || field.readonly ? "bg-gray-50 cursor-not-allowed" : ""}`}
                   rows={4}
+                  disabled={readonly || field.readonly}
+                  placeholder={field.placeholder}
                 />
               ) : field.type === "headline" ? (
                 <h2 className="col-span-4 text-lg font-semibold mt-4 mb-2">
@@ -133,9 +152,11 @@ export function FormBuilder({ form, onSubmit }: FormBuilderProps) {
           </div>
         ))}
 
-        <div className="col-span-4 text-right">
-          <Button type="submit">Submit</Button>
-        </div>
+        {!readonly && (
+          <div className="col-span-4 text-right">
+            <Button type="submit">Submit</Button>
+          </div>
+        )}
       </form>
     );
   }

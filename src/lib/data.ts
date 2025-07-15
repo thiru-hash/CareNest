@@ -26,6 +26,7 @@ import {
   Info,
   RectangleHorizontal,
   Landmark,
+  Zap,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
@@ -161,6 +162,54 @@ export const mockStaff: Staff[] = [
       documents: [{ id: 'doc-holly-1', name: 'HollyR_Contract.pdf', type: 'Contract', uploadDate: new Date('2019-04-15'), url: '#' }]
     }
   },
+  { 
+    id: 'staff-it-admin', 
+    name: 'Ian Technical', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'IT Admin', 
+    email: 'ian.t@carenest.com', 
+    phone: '555-1005', 
+    groupIds: ['group-it-admin', 'group-all'],
+    propertyIds: [],
+    personalDetails: { dob: new Date('1987-12-03'), address: '15 Tech Street, Digital City' },
+    employmentDetails: { startDate: new Date('2020-06-01'), employmentType: 'Full-time', payRate: 65.00 },
+    hrDetails: {
+      interviewNotes: "Strong technical background with excellent system administration skills.",
+      documents: [{ id: 'doc-ian-1', name: 'IanT_Contract.pdf', type: 'Contract', uploadDate: new Date('2020-06-01'), url: '#' }]
+    }
+  },
+  { 
+    id: 'staff-tech-admin', 
+    name: 'Tara Systems', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Technical Admin', 
+    email: 'tara.s@carenest.com', 
+    phone: '555-1006', 
+    groupIds: ['group-tech-admin', 'group-all'],
+    propertyIds: [],
+    personalDetails: { dob: new Date('1991-04-18'), address: '8 Code Lane, Developer Town' },
+    employmentDetails: { startDate: new Date('2021-09-15'), employmentType: 'Full-time', payRate: 58.00 },
+    hrDetails: {
+      interviewNotes: "Excellent problem-solving skills and deep understanding of healthcare systems.",
+      documents: [{ id: 'doc-tara-1', name: 'TaraS_Contract.pdf', type: 'Contract', uploadDate: new Date('2021-09-15'), url: '#' }]
+    }
+  },
+  { 
+    id: 'staff-client-it', 
+    name: 'Carl Client', 
+    avatarUrl: 'https://placehold.co/100x100.png', 
+    role: 'Client IT Admin', 
+    email: 'carl.c@carenest.com', 
+    phone: '555-1007', 
+    groupIds: ['group-client-it-admin', 'group-all'],
+    propertyIds: [],
+    personalDetails: { dob: new Date('1986-08-25'), address: '42 Client Road, Support City' },
+    employmentDetails: { startDate: new Date('2022-03-10'), employmentType: 'Full-time', payRate: 52.00 },
+    hrDetails: {
+      interviewNotes: "Great customer service skills with strong technical background.",
+      documents: [{ id: 'doc-carl-1', name: 'CarlC_Contract.pdf', type: 'Contract', uploadDate: new Date('2022-03-10'), url: '#' }]
+    }
+  },
 ];
 
 
@@ -183,6 +232,9 @@ export const mockGroups: Group[] = [
     { id: 'group-hr-admin', 'name': 'HR Admin', 'description': 'Assists with HR administrative tasks', userIds: [] },
     { id: 'group-hr', name: 'HR', description: 'General HR staff', userIds: [] },
     { id: 'group-behavioural-support', name: 'Behavioural Support', description: 'Provides specialist behavioural support', userIds: [] },
+    { id: 'group-it-admin', name: 'IT Administrators', description: 'Manages IT infrastructure and systems', userIds: ['staff-it-admin', 'staff-tech-admin', 'staff-client-it'] },
+    { id: 'group-tech-admin', name: 'Technical Admins', description: 'Provides technical support and system maintenance', userIds: ['staff-tech-admin'] },
+    { id: 'group-client-it-admin', name: 'Client IT Admins', description: 'Manages client-specific IT systems', userIds: ['staff-client-it'] },
 ];
 
 export const mockClients: Client[] = [
@@ -279,6 +331,15 @@ export const mockSections: AppSection[] = [
     ]
   },
    { id: 'sec-finance', name: 'Finance', path: '/finance', iconName: 'Landmark', order: 55, status: 'Active', tabs: [] },
+  { 
+    id: 'sec-automation', 
+    name: 'System Automation', 
+    path: '/automation', 
+    iconName: 'Zap', 
+    order: 56, 
+    status: 'Active',
+    tabs: []
+  },
   { 
     id: 'sec-inc', 
     name: 'Incident Reports', 

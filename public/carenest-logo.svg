@@ -1,0 +1,58 @@
+<svg width="400" height="120" viewBox="0 0 400 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="120" rx="12" fill="url(#gradient-bg)" />
+  
+  <!-- Nest Structure -->
+  <g id="nest">
+    <!-- Nest base -->
+    <path d="M60 80 Q80 60 100 80 Q120 100 140 80 Q160 60 180 80 Q200 100 220 80 Q240 60 260 80 Q280 100 300 80 Q320 60 340 80" 
+          stroke="#8B4513" stroke-width="3" fill="none" opacity="0.8"/>
+    
+    <!-- Nest twigs -->
+    <path d="M70 75 Q90 55 110 75" stroke="#A0522D" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M130 75 Q150 55 170 75" stroke="#A0522D" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M190 75 Q210 55 230 75" stroke="#A0522D" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M250 75 Q270 55 290 75" stroke="#A0522D" stroke-width="2" fill="none" opacity="0.6"/>
+    <path d="M310 75 Q330 55 350 75" stroke="#A0522D" stroke-width="2" fill="none" opacity="0.6"/>
+    
+    <!-- Nest interior -->
+    <ellipse cx="200" cy="85" rx="80" ry="15" fill="#F5DEB3" opacity="0.7"/>
+  </g>
+  
+  <!-- Care symbols -->
+  <g id="care-symbols">
+    <!-- Heart -->
+    <path d="M180 65 Q185 60 190 65 Q195 70 190 75 Q185 80 180 75 Q175 70 180 65" 
+          fill="#E91E63" opacity="0.9"/>
+    
+    <!-- Cross -->
+    <rect x="195" y="60" width="2" height="12" fill="#4CAF50" opacity="0.9"/>
+    <rect x="190" y="65" width="12" height="2" fill="#4CAF50" opacity="0.9"/>
+    
+    <!-- Shield -->
+    <path d="M210 60 L215 65 L215 75 Q215 80 210 85 Q205 80 205 75 L205 65 Z" 
+          fill="#2196F3" opacity="0.9"/>
+  </g>
+  
+  <!-- Text -->
+  <g id="text">
+    <!-- CareNest Text -->
+    <text x="200" y="110" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" fill="white">
+      Care<tspan fill="#FFD700">Nest</tspan>
+    </text>
+    
+    <!-- Tagline -->
+    <text x="200" y="125" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="10" fill="white" opacity="0.8">
+      Digital Companion for Care Organizations
+    </text>
+  </g>
+  
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradient-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#3B82F6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg> 

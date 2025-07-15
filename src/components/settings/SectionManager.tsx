@@ -1,136 +1,182 @@
-
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "../ui/button";
-import { MoreHorizontal, PlusCircle } from "lucide-react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { mockSections } from "@/lib/data";
-import { Badge } from "../ui/badge";
-import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
-import { cn } from "@/lib/utils";
-import type { AppSection } from "@/lib/types";
-import { CreateEditSectionDialog } from "./CreateEditSectionDialog";
-import { iconMap } from "@/lib/icon-map";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { 
+  Plus, 
+  Edit, 
+  Trash2, 
+  Settings,
+  Users,
+  Calendar,
+  DollarSign,
+  MapPin,
+  FileText,
+  Shield
+} from "lucide-react";
+
+interface Section {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  icon: string;
+  order: number;
+}
+
+const defaultSections: Section[] = [
+  {
+    id: "dashboard",
+    name: "Dashboard",
+    description: "Main dashboard and overview",
+    enabled: true,
+    icon: "Settings",
+    order: 1
+  },
+  {
+    id: "people",
+    name: "People We Support",
+    description: "Manage clients and people records",
+    enabled: true,
+    icon: "Users",
+    order: 2
+  },
+  {
+    id: "staff",
+    name: "Staff Management",
+    description: "Manage staff records and employment details",
+    enabled: true,
+    icon: "Users",
+    order: 3
+  },
+  {
+    id: "roster",
+    name: "Roster Schedule",
+    description: "Staff scheduling and shift management",
+    enabled: true,
+    icon: "Calendar",
+    order: 4
+  },
+  {
+    id: "finance",
+    name: "Finance",
+    description: "Financial management and reporting",
+    enabled: true,
+    icon: "DollarSign",
+    order: 5
+  },
+  {
+    id: "locations",
+    name: "Locations",
+    description: "Property and location management",
+    enabled: true,
+    icon: "MapPin",
+    order: 6
+  },
+  {
+    id: "documents",
+    name: "Documents",
+    description: "Document templates and management",
+    enabled: true,
+    icon: "FileText",
+    order: 7
+  },
+  {
+    id: "compliance",
+    name: "Compliance",
+    description: "Compliance and audit management",
+    enabled: true,
+    icon: "Shield",
+    order: 8
+  }
+];
 
 export function SectionManager() {
-    const [sections, setSections] = useState<AppSection[]>(mockSections.slice().sort((a,b) => a.order - b.order));
-    const [isDialogOpen, setIsDialogOpen] = useState(false);
-    const [currentSection, setCurrentSection] = useState<AppSection | null>(null);
+  const [sections, setSections] = useState<Section[]>(defaultSections);
+  const [editingSection, setEditingSection] = useState<Section | null>(null);
 
-    const handleCreateSection = () => {
-        const maxOrder = Math.max(...sections.map(s => s.order), 0);
-        setCurrentSection({
-            id: '', // Empty ID signifies a new section
-            name: "New Section",
-            path: "/new-section",
-            iconName: "LayoutDashboard",
-            order: maxOrder + 10,
-            status: "Inactive",
-            tabs: [],
-        });
-        setIsDialogOpen(true);
-    };
+  const toggleSection = (sectionId: string) => {
+    setSections(sections.map(section => 
+      section.id === sectionId 
+        ? { ...section, enabled: !section.enabled }
+        : section
+    ));
+  };
 
-    const handleEditSection = (section: AppSection) => {
-        setCurrentSection(section);
-        setIsDialogOpen(true);
+  const getIconComponent = (iconName: string) => {
+    const icons: { [key: string]: any } = {
+      Settings,
+      Users,
+      Calendar,
+      DollarSign,
+      MapPin,
+      FileText,
+      Shield
     };
+    return icons[iconName] || Settings;
+  };
 
-    const handleDeleteSection = (sectionId: string) => {
-        // Prevent deleting core sections for demo purposes
-        if (['sec-dash', 'sec-settings'].includes(sectionId)) {
-            alert("This is a core section and cannot be deleted.");
-            return;
-        }
-        setSections(prev => prev.filter(s => s.id !== sectionId));
-    };
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Section Management</h2>
+          <p className="text-muted-foreground">
+            Configure which sections are available in the application
+          </p>
+        </div>
+        <Button>
+          <Plus className="h-4 w-4 mr-2" />
+          Add Section
+        </Button>
+      </div>
 
-    const handleSaveSection = (savedSection: AppSection) => {
-        if (sections.some(s => s.id === savedSection.id)) {
-            // Update existing
-            setSections(prev => prev.map(s => s.id === savedSection.id ? savedSection : s).sort((a, b) => a.order - b.order));
-        } else {
-            // Create new
-            const newSection = { ...savedSection, id: `sec-${Date.now()}` };
-            setSections(prev => [...prev, newSection].sort((a, b) => a.order - b.order));
-        }
-    };
-    
-    return (
-        <>
-            <Card>
-                <CardHeader>
-                    <div className="flex justify-between items-start">
-                        <div>
-                            <CardTitle>Section Manager</CardTitle>
-                            <CardDescription>Create and manage the main navigation sections of the application.</CardDescription>
-                        </div>
-                        <Button onClick={handleCreateSection}>
-                            <PlusCircle className="mr-2 h-4 w-4" />
-                            Create Section
-                        </Button>
+      <div className="grid gap-4">
+        {sections.map((section) => {
+          const IconComponent = getIconComponent(section.icon);
+          
+          return (
+            <Card key={section.id}>
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center w-10 h-10 bg-primary/10 rounded-lg">
+                      <IconComponent className="h-5 w-5 text-primary" />
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>Section Name</TableHead>
-                                <TableHead>Icon</TableHead>
-                                <TableHead>Tabs</TableHead>
-                                <TableHead>Order</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead><span className="sr-only">Actions</span></TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {sections.map((section) => {
-                                const Icon = iconMap[section.iconName] || MoreHorizontal;
-                                const statusClass = section.status === 'Active' 
-                                    ? "bg-green-500/20 text-green-700 border-green-500/30 hover:bg-green-500/30"
-                                    : "bg-gray-500/20 text-gray-700 border-gray-500/30 hover:bg-gray-500/30";
-
-                                return (
-                                    <TableRow key={section.id}>
-                                        <TableCell className="font-medium">{section.name}</TableCell>
-                                        <TableCell><Icon className="h-5 w-5 text-muted-foreground" /></TableCell>
-                                        <TableCell>{section.tabs?.length || 0}</TableCell>
-                                        <TableCell>{section.order}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={section.status === 'Active' ? 'default' : 'secondary'} className={cn(statusClass)}>{section.status}</Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="ghost" size="icon">
-                                                        <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end">
-                                                    <DropdownMenuItem onClick={() => handleEditSection(section)}>Edit Section</DropdownMenuItem>
-                                                    <DropdownMenuItem asChild>
-                                                        <Link href={`/settings/sections/${section.id}`}>Manage Tabs</Link>
-                                                    </DropdownMenuItem>
-                                                    <DropdownMenuItem className="text-destructive" onClick={() => handleDeleteSection(section.id)}>Delete</DropdownMenuItem>
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        </TableCell>
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
-                    </Table>
-                </CardContent>
+                    <div>
+                      <h3 className="font-semibold">{section.name}</h3>
+                      <p className="text-sm text-muted-foreground">
+                        {section.description}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        checked={section.enabled}
+                        onCheckedChange={() => toggleSection(section.id)}
+                      />
+                      <Label className="text-sm">
+                        {section.enabled ? "Enabled" : "Disabled"}
+                      </Label>
+                    </div>
+                    <Button variant="outline" size="sm">
+                      <Edit className="h-4 w-4" />
+                    </Button>
+                    <Button variant="outline" size="sm">
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
             </Card>
-            <CreateEditSectionDialog 
-                isOpen={isDialogOpen}
-                setIsOpen={setIsDialogOpen}
-                section={currentSection}
-                onSave={handleSaveSection}
-            />
-        </>
-    );
-}
+          );
+        })}
+      </div>
+    </div>
+  );
+} 

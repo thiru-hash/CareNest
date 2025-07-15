@@ -1,24 +1,18 @@
-"use server";
+'use server';
 
-import { cookies } from 'next/headers'
-import { redirect } from 'next/navigation'
-
-export type FormState = {
-    message: string;
-    error?: boolean;
-}
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
 export async function switchUser(userId: string) {
-    const cookieStore = await cookies();
-    cookieStore.set('currentUser_id', userId, {
-        path: '/',
-        maxAge: 60 * 60 * 24 * 7 // 1 week
-    });
-    redirect('/dashboard');
-}
+  const cookieStore = cookies();
+  
+  // Set the user cookie
+  cookieStore.set('user', userId, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
 
-export async function logout() {
-    const cookieStore = await cookies();
-    cookieStore.delete('currentUser_id');
-    redirect('/');
+  redirect('/dashboard');
 }

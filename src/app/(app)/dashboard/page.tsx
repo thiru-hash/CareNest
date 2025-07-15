@@ -10,6 +10,8 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, Play, Square, AlertTriangle, CheckCircle, XCircle, UserCheck, FileText, Users } from 'lucide-react';
 import { useRoster } from '@/lib/hooks/useRoster';
+import { useDashboardConfig } from '@/lib/hooks/useDashboardConfig';
+import { UserLevelSelector } from '@/components/UserLevelSelector';
 
 interface ComplianceItem {
   id: string;
@@ -32,6 +34,8 @@ export default function DashboardPage() {
     getCurrentShift,
     currentUserId 
   } = useRoster();
+
+  const { isSectionVisible, isFieldVisible } = useDashboardConfig();
 
   const [complianceItems] = useState<ComplianceItem[]>([
     {
@@ -97,7 +101,11 @@ export default function DashboardPage() {
       clockInLocation: location.address
     }));
     
+    // Call the clock in function from the hook
     clockIn(shiftId);
+    
+    // Show success feedback (you could add a toast notification here)
+    console.log(`Successfully clocked in at ${clockInTime} from ${location.address}`);
   };
 
   const handleClockOut = (shiftId: string) => {
@@ -133,6 +141,8 @@ export default function DashboardPage() {
       
       setTimesheetDialogOpen(true);
     }
+    // Show success feedback (you could add a toast notification here)
+    console.log(`Successfully clocked out at ${clockOutTime} from ${location.address}`);
   };
 
   const confirmClockOut = () => {
@@ -361,571 +371,400 @@ export default function DashboardPage() {
   };
 
   if (loading) {
-    return (
-      <div className="space-y-8">
-        <div className="section-padding">
-          <h1 className="heading-1">Dashboard</h1>
-          <p className="text-muted">Loading your dashboard...</p>
+  return (
+      <div className="min-h-screen flex items-center justify-center bg-muted">
+        <div className="w-full max-w-3xl mx-auto p-6">
+          <div className="animate-pulse bg-white rounded-2xl shadow-md p-8">
+            <h1 className="text-2xl font-bold text-left mb-2">Dashboard</h1>
+            <p className="text-muted-foreground text-left">Loading your dashboard...</p>
+          </div>
         </div>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-8">
-      {/* Header Section */}
-      <div className="section-padding">
-        <h1 className="heading-1">Dashboard</h1>
-        <p className="text-muted">
-          Welcome to your CareNest dashboard
-        </p>
-      </div>
-
-      {/* Main Content Grid */}
-      <div className="content-padding">
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Left Column - My Shifts */}
-          <div className="xl:col-span-2 space-y-6">
-            {/* My Shifts Section */}
-            <Card className="shadow-soft border-0 bg-card">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-3 text-xl font-semibold">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <Calendar className="h-5 w-5 text-primary" />
-                  </div>
-                  <span>My Shifts</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {shifts.map((shift) => (
-                  <div key={shift.id} className="border border-border rounded-xl p-6 hover:shadow-medium transition-all duration-200 bg-background">
-                    {/* Mobile Layout */}
-                    <div className="md:hidden space-y-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-xl font-semibold text-foreground">{shift.startTime}</span>
-                            <span className="text-muted-foreground">-</span>
-                            <span className="text-xl font-semibold text-foreground">{shift.endTime}</span>
-                          </div>
-                          <span className={`text-sm font-medium ${isToday(shift.date) ? 'text-primary' : isTomorrow(shift.date) ? 'text-success' : 'text-muted-foreground'}`}>
-                            {formatDate(shift.date)}
-                          </span>
-                        </div>
-                        <div className="ml-3">
-                          {getStatusBadge(shift)}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <p className="font-semibold text-foreground">{shift.area} ({shift.client})</p>
-                        <p className="text-sm text-muted-foreground">{shift.notes}</p>
-                      </div>
-                      
-                      <div className="flex justify-between items-center pt-4 border-t border-border">
-                        <span className="text-sm text-muted-foreground">4 hours</span>
-                        <div className="flex space-x-2">
-                          {/* Show Clock In when shift is about to start or in progress */}
-                          {(shift.status === 'assigned' || shift.status === 'scheduled') && (isShiftAboutToStart(shift) || isShiftInProgress(shift)) && (
-                            <Button
-                              size="sm"
-                              onClick={() => handleClockIn(shift.id)}
-                              className="bg-success hover:bg-success/90 text-success-foreground"
-                            >
-                              <Play className="h-3 w-3 mr-1" />
-                              Clock In
-                            </Button>
-                          )}
-                          {/* Show Clock Out for shifts that are clocked in */}
-                          {shift.status === 'clocked-in' && (
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => {
-                                setSelectedShift(shift);
-                                handleClockOut(shift.id);
-                              }}
-                            >
-                              <Square className="h-3 w-3 mr-1" />
-                              Clock Out
-                            </Button>
-                          )}
-                          {/* Show status for shifts that are not ready for clock in */}
-                          {(shift.status === 'assigned' || shift.status === 'scheduled') && !isShiftAboutToStart(shift) && !isShiftInProgress(shift) && (
-                            <span className="text-sm text-muted-foreground">Not ready</span>
-                          )}
-                          {/* No action buttons for completed or cancelled shifts */}
-                          {(shift.status === 'completed' || shift.status === 'cancelled') && (
-                            <span className="text-sm text-muted-foreground">No actions</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Desktop Layout */}
-                    <div className="hidden md:block">
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b border-border">
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Time</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Client & Area</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Duration</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Notes</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Status</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="border-b border-border hover:bg-muted/50 transition-colors">
-                              <td className="py-4 px-6">
-                                <div className="flex flex-col">
-                                  <div className="flex items-center space-x-1">
-                                    <span className="text-lg font-semibold text-foreground">{shift.startTime.split(':')[0]}</span>
-                                    <span className="text-sm text-muted-foreground">: {shift.startTime.split(':')[1]}</span>
-                                    <span className="text-muted-foreground mx-1">-</span>
-                                    <span className="text-lg font-semibold text-foreground">{shift.endTime.split(':')[0]}</span>
-                                    <span className="text-sm text-muted-foreground">: {shift.endTime.split(':')[1]}</span>
-                                  </div>
-                                  <span className={`text-xs font-medium ${isToday(shift.date) ? 'text-primary' : isTomorrow(shift.date) ? 'text-success' : 'text-muted-foreground'}`}>
-                                    {formatDate(shift.date)}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-foreground">{shift.client}</span>
-                                  <span className="text-sm text-muted-foreground">{shift.area}</span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <span className="text-sm text-muted-foreground">4 hours</span>
-                              </td>
-                              <td className="py-4 px-6">
-                                <span className="text-sm text-muted-foreground max-w-xs truncate" title={shift.notes}>
-                                  {shift.notes}
-                                </span>
-                              </td>
-                              <td className="py-4 px-6">
-                                {getStatusBadge(shift)}
-                              </td>
-                              <td className="py-4 px-6">
-                                <div className="flex space-x-2">
-                                  {/* Show Clock In when shift is about to start or in progress */}
-                                  {(shift.status === 'assigned' || shift.status === 'scheduled') && (isShiftAboutToStart(shift) || isShiftInProgress(shift)) && (
-                                    <Button
-                                      size="sm"
-                                      onClick={() => handleClockIn(shift.id)}
-                                      className="bg-success hover:bg-success/90 text-success-foreground"
-                                    >
-                                      <Play className="h-3 w-3 mr-1" />
-                                      Clock In
-                                    </Button>
-                                  )}
-                                  {/* Show Clock Out for shifts that are clocked in */}
-                                  {shift.status === 'clocked-in' && (
-                                    <Button
-                                      size="sm"
-                                      variant="destructive"
-                                      onClick={() => {
-                                        setSelectedShift(shift);
-                                        handleClockOut(shift.id);
-                                      }}
-                                    >
-                                      <Square className="h-3 w-3 mr-1" />
-                                      Clock Out
-                                    </Button>
-                                  )}
-                                  {/* Show status for shifts that are not ready for clock in */}
-                                  {(shift.status === 'assigned' || shift.status === 'scheduled') && !isShiftAboutToStart(shift) && !isShiftInProgress(shift) && (
-                                    <span className="text-sm text-muted-foreground">Not ready</span>
-                                  )}
-                                  {/* No action buttons for completed or cancelled shifts */}
-                                  {(shift.status === 'completed' || shift.status === 'cancelled') && (
-                                    <span className="text-sm text-muted-foreground">No actions</span>
-                                  )}
-                                </div>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-
-            {/* Open Shifts Section */}
-            <Card className="shadow-soft border-0 bg-card">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-3 text-xl font-semibold">
-                  <div className="p-2 bg-info/10 rounded-lg">
-                    <Users className="h-5 w-5 text-info" />
-                  </div>
-                  <span>Open Shifts</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {openShifts.filter(shift => shift.status === 'open').map((openShift) => (
-                  <div key={openShift.id} className="border border-border rounded-xl p-6 hover:shadow-medium transition-all duration-200 bg-background">
-                    {/* Mobile Layout */}
-                    <div className="md:hidden space-y-4">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-2 mb-2">
-                            <span className="text-xl font-semibold text-foreground">{openShift.startTime}</span>
-                            <span className="text-muted-foreground">-</span>
-                            <span className="text-xl font-semibold text-foreground">{openShift.endTime}</span>
-                          </div>
-                          <span className={`text-sm font-medium ${isToday(openShift.date) ? 'text-primary' : isTomorrow(openShift.date) ? 'text-success' : 'text-muted-foreground'}`}>
-                            {formatDate(openShift.date)}
-                          </span>
-                        </div>
-                        <div className="ml-3">
-                          {getUrgencyBadge(openShift.urgency)}
-                        </div>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <p className="font-semibold text-foreground">{openShift.area} ({openShift.client})</p>
-                        <p className="text-sm text-muted-foreground">{openShift.description}</p>
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center space-x-4">
-                            <span className="text-sm font-medium text-foreground">{openShift.requiredRole}</span>
-                            <span className="text-sm font-medium text-success">{openShift.payRate}</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end pt-4 border-t border-border">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRequestOpenShift(openShift)}
-                          className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                        >
-                          <FileText className="h-3 w-3 mr-1" />
-                          Request
-                        </Button>
-                      </div>
-                    </div>
-                    
-                    {/* Desktop Layout */}
-                    <div className="hidden md:block">
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b border-border">
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Time</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Client & Area</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Required Role</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Pay Rate</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Priority</th>
-                              <th className="text-left py-4 px-6 font-semibold text-foreground">Actions</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="border-b border-border hover:bg-muted/50 transition-colors">
-                              <td className="py-4 px-6">
-                                <div className="flex flex-col">
-                                  <div className="flex items-center space-x-1">
-                                    <span className="text-lg font-semibold text-foreground">{openShift.startTime.split(':')[0]}</span>
-                                    <span className="text-sm text-muted-foreground">: {openShift.startTime.split(':')[1]}</span>
-                                    <span className="text-muted-foreground mx-1">-</span>
-                                    <span className="text-lg font-semibold text-foreground">{openShift.endTime.split(':')[0]}</span>
-                                    <span className="text-sm text-muted-foreground">: {openShift.endTime.split(':')[1]}</span>
-                                  </div>
-                                  <span className={`text-xs font-medium ${isToday(openShift.date) ? 'text-primary' : isTomorrow(openShift.date) ? 'text-success' : 'text-muted-foreground'}`}>
-                                    {formatDate(openShift.date)}
-                                  </span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <div className="flex flex-col">
-                                  <span className="font-semibold text-foreground">{openShift.client}</span>
-                                  <span className="text-sm text-muted-foreground">{openShift.area}</span>
-                                  <span className="text-xs text-muted-foreground mt-1">{openShift.description}</span>
-                                </div>
-                              </td>
-                              <td className="py-4 px-6">
-                                <span className="text-sm font-medium text-foreground">{openShift.requiredRole}</span>
-                              </td>
-                              <td className="py-4 px-6">
-                                <span className="text-sm font-medium text-success">{openShift.payRate}</span>
-                              </td>
-                              <td className="py-4 px-6">
-                                {getUrgencyBadge(openShift.urgency)}
-                              </td>
-                              <td className="py-4 px-6">
-                                <Button
-                                  size="sm"
-                                  variant="outline"
-                                  onClick={() => handleRequestOpenShift(openShift)}
-                                  className="border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                                >
-                                  <FileText className="h-3 w-3 mr-1" />
-                                  Request
-                                </Button>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Column - Compliance */}
-          <div className="space-y-6">
-            <Card className="shadow-soft border-0 bg-card">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center space-x-3 text-xl font-semibold">
-                  <div className="p-2 bg-warning/10 rounded-lg">
-                    <UserCheck className="h-5 w-5 text-warning" />
-                  </div>
-                  <span>Compliance & Training</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {complianceItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between p-4 border border-border rounded-xl hover:shadow-soft transition-all duration-200 bg-background">
-                      <div className="flex items-center space-x-3 flex-1">
-                        {getComplianceStatusIcon(item.status)}
-                        <div className="min-w-0 flex-1">
-                          <p className="font-semibold text-sm text-foreground truncate">{item.title}</p>
-                          <p className="text-xs text-muted-foreground">{item.category}</p>
-                        </div>
-                      </div>
-                      <div className="flex flex-col items-end space-y-1 ml-3">
-                        <Badge 
-                          variant={item.status === 'completed' ? 'default' : item.status === 'overdue' ? 'destructive' : 'secondary'}
-                          className="text-xs"
-                        >
-                          {item.status}
-                        </Badge>
-                        <p className="text-xs text-muted-foreground">Due: {item.dueDate}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+    return (
+    <div className="min-h-screen bg-muted">
+      <div className="w-full h-full p-4 lg:p-6 space-y-6">
+        {/* Header */}
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl lg:text-3xl font-bold text-left">Dashboard</h1>
+          <p className="text-muted-foreground text-left">Welcome to your CareNest dashboard</p>
         </div>
-      </div>
 
-      {/* Open Shift Request Dialog */}
-      <Dialog open={openShiftRequestDialogOpen} onOpenChange={setOpenShiftRequestDialogOpen}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Request Open Shift</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="open-shift-details">Shift Details</Label>
-              <div className="mt-2 p-4 bg-muted rounded-lg">
-                <p className="font-semibold text-foreground">{selectedOpenShift?.area} ({selectedOpenShift?.client})</p>
-                <p className="text-sm text-muted-foreground">
-                  {selectedOpenShift?.date} - {selectedOpenShift?.startTime} to {selectedOpenShift?.endTime}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Required: {selectedOpenShift?.requiredRole} • Pay: {selectedOpenShift?.payRate}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {selectedOpenShift?.description}
-                </p>
+        {/* My Shifts Section */}
+        {isSectionVisible('my-shifts') && (
+          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-left">
+                <Calendar className="h-5 w-5 text-primary" /> My Shifts
+              </h2>
+              <div className="flex gap-2">
+                <Button size="sm" variant="outline">List</Button>
+                <Button size="sm" variant="ghost">Week</Button>
+                <Button size="sm" variant="ghost">Day</Button>
               </div>
             </div>
-            <div>
-              <Label htmlFor="open-shift-reason">Why are you suitable for this shift?</Label>
-              <Textarea
-                id="open-shift-reason"
-                placeholder="Please explain your qualifications, experience, and why you can handle this shift effectively..."
-                value={openShiftRequestReason}
-                onChange={(e) => setOpenShiftRequestReason(e.target.value)}
-                className="mt-2"
-                rows={4}
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setOpenShiftRequestDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={submitOpenShiftRequest} disabled={!openShiftRequestReason.trim()}>
-                Submit Request
-              </Button>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="text-xs text-muted-foreground border-b">
+                    <th className="py-2 px-2"><input type="checkbox" /></th>
+                    <th className="py-2 px-2">Shift</th>
+                    {isFieldVisible('my-shifts-client') && <th className="py-2 px-2 hidden md:table-cell">Client</th>}
+                    <th className="py-2 px-2">Time</th>
+                    {isFieldVisible('my-shifts-status') && <th className="py-2 px-2 hidden sm:table-cell">Status</th>}
+                    {isFieldVisible('my-shifts-actions') && <th className="py-2 px-2">Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {shifts.filter(shift => shift.status !== 'completed' && shift.status !== 'cancelled').map((shift, idx) => (
+                    <tr key={shift.id} className={
+                      `align-middle ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} border-b last:border-0`
+                    }>
+                      <td className="py-2 px-2"><input type="checkbox" /></td>
+                      <td className="py-2 px-2">
+                        <div className="font-medium text-gray-900">{shift.area}</div>
+                        <div className="text-xs text-muted-foreground">{shift.notes}</div>
+                        {isFieldVisible('my-shifts-client') && <div className="text-xs text-muted-foreground md:hidden">{shift.client}</div>}
+                      </td>
+                      {isFieldVisible('my-shifts-client') && <td className="py-2 px-2 hidden md:table-cell">{shift.client}</td>}
+                      <td className="py-2 px-2">
+                        <span className="font-semibold">{shift.startTime}</span> - <span className="font-semibold">{shift.endTime}</span>
+                        <div className="text-xs text-muted-foreground">{formatDate(shift.date)}</div>
+                      </td>
+                      {isFieldVisible('my-shifts-status') && <td className="py-2 px-2 hidden sm:table-cell">{getStatusBadge(shift)}</td>}
+                      {isFieldVisible('my-shifts-actions') && (
+                        <td className="py-2 px-2">
+                          <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
+                            {(shift.status === 'assigned' || shift.status === 'scheduled') && (isShiftAboutToStart(shift) || isShiftInProgress(shift)) && (
+                              <Button 
+                                size="sm" 
+                                className="bg-primary text-white text-xs"
+                                onClick={() => handleClockIn(shift.id)}
+                              >
+                                <Play className="h-3 w-3 mr-1" /> Clock In
+                              </Button>
+                            )}
+                            {shift.status === 'clocked-in' && (
+                              <Button size="sm" variant="destructive" onClick={() => { setSelectedShift(shift); handleClockOut(shift.id); }} className="text-xs">
+                                <Square className="h-3 w-3 mr-1" /> Clock Out
+                              </Button>
+                            )}
+                            {(shift.status === 'assigned' || shift.status === 'scheduled') && !isShiftAboutToStart(shift) && !isShiftInProgress(shift) && (
+                              <span className="text-xs text-muted-foreground">Not ready</span>
+                            )}
+                            {(shift.status === 'completed' || shift.status === 'cancelled') && (
+                              <span className="text-xs text-muted-foreground">No actions</span>
+                            )}
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
 
-      {/* Clock Out Early Dialog */}
-      <Dialog open={clockOutDialogOpen} onOpenChange={setClockOutDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Early Clock Out</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-              <div className="flex items-center space-x-2">
-                <AlertTriangle className="h-4 w-4 text-warning" />
-                <p className="text-sm font-medium text-warning">
-                  You are clocking out before your scheduled shift end time.
-                </p>
-              </div>
+        {/* Open Shifts Section */}
+        {isSectionVisible('open-shifts') && (
+          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold flex items-center gap-2 text-left">
+                <Users className="h-5 w-5 text-info" /> Open Shifts
+              </h2>
             </div>
-            <div>
-              <Label htmlFor="clockout-reason">Reason for early clock out</Label>
-              <Textarea
-                id="clockout-reason"
-                placeholder="Please explain why you need to clock out early..."
-                value={clockOutReason}
-                onChange={(e) => setClockOutReason(e.target.value)}
-                className="mt-2"
-                rows={3}
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setClockOutDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button 
-                variant="destructive" 
-                onClick={confirmClockOut}
-                disabled={!clockOutReason.trim()}
-              >
-                Confirm Clock Out
-              </Button>
+            <div className="overflow-x-auto">
+              <table className="min-w-full text-left">
+                <thead>
+                  <tr className="text-xs text-muted-foreground border-b">
+                    <th className="py-2 px-2"><input type="checkbox" /></th>
+                    <th className="py-2 px-2">Shift</th>
+                    {isFieldVisible('open-shifts-client') && <th className="py-2 px-2 hidden lg:table-cell">Client</th>}
+                    <th className="py-2 px-2">Time</th>
+                    {isFieldVisible('open-shifts-role') && <th className="py-2 px-2 hidden md:table-cell">Role</th>}
+                    {isFieldVisible('open-shifts-pay') && <th className="py-2 px-2 hidden xl:table-cell">Pay</th>}
+                    {isFieldVisible('open-shifts-priority') && <th className="py-2 px-2 hidden sm:table-cell">Priority</th>}
+                    {isFieldVisible('open-shifts-actions') && <th className="py-2 px-2">Actions</th>}
+                  </tr>
+                </thead>
+                <tbody>
+                  {openShifts.filter(shift => shift.status === 'open').map((shift, idx) => (
+                    <tr key={shift.id} className={
+                      `align-middle ${idx % 2 === 0 ? 'bg-gray-50' : 'bg-white'} border-b last:border-0`
+                    }>
+                      <td className="py-2 px-2"><input type="checkbox" /></td>
+                      <td className="py-2 px-2">
+                        <div className="font-medium text-gray-900">{shift.area}</div>
+                        <div className="text-xs text-muted-foreground">{shift.description}</div>
+                        {isFieldVisible('open-shifts-client') && <div className="text-xs text-muted-foreground lg:hidden">{shift.client}</div>}
+                      </td>
+                      {isFieldVisible('open-shifts-client') && <td className="py-2 px-2 hidden lg:table-cell">{shift.client}</td>}
+                      <td className="py-2 px-2">
+                        <span className="font-semibold">{shift.startTime}</span> - <span className="font-semibold">{shift.endTime}</span>
+                        <div className="text-xs text-muted-foreground">{formatDate(shift.date)}</div>
+                      </td>
+                      {isFieldVisible('open-shifts-role') && <td className="py-2 px-2 hidden md:table-cell">{shift.requiredRole}</td>}
+                      {isFieldVisible('open-shifts-pay') && <td className="py-2 px-2 hidden xl:table-cell text-success">{shift.payRate}</td>}
+                      {isFieldVisible('open-shifts-priority') && <td className="py-2 px-2 hidden sm:table-cell">{getUrgencyBadge(shift.urgency)}</td>}
+                      {isFieldVisible('open-shifts-actions') && (
+                        <td className="py-2 px-2">
+                          <Button size="sm" variant="outline" onClick={() => handleRequestOpenShift(shift)} className="text-xs">
+                            <FileText className="h-3 w-3 mr-1" /> Request
+                          </Button>
+                        </td>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </DialogContent>
-      </Dialog>
+        )}
 
-      {/* Timesheet Dialog */}
-      <Dialog open={timesheetDialogOpen} onOpenChange={setTimesheetDialogOpen}>
-        <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Submit Timesheet</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6">
-            {/* Shift Details */}
-            <div className="p-4 bg-muted rounded-lg">
-              <h3 className="font-semibold mb-2 text-foreground">Shift Details</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium text-foreground">Client:</span> {selectedShift?.client}
-                </div>
-                <div>
-                  <span className="font-medium text-foreground">Area:</span> {selectedShift?.area}
-                </div>
-                <div>
-                  <span className="font-medium text-foreground">Scheduled:</span> {selectedShift?.startTime} - {selectedShift?.endTime}
-                </div>
-                <div>
-                  <span className="font-medium text-foreground">Date:</span> {selectedShift?.date}
-                </div>
-              </div>
+        {/* Compliance Section */}
+        {isSectionVisible('compliance') && (
+          <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-6">
+            <div className="flex items-center mb-4">
+              <UserCheck className="h-5 w-5 text-warning mr-2" />
+              <h2 className="text-xl font-semibold text-left">Compliance & Training</h2>
             </div>
+            <div className="divide-y">
+              {complianceItems.map((item, idx) => (
+                <div key={item.id} className="flex items-center justify-between py-4">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {getComplianceStatusIcon(item.status)}
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm text-gray-900 truncate">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">{item.category}</p>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end ml-3">
+                    <Badge variant={item.status === 'completed' ? 'default' : item.status === 'overdue' ? 'destructive' : 'secondary'} className="text-xs">
+                      {item.status}
+                    </Badge>
+                    <p className="text-xs text-muted-foreground">Due: {item.dueDate}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
-            {/* Clock In/Out Times */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {/* Dialogs (unchanged) */}
+        {/* Open Shift Request Dialog */}
+        <Dialog open={openShiftRequestDialogOpen} onOpenChange={setOpenShiftRequestDialogOpen}>
+          <DialogContent className="max-w-2xl">
+            <DialogHeader>
+              <DialogTitle>Request Open Shift</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
               <div>
-                <Label>Clock In Time</Label>
-                <div className="mt-1 p-3 bg-muted rounded-lg border">
-                  <div className="font-semibold text-foreground">{timesheetData.clockInTime}</div>
-                  <div className="text-xs text-muted-foreground">{timesheetData.clockInLocation}</div>
+                <Label htmlFor="open-shift-details">Shift Details</Label>
+                <div className="mt-2 p-4 bg-muted rounded-lg">
+                  <p className="font-semibold text-foreground">{selectedOpenShift?.area} ({selectedOpenShift?.client})</p>
+                  <p className="text-sm text-muted-foreground">
+                    {selectedOpenShift?.date} - {selectedOpenShift?.startTime} to {selectedOpenShift?.endTime}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Required: {selectedOpenShift?.requiredRole} • Pay: {selectedOpenShift?.payRate}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {selectedOpenShift?.description}
+                  </p>
                 </div>
               </div>
               <div>
-                <Label>Clock Out Time</Label>
-                <div className="mt-1 p-3 bg-muted rounded-lg border">
-                  <div className="font-semibold text-foreground">{timesheetData.clockOutTime}</div>
-                  <div className="text-xs text-muted-foreground">{timesheetData.clockOutLocation}</div>
-                </div>
+                <Label htmlFor="open-shift-reason">Why are you suitable for this shift?</Label>
+                <Textarea
+                  id="open-shift-reason"
+                  placeholder="Please explain your qualifications, experience, and why you can handle this shift effectively..."
+                  value={openShiftRequestReason}
+                  onChange={(e) => setOpenShiftRequestReason(e.target.value)}
+                  className="mt-2"
+                  rows={4}
+                />
               </div>
-            </div>
-
-            {/* Total Hours */}
-            <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
-              <div className="flex justify-between items-center">
-                <span className="font-semibold text-foreground">Total Hours Worked:</span>
-                <span className="text-lg font-bold text-success">
-                  {timesheetData.totalHours.hours}h {timesheetData.totalHours.minutes}m
-                </span>
-              </div>
-            </div>
-
-            {/* Break Times */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <Label>Break Times</Label>
-                <Button size="sm" variant="outline" onClick={addBreak}>
-                  Add Break
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setOpenShiftRequestDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={submitOpenShiftRequest} disabled={!openShiftRequestReason.trim()}>
+                  Submit Request
                 </Button>
               </div>
-              <div className="space-y-3">
-                {timesheetData.breaks.map((break_, index) => (
-                  <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                    <Input
-                      placeholder="Start Time"
-                      value={break_.startTime}
-                      onChange={(e) => updateBreak(index, 'startTime', e.target.value)}
-                    />
-                    <Input
-                      placeholder="End Time"
-                      value={break_.endTime}
-                      onChange={(e) => updateBreak(index, 'endTime', e.target.value)}
-                    />
-                    <Input
-                      placeholder="Duration"
-                      value={break_.duration}
-                      onChange={(e) => updateBreak(index, 'duration', e.target.value)}
-                    />
-                  </div>
-                ))}
-              </div>
             </div>
+          </DialogContent>
+        </Dialog>
 
-            {/* Notes */}
-            <div>
-              <Label htmlFor="timesheet-notes">Notes (Optional)</Label>
-              <Textarea
-                id="timesheet-notes"
-                placeholder="Add any notes about your shift, reasons for finishing late, or other relevant information..."
-                value={timesheetData.notes}
-                onChange={(e) => setTimesheetData(prev => ({ ...prev, notes: e.target.value }))}
-                className="mt-2"
-                rows={3}
-              />
-            </div>
-
-            {/* Early Clock Out Reason */}
-            {clockOutReason && (
+        {/* Clock Out Early Dialog */}
+        <Dialog open={clockOutDialogOpen} onOpenChange={setClockOutDialogOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Early Clock Out</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
               <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
-                <div className="flex items-center space-x-2 mb-2">
+            <div className="flex items-center space-x-2">
                   <AlertTriangle className="h-4 w-4 text-warning" />
-                  <span className="font-semibold text-warning">Early Clock Out Reason:</span>
+                  <p className="text-sm font-medium text-warning">
+                    You are clocking out before your scheduled shift end time.
+                  </p>
                 </div>
-                <p className="text-sm text-warning">{clockOutReason}</p>
               </div>
-            )}
-
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setTimesheetDialogOpen(false)}>
-                Cancel
+              <div>
+                <Label htmlFor="clockout-reason">Reason for early clock out</Label>
+                <Textarea
+                  id="clockout-reason"
+                  placeholder="Please explain why you need to clock out early..."
+                  value={clockOutReason}
+                  onChange={(e) => setClockOutReason(e.target.value)}
+                  className="mt-2"
+                  rows={3}
+                />
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setClockOutDialogOpen(false)}>
+                  Cancel
               </Button>
-              <Button onClick={submitTimesheet}>
-                Submit Timesheet
+                <Button 
+                  variant="destructive" 
+                  onClick={confirmClockOut}
+                  disabled={!clockOutReason.trim()}
+                >
+                  Confirm Clock Out
               </Button>
             </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Timesheet Dialog */}
+        <Dialog open={timesheetDialogOpen} onOpenChange={setTimesheetDialogOpen}>
+          <DialogContent className="max-w-2xl w-[95vw] max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Submit Timesheet</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-6">
+              {/* Shift Details */}
+              <div className="p-4 bg-muted rounded-lg">
+                <h3 className="font-semibold mb-2 text-foreground">Shift Details</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="font-medium text-foreground">Client:</span> {selectedShift?.client}
+                  </div>
+                  <div>
+                    <span className="font-medium text-foreground">Area:</span> {selectedShift?.area}
+            </div>
+                  <div>
+                    <span className="font-medium text-foreground">Scheduled:</span> {selectedShift?.startTime} - {selectedShift?.endTime}
+            </div>
+                  <div>
+                    <span className="font-medium text-foreground">Date:</span> {selectedShift?.date}
+            </div>
+            </div>
+      </div>
+
+              {/* Clock In/Out Times */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <Label>Clock In Time</Label>
+                  <div className="mt-1 p-3 bg-muted rounded-lg border">
+                    <div className="font-semibold text-foreground">{timesheetData.clockInTime}</div>
+                    <div className="text-xs text-muted-foreground">{timesheetData.clockInLocation}</div>
+                  </div>
+                </div>
+                <div>
+                  <Label>Clock Out Time</Label>
+                  <div className="mt-1 p-3 bg-muted rounded-lg border">
+                    <div className="font-semibold text-foreground">{timesheetData.clockOutTime}</div>
+                    <div className="text-xs text-muted-foreground">{timesheetData.clockOutLocation}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Total Hours */}
+              <div className="p-4 bg-success/10 border border-success/20 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="font-semibold text-foreground">Total Hours Worked:</span>
+                  <span className="text-lg font-bold text-success">
+                    {timesheetData.totalHours.hours}h {timesheetData.totalHours.minutes}m
+                  </span>
+                </div>
+              </div>
+
+              {/* Break Times */}
+              <div>
+                <div className="flex justify-between items-center mb-3">
+                  <Label>Break Times</Label>
+                  <Button size="sm" variant="outline" onClick={addBreak}>
+                    Add Break
+                  </Button>
+                </div>
+                <div className="space-y-3">
+                  {timesheetData.breaks.map((break_, index) => (
+                    <div key={index} className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      <Input
+                        placeholder="Start Time"
+                        value={break_.startTime}
+                        onChange={(e) => updateBreak(index, 'startTime', e.target.value)}
+                      />
+                      <Input
+                        placeholder="End Time"
+                        value={break_.endTime}
+                        onChange={(e) => updateBreak(index, 'endTime', e.target.value)}
+                      />
+                      <Input
+                        placeholder="Duration"
+                        value={break_.duration}
+                        onChange={(e) => updateBreak(index, 'duration', e.target.value)}
+                      />
+            </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Notes */}
+              <div>
+                <Label htmlFor="timesheet-notes">Notes (Optional)</Label>
+                <Textarea
+                  id="timesheet-notes"
+                  placeholder="Add any notes about your shift, reasons for finishing late, or other relevant information..."
+                  value={timesheetData.notes}
+                  onChange={(e) => setTimesheetData(prev => ({ ...prev, notes: e.target.value }))}
+                  className="mt-2"
+                  rows={3}
+                />
+              </div>
+
+              {/* Early Clock Out Reason */}
+              {clockOutReason && (
+                <div className="p-4 bg-warning/10 border border-warning/20 rounded-lg">
+                  <div className="flex items-center space-x-2 mb-2">
+                    <AlertTriangle className="h-4 w-4 text-warning" />
+                    <span className="font-semibold text-warning">Early Clock Out Reason:</span>
+            </div>
+                  <p className="text-sm text-warning">{clockOutReason}</p>
+                </div>
+              )}
+
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setTimesheetDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={submitTimesheet}>
+                  Submit Timesheet
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+        
+        {/* User Level Selector for Testing */}
+        <UserLevelSelector />
           </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
