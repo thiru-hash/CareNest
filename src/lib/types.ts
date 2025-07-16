@@ -412,3 +412,80 @@ export interface PermissionPreset {
   description: string;
   permissions: { [rightId: string]: boolean };
 }
+
+export interface UserAccount {
+  id: string;
+  username: string;
+  email: string;
+  staffId?: string; // Links to staff record
+  status: 'Active' | 'Inactive' | 'Blocked' | 'Pending';
+  role: UserRole;
+  permissions: string[];
+  groupIds: string[]; // User groups
+  lastLogin?: Date;
+  passwordLastChanged?: Date;
+  passwordNeverExpires: boolean;
+  twoFactorEnabled: boolean;
+  recoveryEmail?: string;
+  recoveryPhone?: string;
+  createdAt: Date;
+  updatedAt: Date;
+  createdBy: string;
+  notes?: string;
+}
+
+export type UserStatus = 'Active' | 'Inactive' | 'Blocked' | 'Pending';
+
+export interface UserPermissions {
+  canCreateUsers: boolean;
+  canEditUsers: boolean;
+  canBlockUsers: boolean;
+  canResetPasswords: boolean;
+  canManageRoles: boolean;
+  canViewAuditLogs: boolean;
+}
+
+export interface UserAuditLog {
+  id: string;
+  userId: string;
+  action: 'Login' | 'Logout' | 'Password_Reset' | 'Account_Blocked' | 'Account_Unblocked' | 'Profile_Updated' | 'Role_Changed';
+  timestamp: Date;
+  ipAddress?: string;
+  userAgent?: string;
+  details?: string;
+}
+
+export interface TwoFactorConfig {
+  // Global 2FA settings
+  globalEnabled: boolean;
+  globalRequired: boolean;
+  
+  // Group-based 2FA settings
+  groupSettings: {
+    [groupId: string]: {
+      enabled: boolean;
+      required: boolean;
+      method: 'app' | 'sms' | 'both' | 'none';
+    };
+  };
+  
+  // User-based 2FA settings (overrides group settings)
+  userSettings: {
+    [userId: string]: {
+      enabled: boolean;
+      required: boolean;
+      method: 'app' | 'sms' | 'both' | 'none';
+      setupComplete: boolean;
+      lastSetupDate?: Date;
+    };
+  };
+  
+  // Excluded users/groups (never require 2FA)
+  excludedUsers: string[];
+  excludedGroups: string[];
+  
+  // Enforcement settings
+  enforcementMode: 'strict' | 'gradual' | 'optional';
+  gracePeriod: number; // days
+  reminderFrequency: number; // days
+}

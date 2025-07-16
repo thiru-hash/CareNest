@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import type { AppSection } from "@/lib/types";
 import { CreateEditSectionDialog } from "./CreateEditSectionDialog";
 import { iconMap } from "@/lib/icon-map";
+import { autoDetectNewSections } from "@/lib/terminology";
 
 export function SectionManager() {
     const [sections, setSections] = useState<AppSection[]>(mockSections.slice().sort((a,b) => a.order - b.order));
@@ -55,6 +56,9 @@ export function SectionManager() {
             // Create new
             const newSection = { ...savedSection, id: `sec-${Date.now()}` };
             setSections(prev => [...prev, newSection].sort((a, b) => a.order - b.order));
+            
+            // Auto-detect new section for terminology
+            autoDetectNewSections([newSection]);
         }
     };
     

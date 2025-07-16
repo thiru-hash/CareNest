@@ -19,66 +19,73 @@ import {
   Shield,
   UserCheck
 } from 'lucide-react';
+import { getNavigationItems } from '@/lib/terminology';
 
-const sidebarNavItems = [
-  {
-    title: 'Dashboard',
-    href: '/dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'People We Support',
-    href: '/people',
-    icon: Users,
-  },
-  {
-    title: 'Staff',
-    href: '/staff',
-    icon: UserCheck,
-  },
-  {
-    title: 'Roster',
-    href: '/roster',
-    icon: Calendar,
-  },
-  {
-    title: 'Timesheets',
-    href: '/timesheets',
-    icon: Clock,
-  },
-  {
-    title: 'Finance',
-    href: '/finance',
-    icon: DollarSign,
-  },
-  {
-    title: 'Compliance',
-    href: '/compliance',
-    icon: Shield,
-  },
-  {
-    title: 'Locations',
-    href: '/locations',
-    icon: MapPin,
-  },
-  {
-    title: 'Settings',
-    href: '/settings',
-    icon: Settings,
-  },
-];
+// Get navigation items with terminology
+const getSidebarNavItems = () => {
+  const navItems = getNavigationItems();
+  
+  return [
+    {
+      title: navItems.find(item => item.id === 'dashboard')?.name || 'Dashboard',
+      href: '/dashboard',
+      icon: LayoutDashboard,
+    },
+    {
+      title: navItems.find(item => item.id === 'people')?.name || 'People We Support',
+      href: '/people',
+      icon: Users,
+    },
+    {
+      title: navItems.find(item => item.id === 'staff')?.name || 'Staff',
+      href: '/staff',
+      icon: UserCheck,
+    },
+    {
+      title: navItems.find(item => item.id === 'roster')?.name || 'Roster Schedule',
+      href: '/roster',
+      icon: Calendar,
+    },
+    {
+      title: 'Timesheets',
+      href: '/timesheets',
+      icon: Clock,
+    },
+    {
+      title: navItems.find(item => item.id === 'finance')?.name || 'Finance',
+      href: '/finance',
+      icon: DollarSign,
+    },
+    {
+      title: 'Compliance',
+      href: '/compliance',
+      icon: Shield,
+    },
+    {
+      title: navItems.find(item => item.id === 'locations')?.name || 'Locations',
+      href: '/locations',
+      icon: MapPin,
+    },
+    {
+      title: navItems.find(item => item.id === 'settings')?.name || 'Settings',
+      href: '/settings',
+      icon: Settings,
+    },
+  ];
+};
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
-  items?: typeof sidebarNavItems;
+  items?: ReturnType<typeof getSidebarNavItems>;
 }
 
-export function SidebarNav({ className, items = sidebarNavItems, ...props }: SidebarNavProps) {
+export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
   const pathname = usePathname();
+  const sidebarNavItems = items || getSidebarNavItems();
 
   return (
     <nav className={cn('flex space-x-2 lg:flex-col lg:space-x-0 lg:space-y-1', className)} {...props}>
       <ScrollArea className="h-[300px] w-full lg:h-[400px]">
-        {items.map((item) => {
+        {sidebarNavItems.map((item) => {
           const Icon = item.icon;
           return (
             <Link

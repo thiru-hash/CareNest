@@ -1,4 +1,4 @@
-import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, Payroll as PayrollType, ClientFunding, ClientTransaction } from './types';
+import type { User, Client, Staff, Property, Shift, ComplianceItem, Group, AppSection, CustomForm, FormField, FormFieldType, Timesheet, Notice, Invoice, Payroll as PayrollType, ClientFunding, ClientTransaction, UserAccount, UserAuditLog } from './types';
 import { addDays, addHours, subDays, subHours } from 'date-fns';
 import {
   CaseSensitive,
@@ -247,8 +247,8 @@ export const mockGroups: Group[] = [
   },
   {
     id: 'group-system-admin',
-    name: 'FLOWLOGIC ADMIN',
-    description: 'Flowlogic Admin Functions',
+    name: 'CARNEST ADMIN',
+    description: 'CareNest Admin Functions',
     userIds: ['user-1']
   },
   {
@@ -571,7 +571,6 @@ export const mockComplianceItems: ComplianceItem[] = [
 
 export const mockSections: AppSection[] = [
   { id: 'sec-dash', name: 'Dashboard', path: '/dashboard', iconName: 'LayoutDashboard', order: 10, status: 'Active', tabs: [] },
-  { id: 'sec-roster', name: 'Roster Schedule', path: '/roster', iconName: 'Calendar', order: 20, status: 'Active', tabs: [] },
   { 
     id: 'sec-people', 
     name: 'People We Support', 
@@ -1459,3 +1458,269 @@ export const permissionPresets: PermissionPreset[] = [
     }
   }
 ];
+
+export const mockUserAccounts: UserAccount[] = [
+  {
+    id: 'user-admin',
+    username: 'admin',
+    email: 'admin@carenest.com',
+    staffId: 'staff-admin',
+    status: 'Active',
+    role: 'System Admin',
+    permissions: ['all'],
+    groupIds: ['group-system-admin', 'group-all'],
+    lastLogin: new Date('2024-01-15T10:30:00'),
+    passwordLastChanged: new Date('2024-01-01T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: true,
+    recoveryEmail: 'admin.recovery@carenest.com',
+    recoveryPhone: '555-0001',
+    createdAt: new Date('2020-01-01T00:00:00'),
+    updatedAt: new Date('2024-01-15T10:30:00'),
+    createdBy: 'system',
+    notes: 'Primary system administrator'
+  },
+  {
+    id: 'user-jane',
+    username: 'jane.doe',
+    email: 'jane.d@carenest.com',
+    staffId: 'staff-1',
+    status: 'Active',
+    role: 'Support Worker',
+    permissions: ['view_dashboard', 'view_people', 'edit_people', 'view_roster'],
+    groupIds: ['group-support-worker', 'group-all'],
+    lastLogin: new Date('2024-01-14T15:45:00'),
+    passwordLastChanged: new Date('2024-01-10T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: false,
+    recoveryEmail: 'jane.recovery@carenest.com',
+    recoveryPhone: '555-1235',
+    createdAt: new Date('2021-03-15T00:00:00'),
+    updatedAt: new Date('2024-01-14T15:45:00'),
+    createdBy: 'user-admin',
+    notes: 'Support worker - active user'
+  },
+  {
+    id: 'user-john',
+    username: 'john.smith',
+    email: 'john.s@carenest.com',
+    staffId: 'staff-2',
+    status: 'Blocked',
+    role: 'Support Worker',
+    permissions: [],
+    groupIds: [],
+    lastLogin: new Date('2024-01-10T09:15:00'),
+    passwordLastChanged: new Date('2024-01-05T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: false,
+    recoveryEmail: 'john.recovery@carenest.com',
+    recoveryPhone: '555-5679',
+    createdAt: new Date('2022-07-22T00:00:00'),
+    updatedAt: new Date('2024-01-12T14:20:00'),
+    createdBy: 'user-admin',
+    notes: 'Account blocked due to security concerns'
+  },
+  {
+    id: 'user-alice',
+    username: 'alice.johnson',
+    email: 'alice.j@carenest.com',
+    staffId: 'staff-3',
+    status: 'Active',
+    role: 'Support Manager',
+    permissions: ['view_dashboard', 'view_people', 'edit_people', 'view_roster', 'edit_roster', 'view_staff'],
+    groupIds: ['group-support-manager', 'group-all'],
+    lastLogin: new Date('2024-01-15T08:30:00'),
+    passwordLastChanged: new Date('2024-01-08T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: true,
+    recoveryEmail: 'alice.recovery@carenest.com',
+    recoveryPhone: '555-8766',
+    createdAt: new Date('2018-01-20T00:00:00'),
+    updatedAt: new Date('2024-01-15T08:30:00'),
+    createdBy: 'user-admin',
+    notes: 'Support manager with elevated permissions'
+  },
+  {
+    id: 'user-rory',
+    username: 'rory.roster',
+    email: 'rory.r@carenest.com',
+    staffId: 'staff-roster-admin',
+    status: 'Active',
+    role: 'Roster Admin',
+    permissions: ['view_dashboard', 'view_roster', 'edit_roster', 'manage_roster'],
+    groupIds: ['group-roster-admin', 'group-all'],
+    lastLogin: new Date('2024-01-15T11:20:00'),
+    passwordLastChanged: new Date('2024-01-12T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: true,
+    recoveryEmail: 'rory.recovery@carenest.com',
+    recoveryPhone: '555-1002',
+    createdAt: new Date('2019-11-01T00:00:00'),
+    updatedAt: new Date('2024-01-15T11:20:00'),
+    createdBy: 'user-admin',
+    notes: 'Roster administration specialist'
+  },
+  {
+    id: 'user-fiona',
+    username: 'fiona.finance',
+    email: 'fiona.f@carenest.com',
+    staffId: 'staff-finance',
+    status: 'Active',
+    role: 'Finance Admin',
+    permissions: ['view_dashboard', 'view_finance', 'edit_finance', 'view_reports'],
+    groupIds: ['group-finance-admin', 'group-all'],
+    lastLogin: new Date('2024-01-15T09:45:00'),
+    passwordLastChanged: new Date('2024-01-10T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: true,
+    recoveryEmail: 'fiona.recovery@carenest.com',
+    recoveryPhone: '555-1003',
+    createdAt: new Date('2020-02-10T00:00:00'),
+    updatedAt: new Date('2024-01-15T09:45:00'),
+    createdBy: 'user-admin',
+    notes: 'Finance administration and reporting'
+  },
+  {
+    id: 'user-charles',
+    username: 'charles.executive',
+    email: 'charles.e@carenest.com',
+    staffId: 'staff-ceo',
+    status: 'Active',
+    role: 'CEO',
+    permissions: ['all'],
+    groupIds: ['group-ceo', 'group-all'],
+    lastLogin: new Date('2024-01-15T07:15:00'),
+    passwordLastChanged: new Date('2024-01-01T00:00:00'),
+    passwordNeverExpires: true,
+    twoFactorEnabled: true,
+    recoveryEmail: 'charles.recovery@carenest.com',
+    recoveryPhone: '555-1004',
+    createdAt: new Date('2015-08-01T00:00:00'),
+    updatedAt: new Date('2024-01-15T07:15:00'),
+    createdBy: 'system',
+    notes: 'Chief Executive Officer - full system access'
+  },
+  {
+    id: 'user-holly',
+    username: 'holly.resources',
+    email: 'holly.r@carenest.com',
+    staffId: 'staff-hr',
+    status: 'Active',
+    role: 'Human Resources Manager',
+    permissions: ['view_dashboard', 'view_staff', 'edit_staff', 'view_hr', 'edit_hr'],
+    groupIds: ['group-hr-manager', 'group-all'],
+    lastLogin: new Date('2024-01-15T10:10:00'),
+    passwordLastChanged: new Date('2024-01-05T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: true,
+    recoveryEmail: 'holly.recovery@carenest.com',
+    recoveryPhone: '555-1005',
+    createdAt: new Date('2019-04-15T00:00:00'),
+    updatedAt: new Date('2024-01-15T10:10:00'),
+    createdBy: 'user-admin',
+    notes: 'HR management and staff records'
+  },
+  {
+    id: 'user-ian',
+    username: 'ian.technical',
+    email: 'ian.t@carenest.com',
+    staffId: 'staff-it-admin',
+    status: 'Active',
+    role: 'IT Admin',
+    permissions: ['all'],
+    groupIds: ['group-it-admin', 'group-all'],
+    lastLogin: new Date('2024-01-15T12:00:00'),
+    passwordLastChanged: new Date('2024-01-01T00:00:00'),
+    passwordNeverExpires: false,
+    twoFactorEnabled: true,
+    recoveryEmail: 'ian.recovery@carenest.com',
+    recoveryPhone: '555-1006',
+    createdAt: new Date('2020-06-01T00:00:00'),
+    updatedAt: new Date('2024-01-15T12:00:00'),
+    createdBy: 'user-admin',
+    notes: 'IT administration and system management'
+  }
+];
+
+export const mockUserAuditLogs: UserAuditLog[] = [
+  {
+    id: 'audit-1',
+    userId: 'user-john',
+    action: 'Account_Blocked',
+    timestamp: new Date('2024-01-12T14:20:00'),
+    ipAddress: '192.168.1.100',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    details: 'Account blocked due to multiple failed login attempts'
+  },
+  {
+    id: 'audit-2',
+    userId: 'user-jane',
+    action: 'Password_Reset',
+    timestamp: new Date('2024-01-10T10:30:00'),
+    ipAddress: '192.168.1.101',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    details: 'Password reset requested by user'
+  },
+  {
+    id: 'audit-3',
+    userId: 'user-alice',
+    action: 'Profile_Updated',
+    timestamp: new Date('2024-01-14T16:45:00'),
+    ipAddress: '192.168.1.102',
+    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    details: 'Updated two-factor authentication settings'
+  }
+];
+
+// Mock 2FA Configuration
+export const mockTwoFactorConfig: TwoFactorConfig = {
+  globalEnabled: true,
+  globalRequired: false,
+  groupSettings: {
+    'group-system-admin': {
+      enabled: true,
+      required: true,
+      method: 'app'
+    },
+    'group-finance-admin': {
+      enabled: true,
+      required: true,
+      method: 'both'
+    },
+    'group-hr-manager': {
+      enabled: true,
+      required: false,
+      method: 'app'
+    },
+    'group-support-worker': {
+      enabled: false,
+      required: false,
+      method: 'none'
+    },
+    'group-support-manager': {
+      enabled: true,
+      required: false,
+      method: 'app'
+    }
+  },
+  userSettings: {
+    'user-1': {
+      enabled: true,
+      required: true,
+      method: 'app',
+      setupComplete: true,
+      lastSetupDate: new Date('2024-01-15')
+    },
+    'user-2': {
+      enabled: true,
+      required: false,
+      method: 'both',
+      setupComplete: false
+    }
+  },
+  excludedUsers: ['user-emergency', 'user-guest'],
+  excludedGroups: ['group-visitors', 'group-contractors'],
+  enforcementMode: 'gradual',
+  gracePeriod: 30,
+  reminderFrequency: 7
+};

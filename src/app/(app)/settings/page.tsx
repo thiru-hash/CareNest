@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Shield, AlertTriangle, Database, Settings } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { databaseAutomation, type DatabaseField } from "@/lib/database-automation";
+import { getTerm } from "@/lib/terminology";
 
 // Define IT admin roles that can access system settings
 const IT_ADMIN_ROLES = [
@@ -200,12 +201,12 @@ export default function SettingsPage() {
 
       <Tabs defaultValue="users" className="w-full">
         <TabsList className="grid w-full grid-cols-3 md:grid-cols-8">
-          <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="groups">Groups</TabsTrigger>
-          <TabsTrigger value="roles">Roles</TabsTrigger>
-          <TabsTrigger value="rights">Rights</TabsTrigger>
-          <TabsTrigger value="sections">Sections</TabsTrigger>
-          <TabsTrigger value="forms">Forms</TabsTrigger>
+          <TabsTrigger value="users">{getTerm('users')}</TabsTrigger>
+          <TabsTrigger value="groups">{getTerm('groups')}</TabsTrigger>
+          <TabsTrigger value="roles">{getTerm('roles')}</TabsTrigger>
+          <TabsTrigger value="rights">{getTerm('rights')}</TabsTrigger>
+          <TabsTrigger value="sections">{getTerm('sections')}</TabsTrigger>
+          <TabsTrigger value="forms">{getTerm('forms')}</TabsTrigger>
           <TabsTrigger value="notices">Notices</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>

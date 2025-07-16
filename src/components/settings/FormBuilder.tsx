@@ -12,6 +12,7 @@ import {
 } from "../ui/table";
 import { mockForms, mockSections, getAllForms, getAllSections, setStoredForms, getStoredForms } from "@/lib/data";
 import { Badge } from "../ui/badge";
+import { autoDetectNewForms } from "@/lib/terminology";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
@@ -84,6 +85,9 @@ export function FormBuilder({
       updatedForms = forms.map((f) => (f.id === savedForm.id ? savedForm : f));
     } else {
       updatedForms = [...forms, { ...savedForm, fields: [] }];
+      
+      // Auto-detect new form for terminology
+      autoDetectNewForms([savedForm]);
     }
     
     setForms(updatedForms);

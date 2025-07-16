@@ -3,8 +3,8 @@ import { Inter } from 'next/font/google';
 import '../globals.css';
 import { Header } from '@/components/layout/Header';
 import { DynamicSidebar } from '@/components/layout/DynamicSidebar';
-import { getCurrentUser } from '@/lib/auth';
 import { MobileNav } from '@/components/layout/MobileNav';
+import { mockStaff } from '@/lib/data';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -21,12 +21,13 @@ export const metadata: Metadata = {
 const DEMO_TENANT_ID = 'tenant-1';
 const DEMO_USER_ID = 'user-1'; // Sarah Johnson - Tenant Admin
 
-export default async function AppLayout({
+export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const currentUser = await getCurrentUser();
+  // Use mock user for now - in real app this would come from auth context
+  const currentUser = mockStaff.find(s => s.id === 'staff-admin');
 
   return (
     <div className="flex h-screen bg-gray-50">
