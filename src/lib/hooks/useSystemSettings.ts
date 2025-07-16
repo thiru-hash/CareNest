@@ -15,12 +15,12 @@ export interface SystemSettings {
 
 const defaultSettings: SystemSettings = {
   aiFeatures: true,
-  darkMode: false,
-  betaFeatures: false,
+  darkMode: true,
+  betaFeatures: true,
   automationEnabled: true,
   clientAutomation: true,
   globalAutomation: true,
-  showPayRates: false, // Default to hidden for privacy
+  showPayRates: true,
   allowStaffEditing: true,
   enableDynamicForms: true,
 };

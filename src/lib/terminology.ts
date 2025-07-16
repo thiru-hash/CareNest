@@ -27,7 +27,10 @@ const defaultTerms = {
   groups: "Groups",
   roles: "Roles",
   rights: "Rights",
-  users: "Users"
+  users: "Users",
+  primaryLanguage: "Māori",
+  enableMaoriTerms: true,
+  enableCulturalTerms: true
 };
 
 // Cache for terminology settings

@@ -28,12 +28,7 @@ export function Header({ currentUser }: HeaderProps) {
           <div className="lg:hidden">
             <h1 className="text-lg font-bold text-gray-900 dark:text-white">CareNest</h1>
           </div>
-          <div className="hidden lg:flex items-center gap-2">
-            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CN</span>
-            </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">CareNest</span>
-          </div>
+          {/* Removed desktop branding here */}
         </div>
 
         {/* Center - Search (hidden on mobile, shown on tablet and up) */}
@@ -145,7 +140,7 @@ export function Header({ currentUser }: HeaderProps) {
               
               {/* Profile & Settings */}
               <DropdownMenuItem asChild>
-                <Link href={`/staff/${currentUser?.id || 'user'}`}>
+                <Link href={`/staff/${currentUser?.id || 'profile'}`}>
                   <UserCheck className="mr-2 h-4 w-4" />
                   <span>My Profile</span>
                 </Link>

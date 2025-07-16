@@ -5,6 +5,7 @@ import { Header } from '@/components/layout/Header';
 import { DynamicSidebar } from '@/components/layout/DynamicSidebar';
 import { MobileNav } from '@/components/layout/MobileNav';
 import { mockStaff } from '@/lib/data';
+import { useState, useEffect } from 'react';
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -16,32 +17,35 @@ export const metadata: Metadata = {
   description: 'A comprehensive B2B SaaS platform for care organizations',
 };
 
-// Mock tenant and user IDs for demonstration
-// In a real app, these would come from authentication/session
 const DEMO_TENANT_ID = 'tenant-1';
-const DEMO_USER_ID = 'user-1'; // Sarah Johnson - Tenant Admin
+const DEMO_USER_ID = 'user-1';
 
 export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Use mock user for now - in real app this would come from auth context
   const currentUser = mockStaff.find(s => s.id === 'staff-admin');
+  const [collapsed, setCollapsed] = useState(false);
+
+  useEffect(() => {
+    const stored = typeof window !== 'undefined' && localStorage.getItem('sidebar-collapsed');
+    setCollapsed(stored === 'true');
+  }, []);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('sidebar-collapsed', collapsed ? 'true' : 'false');
+    }
+  }, [collapsed]);
 
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Desktop Sidebar - Hidden on mobile */}
-      <aside className="hidden lg:flex w-64 bg-white border-r border-gray-200 flex-col">
-        <div className="p-6 border-b border-gray-200">
-          <h1 className="text-xl font-bold text-gray-900">CareNest</h1>
-        </div>
-        
-        <nav className="flex-1 p-4">
-          <DynamicSidebar />
+      <aside className="hidden lg:flex relative flex-col min-h-screen">
+        <nav className="flex-1">
+          <DynamicSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
         </nav>
-        
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4">
           <div className="text-xs text-gray-500">
             Multi-Tenant Demo
           </div>
@@ -49,7 +53,9 @@ export default function AppLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className={
+        `flex-1 flex flex-col overflow-hidden transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-56'}`
+      }>
         <Header currentUser={currentUser} />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6">
           {children}

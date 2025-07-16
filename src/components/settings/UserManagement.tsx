@@ -39,6 +39,7 @@ import { mockUserAccounts, mockStaff, mockUserAuditLogs } from "@/lib/data";
 import type { UserAccount, UserStatus, Staff } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { TwoFactorSetup } from "./TwoFactorSetup";
+import { useToast } from "@/hooks/use-toast";
 
 export function UserManagement() {
   const [users, setUsers] = useState<UserAccount[]>(mockUserAccounts);
@@ -48,6 +49,7 @@ export function UserManagement() {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isTwoFactorSetupOpen, setIsTwoFactorSetupOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
+  const { toast } = useToast();
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -321,6 +323,29 @@ export function UserManagement() {
                             <Shield className="mr-2 h-4 w-4" />
                             Setup 2FA
                           </DropdownMenuItem>
+                          {user.twoFactorEnabled ? (
+                            <DropdownMenuItem onClick={() => {
+                              handleUpdateUser(user.id, { twoFactorEnabled: false });
+                              toast({
+                                title: "2FA Disabled",
+                                description: `Two-factor authentication disabled for ${user.username}.`,
+                              });
+                            }}>
+                              <Shield className="mr-2 h-4 w-4" />
+                              Disable 2FA
+                            </DropdownMenuItem>
+                          ) : (
+                            <DropdownMenuItem onClick={() => {
+                              handleUpdateUser(user.id, { twoFactorEnabled: true });
+                              toast({
+                                title: "2FA Enabled",
+                                description: `Two-factor authentication enabled for ${user.username}.`,
+                              });
+                            }}>
+                              <Shield className="mr-2 h-4 w-4" />
+                              Enable 2FA
+                            </DropdownMenuItem>
+                          )}
                           {user.status === "Blocked" ? (
                             <DropdownMenuItem onClick={() => handleUnblockUser(user.id)}>
                               <Unlock className="mr-2 h-4 w-4" />
@@ -381,6 +406,10 @@ export function UserManagement() {
               onSetupComplete={(enabled) => {
                 if (enabled) {
                   handleUpdateUser(selectedUser.id, { twoFactorEnabled: true });
+                  toast({
+                    title: "2FA Enabled",
+                    description: `Two-factor authentication enabled for ${selectedUser.username}.`,
+                  });
                 }
                 setIsTwoFactorSetupOpen(false);
                 setSelectedUser(null);

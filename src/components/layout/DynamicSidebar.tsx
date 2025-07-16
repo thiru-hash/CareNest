@@ -2,6 +2,6 @@
 
 import { SidebarNav } from './SidebarNav';
 
-export function DynamicSidebar() {
-  return <SidebarNav />;
+export function DynamicSidebar({ collapsed, setCollapsed }) {
+  return <SidebarNav collapsed={collapsed} setCollapsed={setCollapsed} />;
 } 

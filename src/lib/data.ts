@@ -1724,3 +1724,7 @@ export const mockTwoFactorConfig: TwoFactorConfig = {
   gracePeriod: 30,
   reminderFrequency: 7
 };
+
+export const mockModules = [
+  // ... existing modules ...
+].map(module => ({ ...module, enabled: true }));

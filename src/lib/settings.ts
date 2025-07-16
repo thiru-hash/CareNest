@@ -6,6 +6,9 @@ export interface SystemSettings {
   automationEnabled: boolean;
   clientAutomation: boolean;
   globalAutomation: boolean;
+  showPayRates: boolean;
+  allowStaffEditing: boolean;
+  enableDynamicForms: boolean;
 }
 
 // Default settings
@@ -16,11 +19,24 @@ export const defaultSettings: SystemSettings = {
   automationEnabled: true,
   clientAutomation: true,
   globalAutomation: true,
+  showPayRates: true,
+  allowStaffEditing: true,
+  enableDynamicForms: true,
 };
 
 // In a real application, these would be stored in a database
 // For now, we'll use a simple in-memory store
-let currentSettings: SystemSettings = { ...defaultSettings };
+let currentSettings: SystemSettings = {
+  aiFeatures: true,
+  darkMode: true,
+  betaFeatures: true,
+  automationEnabled: true,
+  clientAutomation: true,
+  globalAutomation: true,
+  showPayRates: true,
+  allowStaffEditing: true,
+  enableDynamicForms: true,
+};
 
 export function getSystemSettings(): SystemSettings {
   return { ...currentSettings };

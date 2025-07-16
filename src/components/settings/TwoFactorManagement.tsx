@@ -36,7 +36,14 @@ interface TwoFactorManagementProps {
 
 export function TwoFactorManagement({ onConfigChange }: TwoFactorManagementProps) {
   const { toast } = useToast();
-  const [config, setConfig] = useState<TwoFactorConfig>(mockTwoFactorConfig);
+  const default2FAConfig = {
+    globalEnabled: true,
+    enforcementMode: 'strict',
+    excludedUsers: [],
+    excludedGroups: [],
+    groupSettings: Object.fromEntries(mockGroups.map(g => [g.id, { enabled: true, required: true, method: 'app' }]))
+  };
+  const [config, setConfig] = useState<TwoFactorConfig>(default2FAConfig);
   const [selectedGroup, setSelectedGroup] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<string>("");
 
@@ -337,88 +344,6 @@ export function TwoFactorManagement({ onConfigChange }: TwoFactorManagementProps
               </div>
             </TabsContent>
           </Tabs>
-        </CardContent>
-      </Card>
-
-      {/* User-specific 2FA Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <User className="h-5 w-5 text-purple-600" />
-            User-specific 2FA Settings
-          </CardTitle>
-          <CardDescription>
-            Override group settings for individual users
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {mockUserAccounts.map((user) => {
-              const userSettings = getUser2FAStatus(user.id);
-              const isExcluded = isUserExcluded(user.id);
-              const effectiveStatus = getEffective2FAStatus(user.id, user.groupIds || []);
-              
-              return (
-                <Card key={user.id} className="p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div>
-                      <h4 className="font-medium">{user.username}</h4>
-                      <p className="text-sm text-gray-500">{user.email}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Badge variant={isExcluded ? "destructive" : effectiveStatus.enabled ? "default" : "secondary"}>
-                        {isExcluded ? "Excluded" : effectiveStatus.enabled ? "Enabled" : "Disabled"}
-                      </Badge>
-                      {userSettings.setupComplete && (
-                        <Badge variant="outline" className="text-green-600">
-                          <CheckCircle className="h-3 w-3 mr-1" />
-                          Setup Complete
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
-                  {!isExcluded && (
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Enable 2FA</Label>
-                        <Switch
-                          checked={userSettings.enabled}
-                          onCheckedChange={(checked) => handleUserSettingChange(user.id, 'enabled', checked)}
-                        />
-                      </div>
-                      
-                      <div className="flex items-center justify-between">
-                        <Label className="text-sm">Require 2FA</Label>
-                        <Switch
-                          checked={userSettings.required}
-                          onCheckedChange={(checked) => handleUserSettingChange(user.id, 'required', checked)}
-                        />
-                      </div>
-                      
-                      <div>
-                        <Label className="text-sm">Method</Label>
-                        <Select 
-                          value={userSettings.method} 
-                          onValueChange={(value) => handleUserSettingChange(user.id, 'method', value)}
-                        >
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="app">Authenticator App</SelectItem>
-                            <SelectItem value="sms">SMS</SelectItem>
-                            <SelectItem value="both">Both</SelectItem>
-                            <SelectItem value="none">None</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
         </CardContent>
       </Card>
 

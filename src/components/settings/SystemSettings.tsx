@@ -20,7 +20,6 @@ import {
   removeItemTerminology,
   clearTerminologyCache
 } from "@/lib/terminology";
-import { UserManagement } from "./UserManagement";
 import { TwoFactorManagement } from "./TwoFactorManagement";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
@@ -86,11 +85,10 @@ export function SystemSettings() {
     return (
         <div className="space-y-6">
             <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
                     <TabsTrigger value="general">General</TabsTrigger>
                     <TabsTrigger value="terminology">Terminology</TabsTrigger>
                     <TabsTrigger value="twofactor">Two-Factor Auth</TabsTrigger>
-                    <TabsTrigger value="users">User Management</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="general" className="space-y-6">
@@ -283,8 +281,8 @@ export function SystemSettings() {
                                         <Label htmlFor="users">Users</Label>
                                         <Input
                                             id="users"
-                                            value={terminology.core.users}
-                                            onChange={(e) => handleCustomTermChange('core.users', e.target.value)}
+                                            value={terminology.users}
+                                            onChange={(e) => handleTerminologyChange('users', e.target.value)}
                                             placeholder="Users"
                                         />
                                     </div>
@@ -292,8 +290,8 @@ export function SystemSettings() {
                                         <Label htmlFor="groups">Groups</Label>
                                         <Input
                                             id="groups"
-                                            value={terminology.core.groups}
-                                            onChange={(e) => handleCustomTermChange('core.groups', e.target.value)}
+                                            value={terminology.groups}
+                                            onChange={(e) => handleTerminologyChange('groups', e.target.value)}
                                             placeholder="Groups"
                                         />
                                     </div>
@@ -301,8 +299,8 @@ export function SystemSettings() {
                                         <Label htmlFor="roles">Roles</Label>
                                         <Input
                                             id="roles"
-                                            value={terminology.core.roles}
-                                            onChange={(e) => handleCustomTermChange('core.roles', e.target.value)}
+                                            value={terminology.roles}
+                                            onChange={(e) => handleTerminologyChange('roles', e.target.value)}
                                             placeholder="Roles"
                                         />
                                     </div>
@@ -310,8 +308,8 @@ export function SystemSettings() {
                                         <Label htmlFor="rights">Rights</Label>
                                         <Input
                                             id="rights"
-                                            value={terminology.core.rights}
-                                            onChange={(e) => handleCustomTermChange('core.rights', e.target.value)}
+                                            value={terminology.rights}
+                                            onChange={(e) => handleTerminologyChange('rights', e.target.value)}
                                             placeholder="Rights"
                                         />
                                     </div>
@@ -319,8 +317,8 @@ export function SystemSettings() {
                                         <Label htmlFor="sections">Sections</Label>
                                         <Input
                                             id="sections"
-                                            value={terminology.core.sections}
-                                            onChange={(e) => handleCustomTermChange('core.sections', e.target.value)}
+                                            value={terminology.sections}
+                                            onChange={(e) => handleTerminologyChange('sections', e.target.value)}
                                             placeholder="Sections"
                                         />
                                     </div>
@@ -328,8 +326,8 @@ export function SystemSettings() {
                                         <Label htmlFor="forms">Forms</Label>
                                         <Input
                                             id="forms"
-                                            value={terminology.core.forms}
-                                            onChange={(e) => handleCustomTermChange('core.forms', e.target.value)}
+                                            value={terminology.forms}
+                                            onChange={(e) => handleTerminologyChange('forms', e.target.value)}
                                             placeholder="Forms"
                                         />
                                     </div>
@@ -341,39 +339,39 @@ export function SystemSettings() {
                                 <h3 className="text-lg font-semibold">Profile Terms</h3>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <Label htmlFor="profile">Profile</Label>
+                                        <Label htmlFor="basic-info">Basic Information</Label>
                                         <Input
-                                            id="profile"
-                                            value={terminology.profile.profile}
-                                            onChange={(e) => handleCustomTermChange('profile.profile', e.target.value)}
-                                            placeholder="Profile"
+                                            id="basic-info"
+                                            value={terminology.basicInfo}
+                                            onChange={(e) => handleTerminologyChange('basicInfo', e.target.value)}
+                                            placeholder="Basic Information"
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="personal-details">Personal Details</Label>
+                                        <Label htmlFor="contacts">Contacts & Schedule</Label>
                                         <Input
-                                            id="personal-details"
-                                            value={terminology.profile.personalDetails}
-                                            onChange={(e) => handleCustomTermChange('profile.personalDetails', e.target.value)}
-                                            placeholder="Personal Details"
+                                            id="contacts"
+                                            value={terminology.contacts}
+                                            onChange={(e) => handleTerminologyChange('contacts', e.target.value)}
+                                            placeholder="Contacts & Schedule"
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="contact-info">Contact Information</Label>
+                                        <Label htmlFor="communication">Communication</Label>
                                         <Input
-                                            id="contact-info"
-                                            value={terminology.profile.contactInfo}
-                                            onChange={(e) => handleCustomTermChange('profile.contactInfo', e.target.value)}
-                                            placeholder="Contact Information"
+                                            id="communication"
+                                            value={terminology.communication}
+                                            onChange={(e) => handleTerminologyChange('communication', e.target.value)}
+                                            placeholder="Communication"
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="emergency-contacts">Emergency Contacts</Label>
+                                        <Label htmlFor="goals">Goals</Label>
                                         <Input
-                                            id="emergency-contacts"
-                                            value={terminology.profile.emergencyContacts}
-                                            onChange={(e) => handleCustomTermChange('profile.emergencyContacts', e.target.value)}
-                                            placeholder="Emergency Contacts"
+                                            id="goals"
+                                            value={terminology.goals}
+                                            onChange={(e) => handleTerminologyChange('goals', e.target.value)}
+                                            placeholder="Goals"
                                         />
                                     </div>
                                 </div>
@@ -387,8 +385,8 @@ export function SystemSettings() {
                                         <Label htmlFor="dashboard">Dashboard</Label>
                                         <Input
                                             id="dashboard"
-                                            value={terminology.system.dashboard}
-                                            onChange={(e) => handleCustomTermChange('system.dashboard', e.target.value)}
+                                            value={terminology.dashboard}
+                                            onChange={(e) => handleTerminologyChange('dashboard', e.target.value)}
                                             placeholder="Dashboard"
                                         />
                                     </div>
@@ -396,27 +394,27 @@ export function SystemSettings() {
                                         <Label htmlFor="settings">Settings</Label>
                                         <Input
                                             id="settings"
-                                            value={terminology.system.settings}
-                                            onChange={(e) => handleCustomTermChange('system.settings', e.target.value)}
+                                            value={terminology.settings}
+                                            onChange={(e) => handleTerminologyChange('settings', e.target.value)}
                                             placeholder="Settings"
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="notifications">Notifications</Label>
+                                        <Label htmlFor="timesheets">Timesheets</Label>
                                         <Input
-                                            id="notifications"
-                                            value={terminology.system.notifications}
-                                            onChange={(e) => handleCustomTermChange('system.notifications', e.target.value)}
-                                            placeholder="Notifications"
+                                            id="timesheets"
+                                            value={terminology.timesheets}
+                                            onChange={(e) => handleTerminologyChange('timesheets', e.target.value)}
+                                            placeholder="Timesheets"
                                         />
                                     </div>
                                     <div>
-                                        <Label htmlFor="reports">Reports</Label>
+                                        <Label htmlFor="pay-rates">Pay Rates</Label>
                                         <Input
-                                            id="reports"
-                                            value={terminology.system.reports}
-                                            onChange={(e) => handleCustomTermChange('system.reports', e.target.value)}
-                                            placeholder="Reports"
+                                            id="pay-rates"
+                                            value={terminology.payRates}
+                                            onChange={(e) => handleTerminologyChange('payRates', e.target.value)}
+                                            placeholder="Pay Rates"
                                         />
                                     </div>
                                 </div>
@@ -429,67 +427,35 @@ export function SystemSettings() {
                                     <div>
                                         <Label htmlFor="language">Primary Language</Label>
                                         <Select 
-                                            value={terminology.cultural.language} 
-                                            onValueChange={(value) => handleCustomTermChange('cultural.language', value)}
+                                            value={terminology.primaryLanguage} 
+                                            onValueChange={(value) => handleTerminologyChange('primaryLanguage', value)}
                                         >
                                             <SelectTrigger>
                                                 <SelectValue />
                                             </SelectTrigger>
                                             <SelectContent>
-                                                <SelectItem value="en">English</SelectItem>
-                                                <SelectItem value="mi">Māori</SelectItem>
-                                                <SelectItem value="es">Spanish</SelectItem>
-                                                <SelectItem value="fr">French</SelectItem>
+                                                <SelectItem value="English">English</SelectItem>
+                                                <SelectItem value="Māori">Māori</SelectItem>
+                                                <SelectItem value="Spanish">Spanish</SelectItem>
+                                                <SelectItem value="French">French</SelectItem>
                                             </SelectContent>
                                         </Select>
                                     </div>
                                     <div>
-                                        <Label htmlFor="date-format">Date Format</Label>
-                                        <Select 
-                                            value={terminology.cultural.dateFormat} 
-                                            onValueChange={(value) => handleCustomTermChange('cultural.dateFormat', value)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                                                <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                                                <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        <Label htmlFor="enable-maori">Enable Māori Terms</Label>
+                                        <Switch
+                                            id="enable-maori"
+                                            checked={terminology.enableMaoriTerms}
+                                            onCheckedChange={(checked) => handleTerminologyChange('enableMaoriTerms', checked)}
+                                        />
                                     </div>
                                     <div>
-                                        <Label htmlFor="time-format">Time Format</Label>
-                                        <Select 
-                                            value={terminology.cultural.timeFormat} 
-                                            onValueChange={(value) => handleCustomTermChange('cultural.timeFormat', value)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="12h">12-hour</SelectItem>
-                                                <SelectItem value="24h">24-hour</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-                                    <div>
-                                        <Label htmlFor="currency">Currency</Label>
-                                        <Select 
-                                            value={terminology.cultural.currency} 
-                                            onValueChange={(value) => handleCustomTermChange('cultural.currency', value)}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value="NZD">NZD ($)</SelectItem>
-                                                <SelectItem value="USD">USD ($)</SelectItem>
-                                                <SelectItem value="EUR">EUR (€)</SelectItem>
-                                                <SelectItem value="GBP">GBP (£)</SelectItem>
-                                            </SelectContent>
-                                        </Select>
+                                        <Label htmlFor="enable-cultural">Enable Cultural Terms</Label>
+                                        <Switch
+                                            id="enable-cultural"
+                                            checked={terminology.enableCulturalTerms}
+                                            onCheckedChange={(checked) => handleTerminologyChange('enableCulturalTerms', checked)}
+                                        />
                                     </div>
                                 </div>
                             </div>
@@ -512,10 +478,6 @@ export function SystemSettings() {
 
                 <TabsContent value="twofactor" className="space-y-6">
                     <TwoFactorManagement onConfigChange={handleTwoFactorConfigChange} />
-                </TabsContent>
-
-                <TabsContent value="users" className="space-y-6">
-                    <UserManagement />
                 </TabsContent>
             </Tabs>
         </div>
