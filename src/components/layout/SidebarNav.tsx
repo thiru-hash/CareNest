@@ -142,13 +142,17 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitch
       {!collapsed && (
         <div className={cn('px-2 py-4 flex flex-col gap-2')}>
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className={cn('w-full text-white border-gray-600 hover:bg-gray-800', 'justify-start')}
+            className={cn(
+              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+              'text-gray-300 hover:bg-green-800 hover:text-white',
+              'justify-start w-full'
+            )}
             onClick={onSwitchUser}
           >
-            <Users className="h-5 w-5 mr-0.5" />
-            <span>Switch User</span>
+            <Users className="h-5 w-5" />
+            <span className="truncate">Switch User</span>
           </Button>
         </div>
       )}

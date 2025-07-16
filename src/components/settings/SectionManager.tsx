@@ -61,16 +61,16 @@ export function SectionManager() {
             autoDetectNewSections([newSection]);
         }
     };
-    
-    return (
+          
+          return (
         <>
             <Card>
                 <CardHeader>
                     <div className="flex justify-between items-start">
-                        <div>
+                    <div>
                             <CardTitle>Section Manager</CardTitle>
                             <CardDescription>Create and manage the main navigation sections of the application.</CardDescription>
-                        </div>
+                    </div>
                         <Button onClick={handleCreateSection}>
                             <PlusCircle className="mr-2 h-4 w-4" />
                             Create Section
@@ -110,7 +110,7 @@ export function SectionManager() {
                                                 <DropdownMenuTrigger asChild>
                                                     <Button variant="ghost" size="icon">
                                                         <MoreHorizontal className="h-4 w-4" />
-                                                    </Button>
+                    </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuItem onClick={() => handleEditSection(section)}>Edit Section</DropdownMenuItem>
@@ -126,7 +126,7 @@ export function SectionManager() {
                             })}
                         </TableBody>
                     </Table>
-                </CardContent>
+              </CardContent>
             </Card>
             <CreateEditSectionDialog 
                 isOpen={isDialogOpen}
@@ -135,5 +135,5 @@ export function SectionManager() {
                 onSave={handleSaveSection}
             />
         </>
-    );
+  );
 } 

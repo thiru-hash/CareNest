@@ -41,6 +41,9 @@ let cachedTerminology: TerminologySettings | null = null;
  */
 export function getTerminologySettings(): TerminologySettings {
   if (cachedTerminology) {
+    if (!cachedTerminology.customTerminology) {
+      cachedTerminology.customTerminology = {};
+    }
     return cachedTerminology;
   }
 
@@ -50,6 +53,9 @@ export function getTerminologySettings(): TerminologySettings {
       if (stored) {
         const parsed = JSON.parse(stored);
         cachedTerminology = { ...defaultTerms, ...parsed };
+        if (!cachedTerminology.customTerminology) {
+          cachedTerminology.customTerminology = {};
+        }
         return cachedTerminology;
       }
     }
@@ -57,8 +63,7 @@ export function getTerminologySettings(): TerminologySettings {
     console.error('Error loading terminology settings:', error);
   }
 
-  // Return default terminology
-  cachedTerminology = defaultTerms as TerminologySettings;
+  cachedTerminology = { ...(defaultTerms as TerminologySettings), customTerminology: {} };
   return cachedTerminology;
 }
 
@@ -230,6 +235,9 @@ export function getNavigationItems() {
 export function autoDetectNewSections(sections: any[]): void {
   try {
     const terminology = getTerminologySettings();
+    if (!terminology.customTerminology) {
+      terminology.customTerminology = {};
+    }
     let hasChanges = false;
     
     sections.forEach(section => {
@@ -255,6 +263,9 @@ export function autoDetectNewSections(sections: any[]): void {
 export function autoDetectNewForms(forms: any[]): void {
   try {
     const terminology = getTerminologySettings();
+    if (!terminology.customTerminology) {
+      terminology.customTerminology = {};
+    }
     let hasChanges = false;
     
     forms.forEach(form => {
@@ -280,6 +291,9 @@ export function autoDetectNewForms(forms: any[]): void {
 export function autoDetectNewTabs(tabs: any[]): void {
   try {
     const terminology = getTerminologySettings();
+    if (!terminology.customTerminology) {
+      terminology.customTerminology = {};
+    }
     let hasChanges = false;
     
     tabs.forEach(tab => {

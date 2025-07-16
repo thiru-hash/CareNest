@@ -43,6 +43,10 @@ interface PeopleTableProps {
   className?: string;
 }
 
+// Module-wide constants for person types and statuses
+const personTypes = ['client', 'staff', 'family', 'emergency-contact'];
+const statuses = ['active', 'inactive', 'pending', 'suspended'];
+
 export function PeopleTable({ className = '' }: PeopleTableProps) {
   // Mock user for now - in real app this would come from auth context
   const user = { role: 'Manager' };
@@ -53,10 +57,6 @@ export function PeopleTable({ className = '' }: PeopleTableProps) {
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [selectedPerson, setSelectedPerson] = useState<Person | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-
-  // Module-specific data (isolated from other modules)
-  const personTypes = ['client', 'staff', 'family', 'emergency-contact'];
-  const statuses = ['active', 'inactive', 'pending', 'suspended'];
 
   // Load people data (isolated from other modules)
   useEffect(() => {

@@ -14,8 +14,8 @@ export default async function DashboardPage() {
           <div className="text-xs text-muted-foreground">
             Current Time: {new Date().toLocaleTimeString()} | 
             Today: {new Date().toISOString().split('T')[0]}
-          </div>
-        </div>
+                </div>
+              </div>
 
         {/* Main Dashboard Grid */}
         <div className="grid gap-6 lg:grid-cols-2">
@@ -23,7 +23,7 @@ export default async function DashboardPage() {
           <div className="space-y-6">
             <UpcomingShifts currentUser={currentUser} />
             <NoticeBoard />
-          </div>
+              </div>
 
           {/* Right Column */}
           <div className="space-y-6">

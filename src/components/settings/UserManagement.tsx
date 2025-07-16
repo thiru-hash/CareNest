@@ -92,7 +92,7 @@ export function UserManagement() {
       status: userData.status || "Pending",
       role: userData.role || "Support Worker",
       permissions: userData.permissions || [],
-      groupIds: userData.groupIds || [],
+        groupIds: userData.groupIds || [],
       passwordNeverExpires: userData.passwordNeverExpires || false,
       twoFactorEnabled: userData.twoFactorEnabled || false,
       recoveryEmail: userData.recoveryEmail,
@@ -101,8 +101,8 @@ export function UserManagement() {
       updatedAt: new Date(),
       createdBy: "current-user", // In real app, get from auth context
       notes: userData.notes
-    };
-    setUsers(prev => [...prev, newUser]);
+      };
+      setUsers(prev => [...prev, newUser]);
     setIsCreateDialogOpen(false);
   };
 
@@ -160,7 +160,7 @@ export function UserManagement() {
       <Card>
         <CardHeader>
           <div className="flex justify-between items-start">
-            <div>
+              <div>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5" />
                 User Management
@@ -168,7 +168,7 @@ export function UserManagement() {
               <CardDescription>
                 Manage user accounts, permissions, and access controls. Users are billed based on active accounts.
               </CardDescription>
-            </div>
+              </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm">
                 <Download className="mr-2 h-4 w-4" />
@@ -251,16 +251,16 @@ export function UserManagement() {
               {filteredUsers.map((user) => {
                 const staff = mockStaff.find(s => s.id === user.staffId);
                 return (
-                  <TableRow key={user.id}>
+                <TableRow key={user.id}>
                     <TableCell>
-                      <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                         <Avatar className="h-8 w-8">
                           <AvatarImage src={staff?.avatarUrl} alt={user.username} />
                           <AvatarFallback className="bg-blue-100 text-blue-800">
                             {user.username.charAt(0).toUpperCase()}
                           </AvatarFallback>
-                        </Avatar>
-                        <div>
+                      </Avatar>
+                      <div>
                           <div className="font-medium">{user.username}</div>
                           <div className="text-sm text-gray-500">{user.email}</div>
                         </div>
@@ -290,21 +290,21 @@ export function UserManagement() {
                         ) : (
                           <span className="text-gray-400">Never</span>
                         )}
-                      </div>
-                    </TableCell>
+                    </div>
+                  </TableCell>
                     <TableCell>
                       <Badge variant={user.twoFactorEnabled ? "default" : "secondary"}>
                         {user.twoFactorEnabled ? "Enabled" : "Disabled"}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => {
                             setSelectedUser(user);
                             setIsEditDialogOpen(true);
@@ -360,11 +360,11 @@ export function UserManagement() {
                           <DropdownMenuItem className="text-destructive">
                             <Trash2 className="mr-2 h-4 w-4" />
                             Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
                 );
               })}
             </TableBody>
