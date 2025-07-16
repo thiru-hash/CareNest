@@ -2,6 +2,12 @@
 
 import { SidebarNav } from './SidebarNav';
 
-export function DynamicSidebar({ collapsed, setCollapsed }) {
-  return <SidebarNav collapsed={collapsed} setCollapsed={setCollapsed} />;
+interface DynamicSidebarProps {
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+  onSwitchUser?: () => void;
+}
+
+export function DynamicSidebar({ collapsed, setCollapsed, onSwitchUser }: DynamicSidebarProps) {
+  return <SidebarNav collapsed={collapsed} setCollapsed={setCollapsed} onSwitchUser={onSwitchUser} />;
 } 

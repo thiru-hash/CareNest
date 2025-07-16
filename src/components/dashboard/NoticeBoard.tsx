@@ -38,14 +38,14 @@ export function NoticeBoard() {
     <div className="space-y-4">
       {recentNotices.length > 0 ? (
         recentNotices.map((notice) => (
-          <div key={notice.id} className="p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-md transition-all duration-200">
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-start gap-3 flex-1">
-                <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900">
+          <div key={notice.id} className="p-3 sm:p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-r from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-md transition-all duration-200">
+            <div className="flex items-start justify-between gap-2 sm:gap-3">
+              <div className="flex items-start gap-2 sm:gap-3 flex-1 min-w-0">
+                <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900 flex-shrink-0">
                   {getPriorityIcon(notice.priority)}
                 </div>
-                <div className="flex-1">
-                  <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-1">
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-semibold text-sm text-gray-900 dark:text-white mb-1 truncate">
                     {notice.title}
                   </h4>
                   <p className="text-xs text-gray-600 dark:text-gray-400 line-clamp-2 leading-relaxed mb-2">
@@ -56,7 +56,7 @@ export function NoticeBoard() {
                   </p>
                 </div>
               </div>
-              <Badge className={`text-xs font-medium ${getPriorityColor(notice.priority)}`}>
+              <Badge className={`text-xs font-medium ${getPriorityColor(notice.priority)} flex-shrink-0`}>
                 {notice.priority}
               </Badge>
             </div>

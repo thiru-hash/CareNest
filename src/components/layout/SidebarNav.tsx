@@ -62,9 +62,10 @@ interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
   items?: ReturnType<typeof getSidebarNavItems>;
   collapsed: boolean;
   setCollapsed: (c: boolean) => void;
+  onSwitchUser?: () => void;
 }
 
-export function SidebarNav({ className, items, collapsed, setCollapsed, ...props }: SidebarNavProps) {
+export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitchUser, ...props }: SidebarNavProps) {
   const pathname = usePathname();
   const [sidebarNavItems, setSidebarNavItems] = useState(defaultNavItems);
 
@@ -79,9 +80,9 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, ...props
   return (
     <aside
       className={cn(
-        'h-screen flex flex-col transition-all duration-300',
+        'h-screen flex flex-col transition-all duration-300 bg-gray-900 dark:bg-gray-950',
         'relative lg:relative', // relative on desktop
-        collapsed ? 'w-16 bg-transparent shadow-none' : 'w-56 bg-gray-900 dark:bg-gray-950 shadow-lg',
+        collapsed ? 'w-16' : 'w-56',
         className
       )}
       {...props}
@@ -99,13 +100,14 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, ...props
         <Button
           variant="ghost"
           size="icon"
-          className={cn('ml-auto', collapsed ? 'mx-auto' : '')}
+          className={cn('ml-auto text-white hover:bg-gray-800', collapsed ? 'mx-auto' : '')}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           onClick={() => setCollapsed(!collapsed)}
         >
-          {collapsed ? <ChevronRight className="h-5 w-5 text-white" /> : <ChevronLeft className="h-5 w-5 text-white" />}
+          {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
         </Button>
       </div>
+      
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto">
         <ScrollArea className="h-full w-full">
@@ -122,7 +124,7 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, ...props
                       isActive
                         ? 'bg-green-700 text-white shadow'
                         : 'text-gray-300 hover:bg-green-800 hover:text-white',
-                      collapsed ? 'justify-center px-2 bg-opacity-0 hover:bg-gray-800/20' : ''
+                      collapsed ? 'justify-center px-2' : ''
                     )}
                     title={collapsed ? item.title : undefined}
                   >
@@ -135,24 +137,18 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, ...props
           </ul>
         </ScrollArea>
       </nav>
-      {/* Bottom: Org/User Switcher & Settings */}
+      
+      {/* Bottom: Switch User for Admins */}
       {!collapsed && (
         <div className={cn('px-2 py-4 flex flex-col gap-2')}>
           <Button
             variant="outline"
             size="sm"
-            className={cn('w-full', 'justify-start')}
+            className={cn('w-full text-white border-gray-600 hover:bg-gray-800', 'justify-start')}
+            onClick={onSwitchUser}
           >
-            <Building2 className="h-5 w-5 mr-0.5" />
-            <span>Switch Org</span>
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={cn('w-full', 'justify-start')}
-          >
-            <UserCheck className="h-5 w-5 mr-0.5" />
-            <span>My Profile</span>
+            <Users className="h-5 w-5 mr-0.5" />
+            <span>Switch User</span>
           </Button>
         </div>
       )}

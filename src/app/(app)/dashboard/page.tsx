@@ -18,7 +18,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Main Dashboard Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-2">
           {/* Left Column */}
           <div className="space-y-6">
             <UpcomingShifts currentUser={currentUser} />

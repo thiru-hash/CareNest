@@ -38,27 +38,27 @@ export function FinanceOverview() {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       {metrics.map((metric) => {
         const Icon = metric.icon;
         const isPositive = metric.trend === 'up';
         
         return (
-          <div key={metric.title} className="p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-md transition-all duration-200">
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+          <div key={metric.title} className="p-4 sm:p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 hover:shadow-md transition-all duration-200">
+            <div className="flex items-start justify-between mb-3 sm:mb-4">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                   {metric.title}
                 </p>
-                <p className="text-2xl font-bold text-gray-900 dark:text-white">
+                <p className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 dark:text-white truncate">
                   {metric.value}
                 </p>
               </div>
-              <div className={`p-3 rounded-lg bg-gray-100 dark:bg-gray-800 ${metric.color}`}>
-                <Icon className="h-6 w-6" />
+              <div className={`p-2 sm:p-3 rounded-lg bg-gray-100 dark:bg-gray-800 ${metric.color} flex-shrink-0`}>
+                <Icon className="h-4 w-4 sm:h-6 sm:w-6" />
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <Badge 
                 variant={isPositive ? 'default' : 'destructive'}
                 className={`text-xs font-medium ${

@@ -29,9 +29,9 @@ export function MobileNav({ currentUser }: MobileNavProps) {
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-80 p-0">
-        <SheetHeader className="p-6 border-b border-gray-200">
-          <SheetTitle className="text-xl font-bold text-gray-900">CareNest</SheetTitle>
+      <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0">
+        <SheetHeader className="p-4 sm:p-6 border-b border-gray-200">
+          <SheetTitle className="text-lg sm:text-xl font-bold text-gray-900">CareNest</SheetTitle>
         </SheetHeader>
         
         <div className="flex-1 p-4">
@@ -41,7 +41,7 @@ export function MobileNav({ currentUser }: MobileNavProps) {
         {/* User Profile Section */}
         <div className="p-4 border-t border-gray-200">
           <div className="flex items-center space-x-3 mb-4">
-            <Avatar className="h-10 w-10">
+            <Avatar className="h-10 w-10 flex-shrink-0">
               <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name || 'User'} />
               <AvatarFallback className="bg-green-100 text-green-800 font-semibold">
                 {currentUser?.name?.split(' ').map(n => n[0]).join('') || 'U'}
