@@ -222,10 +222,6 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                               formId={tab.formId} 
                               clientId={id}
                               mode="view"
-                              onSave={(data) => {
-                                console.log('Form data saved:', data);
-                                // In real app, this would save to database
-                              }}
                             />
                           ) : (
                             <div className="text-center py-8">

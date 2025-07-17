@@ -16,7 +16,6 @@ interface DynamicFormRendererProps {
   formId: string;
   clientId: string;
   mode?: 'view' | 'edit';
-  onSave?: (data: any) => void;
 }
 
 interface FormField {
@@ -41,8 +40,7 @@ interface FormData {
 export function DynamicFormRenderer({ 
   formId, 
   clientId, 
-  mode = 'view',
-  onSave 
+  mode = 'view'
 }: DynamicFormRendererProps) {
   const [formData, setFormData] = useState<FormData>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -185,9 +183,8 @@ export function DynamicFormRenderer({
       // Mock API call - in real app this would save to database
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (onSave) {
-        onSave(formData);
-      }
+      // Log the saved data for debugging
+      console.log('Form data saved:', formData);
 
       toast({
         title: 'Success',
