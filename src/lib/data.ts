@@ -578,18 +578,7 @@ export const mockSections: AppSection[] = [
     iconName: 'Users', 
     order: 30, 
     status: 'Active',
-    tabs: [
-      { id: 'tab-pws-1', name: 'PWS Basic Information', order: 10, formId: 'form-pws-info' },
-      { id: 'tab-pws-2', name: 'Contacts & Schedule', order: 20, formId: 'form-pws-contacts' },
-      { id: 'tab-pws-3', name: 'Communication', order: 30, formId: 'form-pws-comm' },
-      { id: 'tab-pws-4', name: 'Goals', order: 40, formId: 'form-pws-goals' },
-      { id: 'tab-pws-5', name: 'Oranga Tamariki', order: 50, formId: 'form-pws-ot' },
-      { id: 'tab-pws-6', name: 'Daily Diary', order: 60, formId: 'form-pws-diary' },
-      { id: 'tab-pws-7', name: 'Documents', order: 70, formId: 'form-pws-docs' },
-      { id: 'tab-pws-8', name: 'Health', order: 80, formId: 'form-pws-health' },
-      { id: 'tab-pws-9', name: 'Financials', order: 90, formId: 'form-pws-financials' },
-      { id: 'tab-pws-10', name: 'Key Worker Report', order: 100, formId: 'form-pws-report' },
-    ]
+    tabs: []
   },
   { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 40, status: 'Active', tabs: [] },
   { 

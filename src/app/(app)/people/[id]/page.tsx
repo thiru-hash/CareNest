@@ -9,6 +9,7 @@ import ClientProfileCard from '@/components/people/ClientProfileCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DynamicFormRenderer } from '@/components/people/DynamicFormRenderer';
+import { AIOverviewPanel } from '@/components/people/AIOverviewPanel';
 
 // Mock client data - in real app this would come from database
 const mockClient = {
@@ -77,13 +78,19 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
             </div>
           </div>
 
-          {/* Right Content - Dynamic Tabs from Section Management */}
+          {/* Right Content - AI Overview and Dynamic Tabs */}
           <div className="flex-1 min-w-0">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
               {/* Tabs Header */}
               <div className="border-b border-gray-200 dark:border-gray-700">
-                <Tabs defaultValue={section.tabs?.[0]?.id || "overview"} className="w-full">
+                <Tabs defaultValue="overview" className="w-full">
                   <TabsList className="w-full justify-start bg-transparent border-b-0 h-auto p-0">
+                    <TabsTrigger 
+                      value="overview" 
+                      className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 dark:data-[state=active]:bg-blue-950 dark:data-[state=active]:text-blue-300"
+                    >
+                      AI Overview
+                    </TabsTrigger>
                     {section.tabs?.map((tab) => (
                       <TabsTrigger 
                         key={tab.id} 
@@ -94,6 +101,11 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
                       </TabsTrigger>
                     ))}
                   </TabsList>
+
+                  {/* AI Overview Tab - Default */}
+                  <TabsContent value="overview" className="p-6">
+                    <AIOverviewPanel clientId={id} clientName={mockClient.name} />
+                  </TabsContent>
 
                   {/* Dynamic Tabs from Section Management */}
                   {section.tabs?.map((tab) => (

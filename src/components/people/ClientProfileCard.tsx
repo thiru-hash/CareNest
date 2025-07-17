@@ -125,7 +125,7 @@ export default function ClientProfileCard({ client, mode = 'view' }: ClientProfi
         <p className="text-sm text-gray-500 dark:text-gray-400">Client</p>
       </div>
 
-      {/* Client Information Form */}
+      {/* Client Information Form - ONE PER LINE */}
       <div className="space-y-4">
         {/* Name */}
         <div className="space-y-2">
@@ -142,7 +142,7 @@ export default function ClientProfileCard({ client, mode = 'view' }: ClientProfi
           )}
         </div>
 
-        {/* Email */}
+        {/* Email - ONE LINE */}
         <div className="space-y-2">
           <Label htmlFor="email">Email Address</Label>
           {mode === 'view' ? (
@@ -160,7 +160,7 @@ export default function ClientProfileCard({ client, mode = 'view' }: ClientProfi
           )}
         </div>
 
-        {/* Phone */}
+        {/* Phone - ONE LINE */}
         <div className="space-y-2">
           <Label htmlFor="phone">Phone Number</Label>
           {mode === 'view' ? (
@@ -178,7 +178,7 @@ export default function ClientProfileCard({ client, mode = 'view' }: ClientProfi
           )}
         </div>
 
-        {/* Date of Birth */}
+        {/* Date of Birth - ONE LINE */}
         <div className="space-y-2">
           <Label htmlFor="dateOfBirth">Date of Birth</Label>
           {mode === 'view' ? (
@@ -193,7 +193,7 @@ export default function ClientProfileCard({ client, mode = 'view' }: ClientProfi
           )}
         </div>
 
-        {/* Address */}
+        {/* Address - ONE LINE */}
         <div className="space-y-2">
           <Label htmlFor="address">Home Address</Label>
           {mode === 'view' ? (
@@ -209,7 +209,7 @@ export default function ClientProfileCard({ client, mode = 'view' }: ClientProfi
           )}
         </div>
 
-        {/* Insurance */}
+        {/* Insurance - ONE LINE */}
         <div className="space-y-2">
           <Label htmlFor="insurance">Insurance Status</Label>
           {mode === 'view' ? (
