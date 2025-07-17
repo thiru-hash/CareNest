@@ -1,207 +1,301 @@
-"use client";
+'use client';
 
-import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Checkbox } from "@/components/ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, FileText, User, MapPin, Phone, Mail, Hash, DollarSign, Star, Upload, Image, PenSquare, Globe, Database, Calculator, TrendingUp, Clock, RefreshCw, Activity, Package, Heading1, Heading2, Info, Square, Pilcrow, Link, Lock, Binary, Percent, ListOrdered, BarChart3, Code, QrCode, Palette, Eye } from 'lucide-react';
-import type { CustomForm, FormField } from '@/lib/types';
+import React, { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
+import { 
+  CheckCircle, 
+  Clock, 
+  FileText, 
+  Download, 
+  Plus,
+  Eye,
+  Edit,
+  Trash2
+} from 'lucide-react';
+import ClientOverview from "@/components/people/ClientOverview";
+
+interface FormField {
+  id: string;
+  name: string;
+  type: string;
+  order: number;
+  required?: boolean;
+  status: string;
+  visibleRoles: string[];
+  options?: Array<{ value: string; label: string }>;
+  placeholder?: string;
+  validation?: any;
+  readonly?: boolean;
+  label?: string;
+}
+
+interface CustomForm {
+  id: string;
+  name: string;
+  linkedSectionId: string;
+  status: string;
+  fields: FormField[];
+}
 
 interface DynamicFormRendererProps {
   form: CustomForm;
-  clientId?: string;
-  mode?: 'view' | 'edit';
+  clientId: string;
+  mode: 'view' | 'edit';
   onSave?: (data: any) => void;
+  initialData?: Record<string, any>;
+  onChange?: (data: Record<string, any>) => void;
+  validationErrors?: Record<string, string>;
 }
 
-const fieldTypeIcons: { [key: string]: any } = {
-  text: FileText,
-  email: Mail,
-  phone: Phone,
-  date: Calendar,
-  dob: Calendar,
-  time: Clock,
-  datetime: Clock,
-  number: Hash,
-  currency: DollarSign,
-  percent: Percent,
-  textbox: FileText,
-  'textbox-full': Square,
-  richtext: Pilcrow,
-  url: Link,
-  password: Lock,
-  'number-whole': Hash,
-  'number-decimal': Binary,
-  dropdown: ListOrdered,
-  'multi-select-dropdown': ListOrdered,
-  'dual-select': ListOrdered,
-  radio: Star,
-  checkbox: Star,
-  toggle: Star,
-  tags: Package,
-  lookup: Database,
-  user: User,
-  reference: Link,
-  'foreign_key': Database,
-  'external_select': Globe,
-  formula: Calculator,
-  rollup: TrendingUp,
-  datecalc: Clock,
-  'conditional_text': FileText,
-  'file-upload': Upload,
-  image: Image,
-  signature: PenSquare,
-  geolocation: MapPin,
-  address: MapPin,
-  'condition_field': Eye,
-  stepper: ListOrdered,
-  'progress_bar': BarChart3,
-  'json_editor': Code,
-  'barcode_scanner': QrCode,
-  'color_picker': Palette,
-  'created_at': Clock,
-  'updated_at': RefreshCw,
-  'created_by': User,
-  'record_id': Hash,
-  status: Activity,
-  'service-item': Package,
-  headline: Heading1,
-  'sub-headline': Heading2,
-  infobox: Info,
-  'infobox-full': Info,
-  spacer: Square
-};
+// Mock data for special field types
+const mockTasks = [
+  {
+    id: 1,
+    title: "Contact client for outstanding invoices (Monthly)",
+    dueDate: "Mon, 16 Aug",
+    priority: "high",
+    completed: false
+  },
+  {
+    id: 2,
+    title: "Share consultation forms before the next appointment",
+    dueDate: "Tue, 25 Aug",
+    priority: "medium",
+    completed: false
+  },
+  {
+    id: 3,
+    title: "Schedule next personal consultation",
+    dueDate: "Wed, 26 Aug",
+    priority: "medium",
+    completed: false
+  }
+];
+
+const mockDocuments = [
+  {
+    id: 1,
+    title: "Client intake form",
+    type: "document",
+    submittedDate: "15 Apr, 2022",
+    color: "blue"
+  },
+  {
+    id: 2,
+    title: "Treatment plan",
+    type: "document",
+    submittedDate: "18 Apr, 2022",
+    color: "yellow"
+  }
+];
+
+const mockActivity = [
+  {
+    id: 1,
+    action: "Leslie Alexander added new file Primary questionnaire",
+    time: "1 day ago"
+  },
+  {
+    id: 2,
+    action: "Devon Lane updated personal client information",
+    time: "3 days ago"
+  },
+  {
+    id: 3,
+    action: "Marvin McKinney requested an appointment for Personal consultation service",
+    time: "5 days ago"
+  }
+];
 
 export function DynamicFormRenderer({ 
   form, 
   clientId, 
-  mode = 'view',
-  onSave 
+  mode, 
+  onSave, 
+  initialData = {}, 
+  onChange,
+  validationErrors = {}
 }: DynamicFormRendererProps) {
-  const [formData, setFormData] = useState<{ [key: string]: any }>({});
-  const [isEditing, setIsEditing] = useState(mode === 'edit');
+  const [formData, setFormData] = useState<Record<string, any>>(initialData);
 
-  const handleFieldChange = (fieldId: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
+  // Update formData when initialData changes
+  React.useEffect(() => {
+    setFormData(initialData);
+  }, [initialData]);
+
+  const handleFieldChange = React.useCallback((fieldId: string, value: any) => {
+    const newData = {
+      ...formData,
       [fieldId]: value
-    }));
-  };
+    };
+    // Only update if the specific field value actually changed
+    if (formData[fieldId] !== value) {
+      setFormData(newData);
+      if (onChange) {
+        onChange(newData);
+      }
+    }
+  }, [formData, onChange]);
+
+  // If this is the overview form, render the ClientOverview component
+  if (form.id === "client-overview") {
+    return (
+      <ClientOverview
+        clientId={clientId}
+        tasks={mockTasks}
+        documents={mockDocuments}
+        activity={mockActivity}
+        mode={mode}
+      />
+    );
+  }
 
   const renderField = (field: FormField) => {
-    const IconComponent = fieldTypeIcons[field.type] || FileText;
+    const value = formData[field.id] || '';
+    const isReadonly = mode === 'view' || field.readonly;
+    const hasError = validationErrors[field.id];
+    const isRequired = field.required;
+
+    const renderLabel = () => (
+      <Label htmlFor={field.id} className={hasError ? "text-red-600" : ""}>
+        {field.name}
+        {isRequired && <span className="text-red-500 ml-1">*</span>}
+      </Label>
+    );
+
+    const renderError = () => (
+      hasError && (
+        <div className="text-sm text-red-600 mt-1">
+          {hasError}
+        </div>
+      )
+    );
 
     switch (field.type) {
       case 'text':
-      case 'email':
-      case 'phone':
-      case 'url':
-      case 'password':
         return (
           <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
+            {renderLabel()}
             <Input
               id={field.id}
-              type={field.type === 'email' ? 'email' : field.type === 'phone' ? 'tel' : 'text'}
-              placeholder={field.placeholder || `Enter ${field.name.toLowerCase()}`}
-              value={formData[field.id] || ''}
+              value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
-              disabled={!isEditing}
-              className="w-full"
+              disabled={isReadonly}
+              required={isRequired}
+              placeholder={field.placeholder}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
             />
+            {renderError()}
+          </div>
+        );
+
+      case 'email':
+        return (
+          <div key={field.id} className="space-y-2">
+            {renderLabel()}
+            <Input
+              id={field.id}
+              type="email"
+              value={value}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              disabled={isReadonly}
+              required={isRequired}
+              placeholder={field.placeholder}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
+            />
+            {renderError()}
+          </div>
+        );
+
+      case 'tel':
+        return (
+          <div key={field.id} className="space-y-2">
+            {renderLabel()}
+            <Input
+              id={field.id}
+              type="tel"
+              value={value}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              disabled={isReadonly}
+              required={isRequired}
+              placeholder={field.placeholder}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
+            />
+            {renderError()}
           </div>
         );
 
       case 'date':
-      case 'dob':
-      case 'time':
-      case 'datetime':
         return (
           <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
+            {renderLabel()}
             <Input
               id={field.id}
-              type={field.type === 'time' ? 'time' : 'date'}
-              value={formData[field.id] || ''}
+              type="date"
+              value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
-              disabled={!isEditing}
-              className="w-full"
+              disabled={isReadonly}
+              required={isRequired}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
             />
+            {renderError()}
           </div>
         );
 
       case 'number':
-      case 'number-whole':
-      case 'number-decimal':
-      case 'currency':
-      case 'percent':
         return (
           <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
+            {renderLabel()}
             <Input
               id={field.id}
               type="number"
-              step={field.type === 'number-decimal' ? '0.01' : '1'}
-              placeholder={field.placeholder || `Enter ${field.name.toLowerCase()}`}
-              value={formData[field.id] || ''}
+              value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
-              disabled={!isEditing}
-              className="w-full"
+              disabled={isReadonly}
+              required={isRequired}
+              placeholder={field.placeholder}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
             />
+            {renderError()}
           </div>
         );
 
-      case 'textbox':
-      case 'textbox-full':
-      case 'richtext':
+      case 'textarea':
         return (
           <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
+            {renderLabel()}
             <Textarea
               id={field.id}
-              placeholder={field.placeholder || `Enter ${field.name.toLowerCase()}`}
-              value={formData[field.id] || ''}
+              value={value}
               onChange={(e) => handleFieldChange(field.id, e.target.value)}
-              disabled={!isEditing}
-              rows={field.type === 'textbox-full' ? 6 : 3}
-              className="w-full"
+              disabled={isReadonly}
+              required={isRequired}
+              placeholder={field.placeholder}
+              rows={4}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
             />
+            {renderError()}
           </div>
         );
 
-      case 'dropdown':
-      case 'multi-select-dropdown':
+      case 'select':
         return (
           <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
+            {renderLabel()}
             <Select
-              value={formData[field.id] || ''}
-              onValueChange={(value) => handleFieldChange(field.id, value)}
-              disabled={!isEditing}
+              value={value}
+              onValueChange={(val) => handleFieldChange(field.id, val)}
+              disabled={isReadonly}
             >
-              <SelectTrigger>
-                <SelectValue placeholder={`Select ${field.name.toLowerCase()}`} />
+              <SelectTrigger className={hasError ? "border-red-500 focus:border-red-500" : ""}>
+                <SelectValue placeholder={field.placeholder || `Select ${field.name.toLowerCase()}`} />
               </SelectTrigger>
               <SelectContent>
                 {field.options?.map((option) => (
@@ -211,169 +305,75 @@ export function DynamicFormRenderer({
                 ))}
               </SelectContent>
             </Select>
+            {renderError()}
           </div>
         );
 
       case 'checkbox':
         return (
-          <div key={field.id} className="flex items-center space-x-2">
-            <Checkbox
-              id={field.id}
-              checked={formData[field.id] || false}
-              onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
-              disabled={!isEditing}
-            />
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-          </div>
-        );
-
-      case 'radio':
-        return (
           <div key={field.id} className="space-y-2">
-            <Label className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            <RadioGroup
-              value={formData[field.id] || ''}
-              onValueChange={(value) => handleFieldChange(field.id, value)}
-              disabled={!isEditing}
-            >
-              {field.options?.map((option) => (
-                <div key={option.value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={option.value} id={`${field.id}-${option.value}`} />
-                  <Label htmlFor={`${field.id}-${option.value}`} className="text-sm">
-                    {option.label}
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-        );
-
-      case 'headline':
-      case 'sub-headline':
-        return (
-          <div key={field.id} className="py-2">
-            <h3 className={`font-semibold text-gray-900 dark:text-gray-100 ${
-              field.type === 'headline' ? 'text-lg' : 'text-base'
-            }`}>
-              {field.name}
-            </h3>
-          </div>
-        );
-
-      case 'infobox':
-      case 'infobox-full':
-        return (
-          <div key={field.id} className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <div className="flex items-start space-x-2">
-              <Info className="h-5 w-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-              <div className="text-sm text-blue-800 dark:text-blue-200">
-                <p className="font-medium mb-1">{field.name}</p>
-                {field.placeholder && (
-                  <p className="text-blue-700 dark:text-blue-300">{field.placeholder}</p>
-                )}
-              </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id={field.id}
+                checked={value}
+                onCheckedChange={(checked) => handleFieldChange(field.id, checked)}
+                disabled={isReadonly}
+                required={isRequired}
+              />
+              <Label htmlFor={field.id} className={`text-sm font-normal ${hasError ? "text-red-600" : ""}`}>
+                {field.label || field.name}
+                {isRequired && <span className="text-red-500 ml-1">*</span>}
+              </Label>
             </div>
+            {renderError()}
           </div>
         );
-
-      case 'spacer':
-        return <div key={field.id} className="h-4" />;
 
       default:
         return (
           <div key={field.id} className="space-y-2">
-            <Label htmlFor={field.id} className="text-sm font-medium">
-              {field.name}
-              {field.required && <span className="text-red-500 ml-1">*</span>}
-            </Label>
-            <div className="flex items-center space-x-2 p-3 border border-gray-300 rounded-md bg-gray-50 dark:bg-gray-800">
-              <IconComponent className="h-4 w-4 text-gray-400" />
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {field.type} field - {field.name}
-              </span>
-            </div>
+            {renderLabel()}
+            <Input
+              id={field.id}
+              value={value}
+              onChange={(e) => handleFieldChange(field.id, e.target.value)}
+              disabled={isReadonly}
+              required={isRequired}
+              placeholder={field.placeholder}
+              className={hasError ? "border-red-500 focus:border-red-500" : ""}
+            />
+            {renderError()}
           </div>
         );
     }
   };
 
-  const handleSave = () => {
-    if (onSave) {
-      onSave(formData);
-    }
-    setIsEditing(false);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    // Reset form data to original values
-    setFormData({});
-  };
+  // Sort fields by order if available
+  const sortedFields = form.fields.sort((a, b) => (a.order || 0) - (b.order || 0));
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center">
-            <FileText className="h-5 w-5 mr-2" />
-            {form.name}
-          </CardTitle>
-          <div className="flex items-center space-x-2">
-            {!isEditing ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsEditing(true)}
-              >
-                Edit Form
-              </Button>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSave}
-                >
-                  Save Changes
-                </Button>
-              </>
-            )}
-          </div>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {sortedFields.map((field) => renderField(field))}
+      </div>
+      
+      {mode === 'edit' && onSave && (
+        <div className="flex justify-end space-x-2 pt-4 border-t">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setFormData(initialData)}
+          >
+            Reset
+          </Button>
+          <Button
+            type="button"
+            onClick={() => onSave(formData)}
+          >
+            Save
+          </Button>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {form.fields.length === 0 ? (
-            <div className="text-center py-8">
-              <FileText className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 dark:text-gray-400 mb-2">
-                No fields configured for this form
-              </p>
-              <p className="text-sm text-gray-400">
-                Add fields in Settings → Forms Management
-              </p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {form.fields
-                .sort((a, b) => a.order - b.order)
-                .map(renderField)}
-            </div>
-          )}
-        </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 } 

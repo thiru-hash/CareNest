@@ -627,6 +627,73 @@ export const mockSections: AppSection[] = [
   { id: 'sec-settings', name: 'System Settings', path: '/settings', iconName: 'Settings', order: 999, status: 'Active', tabs: [] },
 ];
 
+// Contact Form Definitions
+const contactFormFields = [
+  {
+    id: "contact-name",
+    name: "Name",
+    type: "text",
+    required: true,
+    placeholder: "Enter full name",
+    validation: { minLength: 2, maxLength: 100 }
+  },
+  {
+    id: "contact-relationship",
+    name: "Relationship",
+    type: "select",
+    required: true,
+    options: [
+      { value: "parent", label: "Parent(s)" },
+      { value: "guardian", label: "Guardian" },
+      { value: "sibling", label: "Sibling" },
+      { value: "grandparent", label: "Grandparent" },
+      { value: "other-relative", label: "Other Relatives/Whanau" },
+      { value: "friend", label: "Friend" },
+      { value: "neighbor", label: "Neighbor" },
+      { value: "other", label: "Other" }
+    ]
+  },
+  {
+    id: "contact-email",
+    name: "E-Mail",
+    type: "email",
+    required: false,
+    placeholder: "Enter email address",
+    validation: { pattern: "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$" }
+  },
+  {
+    id: "contact-phone",
+    name: "Contact No.",
+    type: "tel",
+    required: true,
+    placeholder: "Enter phone number",
+    validation: { minLength: 7, maxLength: 15 }
+  },
+  {
+    id: "contact-phone2",
+    name: "Contact No. 2",
+    type: "tel",
+    required: false,
+    placeholder: "Enter secondary phone number",
+    validation: { minLength: 7, maxLength: 15 }
+  },
+  {
+    id: "contact-note",
+    name: "Note",
+    type: "textarea",
+    required: false,
+    placeholder: "Enter any additional notes",
+    validation: { maxLength: 500 }
+  },
+  {
+    id: "contact-newsletter",
+    name: "Newsletter",
+    type: "checkbox",
+    required: false,
+    label: "Subscribe to newsletter"
+  }
+];
+
 export const mockForms: CustomForm[] = [
     { 
       id: 'form-1', name: 'Client Intake Form', linkedSectionId: 'sec-people', status: 'Inactive',
@@ -885,6 +952,428 @@ export const mockForms: CustomForm[] = [
         { id: 'field-sbd-63', name: 'General/Notes', type: 'headline', order: 630, status: 'Active', visibleRoles: [] },
         { id: 'field-sbd-64', name: 'Notes', type: 'richtext', order: 640, status: 'Active', visibleRoles: [] },
       ]
+    },
+    // New Client Forms for Profile Tabs
+    {
+      id: "client-basic-details",
+      name: "Client Basic Details",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "full-name",
+          name: "Full Name",
+          type: "text",
+          order: 1,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "email",
+          name: "Email",
+          type: "email",
+          order: 2,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "phone",
+          name: "Phone",
+          type: "phone",
+          order: 3,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "date-of-birth",
+          name: "Date of Birth",
+          type: "date",
+          order: 4,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "address",
+          name: "Address",
+          type: "textbox",
+          order: 5,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "ndia-number",
+          name: "NDIA Number",
+          type: "text",
+          order: 6,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "insurance",
+          name: "Insurance",
+          type: "select",
+          order: 7,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Yes", "No"]
+        },
+        {
+          id: "emergency-contact",
+          name: "Emergency Contact",
+          type: "text",
+          order: 8,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "notes",
+          name: "Notes",
+          type: "textbox",
+          order: 9,
+          status: "Active",
+          visibleRoles: []
+        }
+      ]
+    },
+    {
+      id: "client-overview",
+      name: "Client Overview",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "latest-tasks",
+          name: "Latest Tasks",
+          type: "task-list",
+          order: 1,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "pinned-documents",
+          name: "Pinned Documents & Files",
+          type: "document-list",
+          order: 2,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "latest-activity",
+          name: "Latest Activity",
+          type: "activity-feed",
+          order: 3,
+          status: "Active",
+          visibleRoles: []
+        }
+      ]
+    },
+    {
+      id: "client-tasks",
+      name: "Client Tasks",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "task-title",
+          name: "Task Title",
+          type: "text",
+          order: 1,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "task-description",
+          name: "Description",
+          type: "textbox",
+          order: 2,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "due-date",
+          name: "Due Date",
+          type: "date",
+          order: 3,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "priority",
+          name: "Priority",
+          type: "select",
+          order: 4,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Low", "Medium", "High", "Urgent"]
+        },
+        {
+          id: "status",
+          name: "Status",
+          type: "select",
+          order: 5,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Pending", "In Progress", "Completed", "Cancelled"]
+        }
+      ]
+    },
+    {
+      id: "client-appointments",
+      name: "Client Appointments",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "appointment-date",
+          name: "Appointment Date",
+          type: "date",
+          order: 1,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "appointment-time",
+          name: "Appointment Time",
+          type: "time",
+          order: 2,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "appointment-type",
+          name: "Appointment Type",
+          type: "select",
+          order: 3,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Consultation", "Follow-up", "Assessment", "Review"]
+        },
+        {
+          id: "notes",
+          name: "Notes",
+          type: "textbox",
+          order: 4,
+          status: "Active",
+          visibleRoles: []
+        }
+      ]
+    },
+    {
+      id: "client-billing",
+      name: "Client Billing",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "invoice-number",
+          name: "Invoice Number",
+          type: "text",
+          order: 1,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "amount",
+          name: "Amount",
+          type: "number",
+          order: 2,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "due-date",
+          name: "Due Date",
+          type: "date",
+          order: 3,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "status",
+          name: "Status",
+          type: "select",
+          order: 4,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Pending", "Paid", "Overdue", "Cancelled"]
+        }
+      ]
+    },
+    {
+      id: "client-notes",
+      name: "Client Notes",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "note-date",
+          name: "Note Date",
+          type: "date",
+          order: 1,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "note-title",
+          name: "Note Title",
+          type: "text",
+          order: 2,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "note-content",
+          name: "Note Content",
+          type: "richtext",
+          order: 3,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "note-category",
+          name: "Category",
+          type: "select",
+          order: 4,
+          status: "Active",
+          visibleRoles: [],
+          options: ["General", "Medical", "Behavioral", "Progress", "Other"]
+        }
+      ]
+    },
+    {
+      id: "client-documents",
+      name: "Client Documents",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "document-upload",
+          name: "Document Upload",
+          type: "file-upload",
+          order: 1,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "document-title",
+          name: "Document Title",
+          type: "text",
+          order: 2,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "document-type",
+          name: "Document Type",
+          type: "select",
+          order: 3,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Medical", "Legal", "Financial", "Personal", "Other"]
+        },
+        {
+          id: "document-notes",
+          name: "Notes",
+          type: "textbox",
+          order: 4,
+          status: "Active",
+          visibleRoles: []
+        }
+      ]
+    },
+    {
+      id: "client-files",
+      name: "Client Files",
+      linkedSectionId: "sec-people",
+      status: "Active",
+      fields: [
+        {
+          id: "file-upload",
+          name: "File Upload",
+          type: "file-upload",
+          order: 1,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "file-name",
+          name: "File Name",
+          type: "text",
+          order: 2,
+          required: true,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "file-category",
+          name: "File Category",
+          type: "select",
+          order: 3,
+          status: "Active",
+          visibleRoles: [],
+          options: ["Photos", "Videos", "Audio", "Documents", "Other"]
+        },
+        {
+          id: "file-description",
+          name: "Description",
+          type: "textbox",
+          order: 4,
+          status: "Active",
+          visibleRoles: []
+        }
+      ]
+    },
+    // Contact Management Forms
+    {
+      id: "form-contact-add",
+      name: "Add New Contact",
+      description: "Form for adding new contacts to client profile",
+      category: "contacts",
+      fields: contactFormFields,
+      settings: {
+        allowMultiple: false,
+        requireApproval: false,
+        autoSave: true,
+        showProgress: true
+      }
+    },
+    {
+      id: "form-contact-edit",
+      name: "Edit Contact",
+      description: "Form for editing existing contact information",
+      category: "contacts",
+      fields: contactFormFields,
+      settings: {
+        allowMultiple: false,
+        requireApproval: false,
+        autoSave: true,
+        showProgress: true
+      }
+    },
+    {
+      id: "form-contact-view",
+      name: "View Contact",
+      description: "Form for viewing contact details (read-only)",
+      category: "contacts",
+      fields: contactFormFields.map(field => ({ ...field, readonly: true })),
+      settings: {
+        allowMultiple: false,
+        requireApproval: false,
+        autoSave: false,
+        showProgress: false
+      }
     }
 ];
 
@@ -1728,3 +2217,472 @@ export const mockTwoFactorConfig: TwoFactorConfig = {
 export const mockModules = [
   // ... existing modules ...
 ].map(module => ({ ...module, enabled: true }));
+
+// Basic Information Form for People We Support
+export const basicInfoForm = {
+  id: "basic-info-form",
+  name: "Basic Information",
+  linkedSectionId: "people-section",
+  status: "Active",
+  fields: [
+    {
+      id: "full-name",
+      name: "Full Name",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "email",
+      name: "Email",
+      type: "email",
+      order: 2,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "phone",
+      name: "Phone",
+      type: "phone",
+      order: 3,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "date-of-birth",
+      name: "Date of Birth",
+      type: "date",
+      order: 4,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "address",
+      name: "Address",
+      type: "textbox",
+      order: 5,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "ndia-number",
+      name: "NDIA Number",
+      type: "text",
+      order: 6,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "insurance",
+      name: "Insurance",
+      type: "select",
+      order: 7,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Yes", "No"]
+    },
+    {
+      id: "emergency-contact",
+      name: "Emergency Contact",
+      type: "text",
+      order: 8,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "notes",
+      name: "Notes",
+      type: "textbox",
+      order: 9,
+      status: "Active",
+      visibleRoles: []
+    }
+  ]
+};
+
+// Forms for People We Support Profile Sections
+export const clientBasicDetailsForm = {
+  id: "client-basic-details",
+  name: "Client Basic Details",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "full-name",
+      name: "Full Name",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "email",
+      name: "Email",
+      type: "email",
+      order: 2,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "phone",
+      name: "Phone",
+      type: "phone",
+      order: 3,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "date-of-birth",
+      name: "Date of Birth",
+      type: "date",
+      order: 4,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "address",
+      name: "Address",
+      type: "textbox",
+      order: 5,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "ndia-number",
+      name: "NDIA Number",
+      type: "text",
+      order: 6,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "insurance",
+      name: "Insurance",
+      type: "select",
+      order: 7,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Yes", "No"]
+    },
+    {
+      id: "emergency-contact",
+      name: "Emergency Contact",
+      type: "text",
+      order: 8,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "notes",
+      name: "Notes",
+      type: "textbox",
+      order: 9,
+      status: "Active",
+      visibleRoles: []
+    }
+  ]
+};
+
+export const clientOverviewForm = {
+  id: "client-overview",
+  name: "Client Overview",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "latest-tasks",
+      name: "Latest Tasks",
+      type: "task-list",
+      order: 1,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "pinned-documents",
+      name: "Pinned Documents & Files",
+      type: "document-list",
+      order: 2,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "latest-activity",
+      name: "Latest Activity",
+      type: "activity-feed",
+      order: 3,
+      status: "Active",
+      visibleRoles: []
+    }
+  ]
+};
+
+export const clientTasksForm = {
+  id: "client-tasks",
+  name: "Client Tasks",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "task-title",
+      name: "Task Title",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "task-description",
+      name: "Description",
+      type: "textbox",
+      order: 2,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "due-date",
+      name: "Due Date",
+      type: "date",
+      order: 3,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "priority",
+      name: "Priority",
+      type: "select",
+      order: 4,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Low", "Medium", "High", "Urgent"]
+    },
+    {
+      id: "status",
+      name: "Status",
+      type: "select",
+      order: 5,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Pending", "In Progress", "Completed", "Cancelled"]
+    }
+  ]
+};
+
+export const clientAppointmentsForm = {
+  id: "client-appointments",
+  name: "Client Appointments",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "appointment-date",
+      name: "Appointment Date",
+      type: "date",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "appointment-time",
+      name: "Appointment Time",
+      type: "time",
+      order: 2,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "appointment-type",
+      name: "Appointment Type",
+      type: "select",
+      order: 3,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Consultation", "Follow-up", "Assessment", "Review"]
+    },
+    {
+      id: "notes",
+      name: "Notes",
+      type: "textbox",
+      order: 4,
+      status: "Active",
+      visibleRoles: []
+    }
+  ]
+};
+
+export const clientBillingForm = {
+  id: "client-billing",
+  name: "Client Billing",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "invoice-number",
+      name: "Invoice Number",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "amount",
+      name: "Amount",
+      type: "number",
+      order: 2,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "due-date",
+      name: "Due Date",
+      type: "date",
+      order: 3,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "status",
+      name: "Status",
+      type: "select",
+      order: 4,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Pending", "Paid", "Overdue", "Cancelled"]
+    }
+  ]
+};
+
+export const clientNotesForm = {
+  id: "client-notes",
+  name: "Client Notes",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "note-title",
+      name: "Note Title",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "note-content",
+      name: "Note Content",
+      type: "textbox",
+      order: 2,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "category",
+      name: "Category",
+      type: "select",
+      order: 3,
+      status: "Active",
+      visibleRoles: [],
+      options: ["General", "Medical", "Behavioral", "Progress", "Other"]
+    }
+  ]
+};
+
+export const clientDocumentsForm = {
+  id: "client-documents",
+  name: "Client Documents",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "document-title",
+      name: "Document Title",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "document-type",
+      name: "Document Type",
+      type: "select",
+      order: 2,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Assessment", "Plan", "Report", "Consent", "Other"]
+    },
+    {
+      id: "upload-file",
+      name: "Upload File",
+      type: "file",
+      order: 3,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "notes",
+      name: "Notes",
+      type: "textbox",
+      order: 4,
+      status: "Active",
+      visibleRoles: []
+    }
+  ]
+};
+
+export const clientFilesForm = {
+  id: "client-files",
+  name: "Client Files",
+  linkedSectionId: "sec-people",
+  status: "Active",
+  fields: [
+    {
+      id: "file-name",
+      name: "File Name",
+      type: "text",
+      order: 1,
+      required: true,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "file-category",
+      name: "File Category",
+      type: "select",
+      order: 2,
+      status: "Active",
+      visibleRoles: [],
+      options: ["Medical Records", "Photos", "Videos", "Audio", "Other"]
+    },
+    {
+      id: "upload-file",
+      name: "Upload File",
+      type: "file",
+      order: 3,
+      status: "Active",
+      visibleRoles: []
+    },
+    {
+      id: "description",
+      name: "Description",
+      type: "textbox",
+      order: 4,
+      status: "Active",
+      visibleRoles: []
+    }
+  ]
+};
+
+// Add the new client forms to the existing mockForms array
