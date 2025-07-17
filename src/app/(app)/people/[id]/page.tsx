@@ -44,7 +44,7 @@ export default async function ClientProfilePage({
   const { id } = await params;
   const currentUser = await getCurrentUser();
   
-  // Find the section config for 'People We Support'
+  // Find the section config for People We Support'
   const section = mockSections.find(s => s.path === "/people");
   if (!section) return <div>Section not found</div>;
 
@@ -79,10 +79,10 @@ export default async function ClientProfilePage({
 
       {/* Main Content */}
       <div className="max-w-full mx-auto">
-        <div className="flex flex-col xl:flex-row min-h-[calc(100vh-4rem)]">
+        <div className="flex flex-col lg:flex-row min-h-[calc(100vh-3.5rem)]">
           {/* Left Sidebar - Client Profile */}
-          <div className="w-full xl:w-80 2xl:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 xl:border-r-0 xl:border-b">
-            <div className="p-4 sm:p-6 xl:p-4 2xl:p-6">
+          <div className="w-full lg:w-72 2xl:w-96 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 lg:border-b-0 lg:border-r">
+            <div className="p-3 sm:p-4 lg:p-3 xl:p-4 2xl:p-6">
               <ClientProfileCard client={mockClient} mode="edit" />
             </div>
           </div>
