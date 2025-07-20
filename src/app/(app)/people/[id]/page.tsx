@@ -3,13 +3,13 @@ import { notFound } from 'next/navigation';
 import { getCurrentUser } from '@/lib/auth';
 import { mockSections } from '@/lib/data';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, MoreHorizontal } from 'lucide-react';
-import Link from 'next/link';
+import { MoreHorizontal } from 'lucide-react';
 import ClientProfileCard from '@/components/people/ClientProfileCard';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { DynamicFormRenderer } from '@/components/people/DynamicFormRenderer';
 import { AIOverviewPanel } from '@/components/people/AIOverviewPanel';
+import { TabConsumer } from '@/components/people/TabConsumer';
 
 // Mock client data - in real app this would come from database
 const mockClient = {
@@ -45,100 +45,26 @@ export default async function ClientProfilePage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Top Navigation Bar */}
-      <div className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-50">
-        <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            {/* Left side - Back button */}
-            <div className="flex items-center space-x-4">
-              <Link href="/people">
-                <Button variant="ghost" size="sm" className="flex items-center space-x-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  <span className="hidden sm:inline">Clients list</span>
-                </Button>
-              </Link>
-            </div>
-            {/* Right side - Actions */}
-            <div className="flex items-center space-x-2">
-              <Button variant="ghost" size="sm">
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Left Sidebar - Client Profile Card */}
-          <div className="lg:w-80 2xl:w-96 flex-shrink-0">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+      {/* Main Content - No top navigation bar, direct content */}
+      <div className="w-full">
+        <div className="flex flex-col xl:flex-row gap-2 lg:gap-3">
+          {/* Left Sidebar - Client Profile Card - Optimized spacing */}
+          <div className="xl:w-80 2xl:w-96 flex-shrink-0">
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 lg:p-6">
               <ClientProfileCard client={mockClient} mode="view" />
             </div>
           </div>
 
-          {/* Right Content - AI Overview and Dynamic Tabs */}
+          {/* Right Content - AI Overview and Dynamic Tabs - Full width utilization */}
           <div className="flex-1 min-w-0">
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-              {/* Tabs Header */}
+              {/* Tabs Header - Responsive single row */}
               <div className="border-b border-gray-200 dark:border-gray-700">
-                <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="w-full justify-start bg-transparent border-b-0 h-auto p-0">
-                    <TabsTrigger 
-                      value="overview" 
-                      className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 dark:data-[state=active]:bg-blue-950 dark:data-[state=active]:text-blue-300"
-                    >
-                      AI Overview
-                    </TabsTrigger>
-                    {section.tabs?.map((tab) => (
-                      <TabsTrigger 
-                        key={tab.id} 
-                        value={tab.id}
-                        className="data-[state=active]:bg-blue-50 data-[state=active]:text-blue-700 dark:data-[state=active]:bg-blue-950 dark:data-[state=active]:text-blue-300"
-                      >
-                        {tab.name}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-
-                  {/* AI Overview Tab - Default */}
-                  <TabsContent value="overview" className="p-6">
-                    <AIOverviewPanel clientId={id} clientName={mockClient.name} />
-                  </TabsContent>
-
-                  {/* Dynamic Tabs from Section Management */}
-                  {section.tabs?.map((tab) => (
-                    <TabsContent key={tab.id} value={tab.id} className="p-6">
-                      <Card>
-                        <CardHeader>
-                          <CardTitle>{tab.name}</CardTitle>
-                          {tab.description && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{tab.description}</p>
-                          )}
-                        </CardHeader>
-                        <CardContent>
-                          {tab.formId ? (
-                            <DynamicFormRenderer 
-                              formId={tab.formId} 
-                              clientId={id}
-                              mode="view"
-                            />
-                          ) : (
-                            <div className="text-center py-8">
-                              <p className="text-gray-500 dark:text-gray-400">
-                                No form assigned to this tab. Configure in System Settings > Sections.
-                              </p>
-                              <p className="text-sm text-gray-400 mt-2">
-                                Go to Settings → Sections → Edit "People We Support" → Add tabs and assign forms.
-                              </p>
-                            </div>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </TabsContent>
-                  ))}
-                </Tabs>
+                <TabConsumer 
+                  sectionId="sec-people"
+                  clientId={id}
+                  clientName={mockClient.name}
+                />
               </div>
             </div>
           </div>

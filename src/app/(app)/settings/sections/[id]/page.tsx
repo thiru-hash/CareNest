@@ -1,5 +1,6 @@
 "use client";
 
+import React from 'react';
 import { notFound } from 'next/navigation';
 import { mockSections } from '@/lib/data';
 import { TabManager } from '@/components/settings/TabManager';
@@ -11,8 +12,8 @@ import Link from 'next/link';
 import { iconMap } from '@/lib/icon-map';
 import { cn } from '@/lib/utils';
 
-export default function SectionDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function SectionDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = React.use(params);
   const section = mockSections.find((s) => s.id === id);
 
   if (!section) {

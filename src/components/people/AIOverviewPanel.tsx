@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -23,9 +23,15 @@ interface ActivityItem {
 
 export function AIOverviewPanel({ clientId, clientName }: AIOverviewPanelProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  const [aiSummary, setAiSummary] = useState<string>('');
+  const [aiSummary, setAiSummary] = useState('');
   const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [isClient, setIsClient] = useState(false);
+
+  // Ensure we're on the client side to avoid hydration mismatches
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Mock AI summary generation
   const generateAISummary = (activities: ActivityItem[]): string => {
@@ -67,7 +73,8 @@ export function AIOverviewPanel({ clientId, clientName }: AIOverviewPanelProps) 
   };
 
   const getTimeAgo = (date: Date): string => {
-    const now = new Date();
+    // Use a fixed reference time to avoid hydration mismatches
+    const now = new Date('2024-01-01T12:00:00Z'); // Fixed reference time
     const diffInMs = now.getTime() - date.getTime();
     const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
     const diffInDays = Math.floor(diffInHours / 24);
@@ -187,8 +194,8 @@ export function AIOverviewPanel({ clientId, clientName }: AIOverviewPanelProps) 
   return (
     <div className="space-y-6">
       {/* AI Summary Card */}
-      <Card>
-        <CardHeader className="pb-3">
+      <Card className="border-0 shadow-none">
+        <CardHeader className="px-0 pt-0 pb-4">
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-semibold flex items-center gap-2">
               <Activity className="h-5 w-5 text-blue-600" />
@@ -205,10 +212,10 @@ export function AIOverviewPanel({ clientId, clientName }: AIOverviewPanelProps) 
             </Button>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Last updated: {lastUpdated.toLocaleTimeString()}
+            Last updated: {lastUpdated ? 'Recently' : 'Loading...'}
           </p>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           <div className="prose prose-sm max-w-none">
             <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
               {isLoading ? 'Generating AI summary...' : aiSummary}
@@ -218,11 +225,11 @@ export function AIOverviewPanel({ clientId, clientName }: AIOverviewPanelProps) 
       </Card>
 
       {/* Recent Activities */}
-      <Card>
-        <CardHeader className="pb-3">
+      <Card className="border-0 shadow-none">
+        <CardHeader className="px-0 pt-0 pb-4">
           <CardTitle className="text-lg font-semibold">Recent Activities</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-0">
           <div className="space-y-4">
             {recentActivities.map((activity) => (
               <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
@@ -251,7 +258,7 @@ export function AIOverviewPanel({ clientId, clientName }: AIOverviewPanelProps) 
                       By {activity.author}
                     </span>
                     <span className="text-xs text-gray-500 dark:text-gray-400">
-                      {getTimeAgo(new Date(activity.timestamp))}
+                      Recently
                     </span>
                   </div>
                 </div>

@@ -10,11 +10,15 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { mockForms } from "@/lib/data";
 import type { AppSection, SectionTab } from "@/lib/types";
 import { CreateEditTabDialog } from "./CreateEditTabDialog";
+import { useTabContext } from "@/lib/tab-context";
 
 export function TabManager({ section: initialSection }: { section: AppSection }) {
-    const [tabs, setTabs] = useState<SectionTab[]>((initialSection.tabs || []).slice().sort((a, b) => a.order - b.order));
+    const { getSectionTabs, addTab, updateTab, deleteTab } = useTabContext();
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentTab, setCurrentTab] = useState<SectionTab | null>(null);
+
+    // Get current tabs from context
+    const tabs = getSectionTabs(initialSection.id);
 
     const handleCreateTab = () => {
         const maxOrder = Math.max(0, ...tabs.map(t => t.order));
@@ -23,6 +27,7 @@ export function TabManager({ section: initialSection }: { section: AppSection })
             name: "New Tab",
             order: maxOrder + 10,
             formId: '',
+            description: ''
         });
         setIsDialogOpen(true);
     };
@@ -33,18 +38,24 @@ export function TabManager({ section: initialSection }: { section: AppSection })
     };
 
     const handleDeleteTab = (tabId: string) => {
-        setTabs(prev => prev.filter(tab => tab.id !== tabId));
+        deleteTab(initialSection.id, tabId);
     };
 
     const handleSaveTab = (savedTab: SectionTab) => {
         if (tabs.some(t => t.id === savedTab.id)) {
             // Update existing
-            setTabs(prev => prev.map(t => t.id === savedTab.id ? savedTab : t).sort((a, b) => a.order - b.order));
+            updateTab(initialSection.id, savedTab.id, savedTab);
         } else {
             // Create new
-            const newTab = { ...savedTab, id: `tab-${Date.now()}` };
-            setTabs(prev => [...prev, newTab].sort((a, b) => a.order - b.order));
+            addTab(initialSection.id, {
+                name: savedTab.name,
+                order: savedTab.order,
+                formId: savedTab.formId,
+                description: savedTab.description || ''
+            });
         }
+        setIsDialogOpen(false);
+        setCurrentTab(null);
     };
     
     const getFormName = (formId: string) => {
@@ -73,6 +84,7 @@ export function TabManager({ section: initialSection }: { section: AppSection })
                                 <TableHead>Order</TableHead>
                                 <TableHead>Tab Name</TableHead>
                                 <TableHead>Linked Form</TableHead>
+                                <TableHead>Description</TableHead>
                                 <TableHead><span className="sr-only">Actions</span></TableHead>
                             </TableRow>
                         </TableHeader>
@@ -82,6 +94,9 @@ export function TabManager({ section: initialSection }: { section: AppSection })
                                     <TableCell>{tab.order}</TableCell>
                                     <TableCell className="font-medium">{tab.name}</TableCell>
                                     <TableCell>{getFormName(tab.formId)}</TableCell>
+                                    <TableCell className="text-sm text-gray-600 dark:text-gray-400">
+                                        {tab.description || '-'}
+                                    </TableCell>
                                     <TableCell className="text-right">
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -98,7 +113,7 @@ export function TabManager({ section: initialSection }: { section: AppSection })
                                 </TableRow>
                             )) : (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="h-24 text-center">
+                                    <TableCell colSpan={5} className="h-24 text-center">
                                         No tabs created yet for this section.
                                     </TableCell>
                                 </TableRow>

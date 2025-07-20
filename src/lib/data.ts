@@ -578,7 +578,9 @@ export const mockSections: AppSection[] = [
     iconName: 'Users', 
     order: 30, 
     status: 'Active',
-    tabs: []
+    tabs: [
+      { id: 'tab-pws-goals', name: 'Goals', order: 10, formId: 'form-pws-goals' }
+    ]
   },
   { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 40, status: 'Active', tabs: [] },
   { 
@@ -755,8 +757,19 @@ export const mockForms: CustomForm[] = [
     {
       id: 'form-pws-goals', name: 'Goals Form', linkedSectionId: 'sec-people', status: 'Active',
       fields: [
-        { id: 'field-g-1', name: 'Personal Goal', type: 'text', order: 10, status: 'Active', visibleRoles: [] },
-        { id: 'field-g-2', name: 'Steps to Achieve', type: 'richtext', order: 20, status: 'Active', visibleRoles: [] },
+        { id: 'goal_title', name: 'goal_title', type: 'text', label: 'Goal Title', required: true },
+        { id: 'goal_description', name: 'goal_description', type: 'textarea', label: 'Goal Description', required: true },
+        { id: 'target_date', name: 'target_date', type: 'date', label: 'Target Date', required: true },
+        { id: 'status', name: 'status', type: 'select', label: 'Status', options: [
+            { value: 'not_started', label: 'Not Started' },
+            { value: 'in_progress', label: 'In Progress' },
+            { value: 'achieved', label: 'Achieved' },
+            { value: 'on_hold', label: 'On Hold' }
+          ], required: true
+        },
+        { id: 'progress_notes', name: 'progress_notes', type: 'textarea', label: 'Progress Notes' },
+        { id: 'responsible_staff', name: 'responsible_staff', type: 'text', label: 'Responsible Staff' },
+        { id: 'is_active', name: 'is_active', type: 'checkbox', label: 'Is Active' }
       ]
     },
     {
@@ -1203,19 +1216,10 @@ export const mockForms: CustomForm[] = [
       status: "Active",
       fields: [
         {
-          id: "note-date",
-          name: "Note Date",
-          type: "date",
-          order: 1,
-          required: true,
-          status: "Active",
-          visibleRoles: []
-        },
-        {
           id: "note-title",
           name: "Note Title",
           type: "text",
-          order: 2,
+          order: 1,
           required: true,
           status: "Active",
           visibleRoles: []
@@ -1223,17 +1227,17 @@ export const mockForms: CustomForm[] = [
         {
           id: "note-content",
           name: "Note Content",
-          type: "richtext",
-          order: 3,
+          type: "textbox",
+          order: 2,
           required: true,
           status: "Active",
           visibleRoles: []
         },
         {
-          id: "note-category",
+          id: "category",
           name: "Category",
           type: "select",
-          order: 4,
+          order: 3,
           status: "Active",
           visibleRoles: [],
           options: ["General", "Medical", "Behavioral", "Progress", "Other"]
@@ -1247,18 +1251,10 @@ export const mockForms: CustomForm[] = [
       status: "Active",
       fields: [
         {
-          id: "document-upload",
-          name: "Document Upload",
-          type: "file-upload",
-          order: 1,
-          status: "Active",
-          visibleRoles: []
-        },
-        {
           id: "document-title",
           name: "Document Title",
           type: "text",
-          order: 2,
+          order: 1,
           required: true,
           status: "Active",
           visibleRoles: []
@@ -1267,13 +1263,21 @@ export const mockForms: CustomForm[] = [
           id: "document-type",
           name: "Document Type",
           type: "select",
-          order: 3,
+          order: 2,
           status: "Active",
           visibleRoles: [],
-          options: ["Medical", "Legal", "Financial", "Personal", "Other"]
+          options: ["Assessment", "Plan", "Report", "Consent", "Other"]
         },
         {
-          id: "document-notes",
+          id: "upload-file",
+          name: "Upload File",
+          type: "file",
+          order: 3,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "notes",
           name: "Notes",
           type: "textbox",
           order: 4,
@@ -1289,18 +1293,10 @@ export const mockForms: CustomForm[] = [
       status: "Active",
       fields: [
         {
-          id: "file-upload",
-          name: "File Upload",
-          type: "file-upload",
-          order: 1,
-          status: "Active",
-          visibleRoles: []
-        },
-        {
           id: "file-name",
           name: "File Name",
           type: "text",
-          order: 2,
+          order: 1,
           required: true,
           status: "Active",
           visibleRoles: []
@@ -1309,13 +1305,21 @@ export const mockForms: CustomForm[] = [
           id: "file-category",
           name: "File Category",
           type: "select",
-          order: 3,
+          order: 2,
           status: "Active",
           visibleRoles: [],
-          options: ["Photos", "Videos", "Audio", "Documents", "Other"]
+          options: ["Medical Records", "Photos", "Videos", "Audio", "Other"]
         },
         {
-          id: "file-description",
+          id: "upload-file",
+          name: "Upload File",
+          type: "file",
+          order: 3,
+          status: "Active",
+          visibleRoles: []
+        },
+        {
+          id: "description",
           name: "Description",
           type: "textbox",
           order: 4,
@@ -1536,50 +1540,73 @@ export const mockTransactions: ClientTransaction[] = [
     { id: 'txn-8', clientId: 'client-2', date: subDays(now, 15), description: 'Event Ticket: Concert', type: 'Expense', amount: 120, gst: 10.91, category: 'Other' },
 ];
 
-// Local storage keys
+// Storage keys
 const FORMS_STORAGE_KEY = 'carenest_forms';
 const SECTIONS_STORAGE_KEY = 'carenest_sections';
 
-// Helper functions for localStorage
-export const getStoredForms = (): CustomForm[] => {
-  if (typeof window === 'undefined') return [];
-  
+// Helper function to safely access localStorage
+const getLocalStorage = (key: string): string | null => {
+  if (typeof window === 'undefined') {
+    return null;
+  }
   try {
-    const stored = localStorage.getItem(FORMS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    return localStorage.getItem(key);
   } catch (error) {
-    console.error('Error reading forms from localStorage:', error);
-    return [];
+    console.error(`Error reading ${key} from localStorage:`, error);
+    return null;
   }
 };
 
-export const setStoredForms = (forms: CustomForm[]): void => {
-  if (typeof window === 'undefined') return;
-  
+const setLocalStorage = (key: string, value: string): void => {
+  if (typeof window === 'undefined') {
+    return;
+  }
   try {
-    localStorage.setItem(FORMS_STORAGE_KEY, JSON.stringify(forms));
+    localStorage.setItem(key, value);
+  } catch (error) {
+    console.error(`Error writing ${key} to localStorage:`, error);
+  }
+};
+
+// Get stored forms from localStorage
+export const getStoredForms = (): CustomForm[] => {
+  try {
+    const stored = getLocalStorage(FORMS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Error reading forms from localStorage:', error);
+  }
+  return [];
+};
+
+// Set forms to localStorage
+export const setStoredForms = (forms: CustomForm[]): void => {
+  try {
+    setLocalStorage(FORMS_STORAGE_KEY, JSON.stringify(forms));
   } catch (error) {
     console.error('Error writing forms to localStorage:', error);
   }
 };
 
+// Get stored sections from localStorage
 export const getStoredSections = (): AppSection[] => {
-  if (typeof window === 'undefined') return [];
-  
   try {
-    const stored = localStorage.getItem(SECTIONS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    const stored = getLocalStorage(SECTIONS_STORAGE_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
   } catch (error) {
     console.error('Error reading sections from localStorage:', error);
-    return [];
   }
+  return [];
 };
 
+// Set sections to localStorage
 export const setStoredSections = (sections: AppSection[]): void => {
-  if (typeof window === 'undefined') return;
-  
   try {
-    localStorage.setItem(SECTIONS_STORAGE_KEY, JSON.stringify(sections));
+    setLocalStorage(SECTIONS_STORAGE_KEY, JSON.stringify(sections));
   } catch (error) {
     console.error('Error writing sections to localStorage:', error);
   }
@@ -1600,15 +1627,24 @@ export const getAllForms = (): CustomForm[] => {
 
 // Get all sections (mock + stored)
 export const getAllSections = (): AppSection[] => {
-  const storedSections = getStoredSections();
-  const allSections = [...mockSections, ...storedSections];
-  
-  // Remove duplicates (stored sections take precedence)
-  const uniqueSections = allSections.filter((section, index, self) => 
-    index === self.findIndex(s => s.id === section.id)
-  );
-  
-  return uniqueSections;
+  try {
+    const storedSections = getStoredSections();
+    
+    // Ensure storedSections is an array
+    const validStoredSections = Array.isArray(storedSections) ? storedSections : [];
+    
+    const allSections = [...mockSections, ...validStoredSections];
+    
+    // Remove duplicates (stored sections take precedence)
+    const uniqueSections = allSections.filter((section, index, self) => 
+      index === self.findIndex(s => s.id === section.id)
+    );
+    
+    return uniqueSections;
+  } catch (error) {
+    console.error('Error getting all sections:', error);
+    return mockSections; // Fallback to mock sections
+  }
 };
 
 // Enhanced Rights Data

@@ -9,13 +9,15 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
-import { getAllForms } from '@/lib/data';
+import { getFormConfig } from '@/lib/formConfig';
 import { useToast } from '@/hooks/use-toast';
 
 interface DynamicFormRendererProps {
   formId: string;
   clientId: string;
   mode?: 'view' | 'edit';
+  initialData?: { [key: string]: any };
+  onSubmit?: (formData: { [key: string]: any }, action: 'save' | 'submit' | 'draft') => void;
 }
 
 interface FormField {
@@ -26,6 +28,7 @@ interface FormField {
   placeholder?: string;
   required?: boolean;
   options?: { value: string; label: string }[];
+  defaultValue?: any;
   validation?: {
     min?: number;
     max?: number;
@@ -40,135 +43,55 @@ interface FormData {
 export function DynamicFormRenderer({ 
   formId, 
   clientId, 
-  mode = 'view'
+  mode = 'view',
+  initialData = {},
+  onSubmit
 }: DynamicFormRendererProps) {
-  const [formData, setFormData] = useState<FormData>({});
-  const [isLoading, setIsLoading] = useState(true);
+  const [formData, setFormData] = useState<FormData>(initialData);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
 
-  // Mock form definition - in real app this would come from the form builder
-  const mockFormFields: FormField[] = useMemo(() => {
-    const formDefinitions: { [key: string]: FormField[] } = {
-      'form-1': [
-        { id: 'client_name', name: 'client_name', type: 'text', label: 'Client Name', required: true },
-        { id: 'contact_person', name: 'contact_person', type: 'text', label: 'Contact Person', required: true },
-        { id: 'phone', name: 'phone', type: 'phone', label: 'Phone Number', required: true },
-        { id: 'email', name: 'email', type: 'email', label: 'Email Address' },
-        { id: 'address', name: 'address', type: 'textarea', label: 'Address', placeholder: 'Enter full address' },
-        { id: 'emergency_contact', name: 'emergency_contact', type: 'text', label: 'Emergency Contact' },
-        { id: 'medical_conditions', name: 'medical_conditions', type: 'textarea', label: 'Medical Conditions', placeholder: 'List any medical conditions or allergies' },
-        { id: 'preferred_language', name: 'preferred_language', type: 'select', label: 'Preferred Language', options: [
-          { value: 'english', label: 'English' },
-          { value: 'maori', label: 'Māori' },
-          { value: 'samoan', label: 'Samoan' },
-          { value: 'tongan', label: 'Tongan' },
-          { value: 'other', label: 'Other' }
-        ]},
-        { id: 'support_needs', name: 'support_needs', type: 'textarea', label: 'Support Needs', placeholder: 'Describe specific support requirements' },
-        { id: 'goals', name: 'goals', type: 'textarea', label: 'Client Goals', placeholder: 'What are the client\'s goals?' },
-        { id: 'start_date', name: 'start_date', type: 'date', label: 'Service Start Date' },
-        { id: 'funding_source', name: 'funding_source', type: 'select', label: 'Funding Source', options: [
-          { value: 'ndis', label: 'NDIS' },
-          { value: 'acc', label: 'ACC' },
-          { value: 'private', label: 'Private' },
-          { value: 'other', label: 'Other' }
-        ]},
-        { id: 'consent_given', name: 'consent_given', type: 'checkbox', label: 'Consent to share information' }
-      ],
-      'form-2': [
-        { id: 'incident_date', name: 'incident_date', type: 'date', label: 'Incident Date', required: true },
-        { id: 'incident_time', name: 'incident_time', type: 'text', label: 'Incident Time', placeholder: 'HH:MM' },
-        { id: 'location', name: 'location', type: 'text', label: 'Location', required: true },
-        { id: 'description', name: 'description', type: 'textarea', label: 'Incident Description', required: true, placeholder: 'Provide a detailed description of what happened' },
-        { id: 'people_involved', name: 'people_involved', type: 'textarea', label: 'People Involved', placeholder: 'List all people involved in the incident' },
-        { id: 'witnesses', name: 'witnesses', type: 'textarea', label: 'Witnesses', placeholder: 'List any witnesses' },
-        { id: 'actions_taken', name: 'actions_taken', type: 'textarea', label: 'Actions Taken', placeholder: 'What actions were taken immediately after the incident?' },
-        { id: 'injuries', name: 'injuries', type: 'textarea', label: 'Injuries', placeholder: 'Describe any injuries sustained' },
-        { id: 'medical_attention', name: 'medical_attention', type: 'select', label: 'Medical Attention Required', options: [
-          { value: 'none', label: 'None' },
-          { value: 'first_aid', label: 'First Aid' },
-          { value: 'doctor', label: 'Doctor' },
-          { value: 'hospital', label: 'Hospital' },
-          { value: 'ambulance', label: 'Ambulance' }
-        ]},
-        { id: 'police_notified', name: 'police_notified', type: 'checkbox', label: 'Police notified' },
-        { id: 'family_notified', name: 'family_notified', type: 'checkbox', label: 'Family/Guardian notified' },
-        { id: 'reported_to_ndis', name: 'reported_to_ndis', type: 'checkbox', label: 'Reported to NDIS Commission' }
-      ],
-      'form-3': [
-        { id: 'vehicle_id', name: 'vehicle_id', type: 'text', label: 'Vehicle ID', required: true },
-        { id: 'check_date', name: 'check_date', type: 'date', label: 'Check Date', required: true },
-        { id: 'checker_name', name: 'checker_name', type: 'text', label: 'Checker Name', required: true },
-        { id: 'fuel_level', name: 'fuel_level', type: 'select', label: 'Fuel Level', options: [
-          { value: 'full', label: 'Full' },
-          { value: '3_4', label: '3/4' },
-          { value: '1_2', label: '1/2' },
-          { value: '1_4', label: '1/4' },
-          { value: 'empty', label: 'Empty' }
-        ]},
-        { id: 'oil_level', name: 'oil_level', type: 'select', label: 'Oil Level', options: [
-          { value: 'good', label: 'Good' },
-          { value: 'low', label: 'Low' },
-          { value: 'needs_change', label: 'Needs Change' }
-        ]},
-        { id: 'tire_condition', name: 'tire_condition', type: 'select', label: 'Tire Condition', options: [
-          { value: 'good', label: 'Good' },
-          { value: 'fair', label: 'Fair' },
-          { value: 'poor', label: 'Poor' },
-          { value: 'needs_replacement', label: 'Needs Replacement' }
-        ]},
-        { id: 'lights_working', name: 'lights_working', type: 'checkbox', label: 'All lights working' },
-        { id: 'wipers_working', name: 'wipers_working', type: 'checkbox', label: 'Wipers working' },
-        { id: 'horn_working', name: 'horn_working', type: 'checkbox', label: 'Horn working' },
-        { id: 'seatbelts_working', name: 'seatbelts_working', type: 'checkbox', label: 'All seatbelts working' },
-        { id: 'interior_clean', name: 'interior_clean', type: 'checkbox', label: 'Interior clean' },
-        { id: 'exterior_clean', name: 'exterior_clean', type: 'checkbox', label: 'Exterior clean' },
-        { id: 'issues_found', name: 'issues_found', type: 'textarea', label: 'Issues Found', placeholder: 'Describe any issues found during the check' },
-        { id: 'action_required', name: 'action_required', type: 'textarea', label: 'Action Required', placeholder: 'What action is required to fix any issues?' }
-      ]
-    };
-
-    return formDefinitions[formId] || [];
+  // Get form configuration from the universal form config system
+  const formConfig = useMemo(() => {
+    return getFormConfig(formId);
   }, [formId]);
 
-  // Load existing form data
+  // If no form configuration found, show fallback message
+  if (!formConfig) {
+    return (
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-lg font-semibold text-gray-700">
+            Form Configuration Not Found
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <p className="text-gray-500 mb-4">
+              This form hasn't been configured yet. Please check the Form Settings.
+            </p>
+            <p className="text-sm text-gray-400">
+              Form ID: {formId}
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // Initialize form data with default values from form config
   useEffect(() => {
-    const loadFormData = async () => {
-      setIsLoading(true);
-      try {
-        // Mock API call - in real app this would fetch from database
-        const mockData: FormData = {
-          client_name: 'Dianne Russell',
-          contact_person: 'Ms Juliane Cheng',
-          phone: '(229) 555-0109',
-          email: 'd.russell@gmail.com',
-          address: '6301 Elgin St. Celina, Delaware, 10299',
-          emergency_contact: 'Ms Juliane Cheng - 0400004335',
-          medical_conditions: 'None reported',
-          preferred_language: 'english',
-          support_needs: 'Personal care and community access support',
-          goals: 'Increase independence in daily activities and community participation',
-          start_date: '2022-04-15',
-          funding_source: 'ndis',
-          consent_given: true
-        };
-
-        setFormData(mockData);
-      } catch (error) {
-        console.error('Error loading form data:', error);
-        toast({
-          title: 'Error',
-          description: 'Failed to load form data',
-          variant: 'destructive'
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadFormData();
-  }, [formId, clientId, toast]);
+    if (formConfig && Object.keys(initialData).length === 0) {
+      const defaultData: FormData = {};
+      formConfig.fields.forEach(field => {
+        if (field.defaultValue !== undefined) {
+          defaultData[field.name] = field.defaultValue;
+        }
+      });
+      setFormData(defaultData);
+    }
+  }, [formConfig, initialData]);
 
   const handleFieldChange = (fieldId: string, value: any) => {
     setFormData(prev => ({
@@ -177,25 +100,48 @@ export function DynamicFormRenderer({
     }));
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (action: 'save' | 'submit' | 'draft') => {
     setIsSaving(true);
     try {
-      // Mock API call - in real app this would save to database
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Validate required fields
+      const requiredFields = formConfig.fields.filter(field => field.required);
+      const missingFields = requiredFields.filter(field => !formData[field.name]);
       
-      // Log the saved data for debugging
-      console.log('Form data saved:', formData);
+      if (missingFields.length > 0) {
+        toast({
+          title: "Validation Error",
+          description: `Please fill in all required fields: ${missingFields.map(f => f.label).join(', ')}`,
+          variant: "destructive",
+        });
+        return;
+      }
 
-      toast({
-        title: 'Success',
-        description: 'Form data saved successfully',
-      });
+      // Add metadata to form data
+      const submissionData = {
+        ...formData,
+        clientId,
+        formId,
+        submittedAt: new Date().toISOString(),
+        status: action === 'draft' ? 'draft' : 'submitted'
+      };
+
+      if (onSubmit) {
+        await onSubmit(submissionData, action);
+      } else {
+        // Mock submission - in real app this would go to your API
+        console.log('Form submission:', submissionData);
+        
+        toast({
+          title: "Form Submitted",
+          description: `Form data has been ${action === 'draft' ? 'saved as draft' : 'submitted'} successfully.`,
+        });
+      }
     } catch (error) {
-      console.error('Error saving form data:', error);
+      console.error('Form submission error:', error);
       toast({
-        title: 'Error',
-        description: 'Failed to save form data',
-        variant: 'destructive'
+        title: "Submission Error",
+        description: "There was an error submitting the form. Please try again.",
+        variant: "destructive",
       });
     } finally {
       setIsSaving(false);
@@ -324,11 +270,11 @@ export function DynamicFormRenderer({
     );
   }
 
-  if (mockFormFields.length === 0) {
+  if (formConfig.fields.length === 0) {
     return (
       <div className="text-center py-8">
-        <p className="text-gray-500">No form configuration found for this tab.</p>
-        <p className="text-sm text-gray-400 mt-2">Configure forms in System Settings > Forms.</p>
+        <p className="text-gray-500">No fields configured for this form.</p>
+        <p className="text-sm text-gray-400 mt-2">Configure fields in System Settings > Forms.</p>
       </div>
     );
   }
@@ -336,17 +282,31 @@ export function DynamicFormRenderer({
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {mockFormFields.map(renderField)}
+        {formConfig.fields.map(renderField)}
       </div>
       
       {mode === 'edit' && (
         <div className="flex justify-end space-x-2 pt-6 border-t">
           <Button
-            onClick={handleSave}
+            onClick={() => handleSubmit('save')}
             disabled={isSaving}
             className="min-w-[100px]"
           >
             {isSaving ? 'Saving...' : 'Save'}
+          </Button>
+          <Button
+            onClick={() => handleSubmit('submit')}
+            disabled={isSaving}
+            className="min-w-[100px]"
+          >
+            {isSaving ? 'Submitting...' : 'Submit'}
+          </Button>
+          <Button
+            onClick={() => handleSubmit('draft')}
+            disabled={isSaving}
+            className="min-w-[100px]"
+          >
+            {isSaving ? 'Drafting...' : 'Draft'}
           </Button>
         </div>
       )}

@@ -19,9 +19,31 @@ import {
   Shield,
   UserCheck,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Zap,
+  ShieldAlert,
+  Landmark
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getAllSections } from '@/lib/data';
+
+// Icon mapping for dynamic sections
+const iconMap: { [key: string]: any } = {
+  LayoutDashboard,
+  Users,
+  UserCheck,
+  Calendar,
+  Clock,
+  DollarSign,
+  Landmark,
+  MapPin,
+  Building2,
+  Settings,
+  Shield,
+  ShieldAlert,
+  Zap,
+  FileText
+};
 
 const defaultNavItems = [
   { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -37,25 +59,27 @@ const defaultNavItems = [
 
 const getSidebarNavItems = () => {
   try {
-    if (typeof window !== 'undefined') {
-      const { getNavigationItems } = require('@/lib/terminology');
-      const navItems = getNavigationItems();
-      return [
-        { title: navItems.find(item => item.id === 'dashboard')?.name || 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-        { title: navItems.find(item => item.id === 'people')?.name || 'People We Support', href: '/people', icon: Users },
-        { title: navItems.find(item => item.id === 'staff')?.name || 'Staff', href: '/staff', icon: UserCheck },
-        { title: navItems.find(item => item.id === 'roster')?.name || 'Roster Schedule', href: '/roster', icon: Calendar },
-        { title: 'Timesheets', href: '/timesheets', icon: Clock },
-        { title: navItems.find(item => item.id === 'finance')?.name || 'Finance', href: '/finance', icon: DollarSign },
-        { title: 'Compliance', href: '/compliance', icon: Shield },
-        { title: navItems.find(item => item.id === 'locations')?.name || 'Locations', href: '/locations', icon: MapPin },
-        { title: navItems.find(item => item.id === 'settings')?.name || 'Settings', href: '/settings', icon: Settings },
-      ];
-    }
+    // Get dynamic sections from settings
+    const sections = getAllSections();
+    
+    // Filter only active sections and convert to nav items
+    const navItems = sections
+      .filter(section => section.status === 'Active')
+      .sort((a, b) => a.order - b.order)
+      .map(section => {
+        const Icon = iconMap[section.iconName] || LayoutDashboard;
+        return {
+          title: section.name,
+          href: section.path,
+          icon: Icon
+        };
+      });
+
+    return navItems.length > 0 ? navItems : defaultNavItems;
   } catch (error) {
     console.error('Error loading navigation items:', error);
+    return defaultNavItems;
   }
-  return defaultNavItems;
 };
 
 interface SidebarNavProps extends React.HTMLAttributes<HTMLElement> {
