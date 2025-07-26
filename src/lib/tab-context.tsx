@@ -61,7 +61,7 @@ export function TabProvider({ children }: { children: ReactNode }) {
         const stored = localStorage.getItem('carenest_sections');
         if (stored) {
           const parsed = JSON.parse(stored);
-          const sectionsMap = new Map(Object.entries(parsed));
+          const sectionsMap = new Map(Object.entries(parsed)) as Map<string, AppSection>;
           setSections(sectionsMap);
         }
       } catch (error) {
@@ -76,6 +76,9 @@ export function TabProvider({ children }: { children: ReactNode }) {
       try {
         const sectionsObj = Object.fromEntries(sections);
         localStorage.setItem('carenest_sections', JSON.stringify(sectionsObj));
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('carenest-sections-updated'));
       } catch (error) {
         console.error('Error saving sections to localStorage:', error);
       }

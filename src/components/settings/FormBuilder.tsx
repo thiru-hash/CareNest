@@ -98,6 +98,11 @@ export function FormBuilder({
       !mockForms.some(mockForm => mockForm.id === form.id)
     );
     setStoredForms(newForms);
+    
+    // Dispatch custom event to update any components that depend on forms
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('carenest-forms-updated'));
+    }
   }, [forms]);
 
   const handleInputChange = useCallback((fieldId: string, value: any) => {

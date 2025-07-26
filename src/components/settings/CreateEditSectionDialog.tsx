@@ -183,11 +183,16 @@ export function CreateEditSectionDialog({
   }, [isOpen]);
 
   const handleSave = () => {
+    console.log('handleSave function called!');
+    
     // Basic validation
     if (!name || !path) {
         alert("Section Name and Path are required.");
         return;
     }
+    
+    console.log('Saving section:', { name, path, iconName, order, status, description, sectionTabs, selectedRoles });
+    
     const newSectionData: AppSection = {
       id: section?.id || '',
       name,
@@ -200,6 +205,8 @@ export function CreateEditSectionDialog({
       // Add role visibility data
       visibleRoles: selectedRoles
     };
+    
+    console.log('Calling onSave with:', newSectionData);
     onSave(newSectionData);
     setIsOpen(false);
   };
@@ -446,7 +453,15 @@ export function CreateEditSectionDialog({
 
         <DialogFooter>
           <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-          <Button onClick={handleSave}>Save Changes</Button>
+          <Button 
+            type="button" 
+            onClick={() => {
+              console.log('Save button clicked!');
+              handleSave();
+            }}
+          >
+            Save Changes
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

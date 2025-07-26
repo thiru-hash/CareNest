@@ -93,12 +93,40 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitch
   const pathname = usePathname();
   const [sidebarNavItems, setSidebarNavItems] = useState(defaultNavItems);
 
-  useEffect(() => {
+  // Function to refresh navigation items
+  const refreshNavItems = () => {
     if (items) {
       setSidebarNavItems(items);
     } else {
       setSidebarNavItems(getSidebarNavItems());
     }
+  };
+
+  useEffect(() => {
+    refreshNavItems();
+  }, [items]);
+
+  // Listen for localStorage changes to update navigation
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'carenest_sections' || e.key === 'carenest-forms') {
+        refreshNavItems();
+      }
+    };
+
+    // Listen for storage events from other tabs/windows
+    window.addEventListener('storage', handleStorageChange);
+
+    // Also listen for custom events (for same-tab updates)
+    const handleCustomStorageChange = () => {
+      refreshNavItems();
+    };
+    window.addEventListener('carenest-sections-updated', handleCustomStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('carenest-sections-updated', handleCustomStorageChange);
+    };
   }, [items]);
 
   return (
@@ -178,6 +206,26 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitch
             <Users className="h-5 w-5" />
             <span className="truncate">Switch User</span>
           </Button>
+          
+          {/* Debug button for testing navigation updates */}
+          {process.env.NODE_ENV === 'development' && (
+            <Button
+              variant="outline"
+              size="sm"
+              className={cn(
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                'text-gray-300 hover:bg-green-800 hover:text-white',
+                'justify-start w-full'
+              )}
+              onClick={() => {
+                console.log('Current nav items:', sidebarNavItems);
+                refreshNavItems();
+                console.log('Refreshed nav items:', getSidebarNavItems());
+              }}
+            >
+              <span className="truncate">🔄 Refresh Nav</span>
+            </Button>
+          )}
         </div>
       )}
     </aside>

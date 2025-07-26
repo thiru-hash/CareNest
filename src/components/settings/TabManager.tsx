@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { mockForms } from "@/lib/data";
+import { mockForms, getAllForms } from "@/lib/data";
 import type { AppSection, SectionTab } from "@/lib/types";
 import { CreateEditTabDialog } from "./CreateEditTabDialog";
 import { useTabContext } from "@/lib/tab-context";
@@ -59,7 +59,8 @@ export function TabManager({ section: initialSection }: { section: AppSection })
     };
     
     const getFormName = (formId: string) => {
-        return mockForms.find(f => f.id === formId)?.name || 'N/A';
+        const allForms = getAllForms();
+        return allForms.find(f => f.id === formId)?.name || 'N/A';
     }
 
     return (

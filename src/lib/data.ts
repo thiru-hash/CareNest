@@ -583,6 +583,7 @@ export const mockSections: AppSection[] = [
     ]
   },
   { id: 'sec-staff', name: 'Staff', path: '/staff', iconName: 'UsersRound', order: 40, status: 'Active', tabs: [] },
+  { id: 'sec-roster', name: 'Roster Schedule', path: '/roster', iconName: 'Calendar', order: 45, status: 'Active', tabs: [] },
   { 
     id: 'sec-loc', 
     name: 'Locations', 
@@ -1607,6 +1608,11 @@ export const getStoredSections = (): AppSection[] => {
 export const setStoredSections = (sections: AppSection[]): void => {
   try {
     setLocalStorage(SECTIONS_STORAGE_KEY, JSON.stringify(sections));
+    
+    // Dispatch custom event to notify other components
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('carenest-sections-updated'));
+    }
   } catch (error) {
     console.error('Error writing sections to localStorage:', error);
   }

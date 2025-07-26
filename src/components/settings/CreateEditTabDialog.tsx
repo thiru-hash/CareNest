@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -21,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import type { SectionTab } from "@/lib/types";
-import { mockForms } from "@/lib/data";
+import { mockForms, getAllForms } from "@/lib/data";
 
 interface CreateEditTabDialogProps {
   isOpen: boolean;
@@ -39,8 +40,12 @@ export function CreateEditTabDialog({
   const [name, setName] = useState("");
   const [order, setOrder] = useState(0);
   const [formId, setFormId] = useState("");
+  const [description, setDescription] = useState("");
 
   const isEditMode = !!tab?.id;
+  
+  // Get all available forms (mock + stored)
+  const availableForms = getAllForms();
 
   useEffect(() => {
     if (isOpen) {
@@ -48,11 +53,13 @@ export function CreateEditTabDialog({
             setName(tab.name);
             setOrder(tab.order);
             setFormId(tab.formId);
+            setDescription(tab.description || "");
         } else {
             // Reset for new tab
             setName("");
             setOrder(0);
             setFormId("");
+            setDescription("");
         }
     }
   }, [tab, isOpen]);
@@ -67,6 +74,7 @@ export function CreateEditTabDialog({
       name,
       order,
       formId,
+      description: description || undefined,
     };
     onSave(newTabData);
     setIsOpen(false);
@@ -106,7 +114,7 @@ export function CreateEditTabDialog({
                 <SelectValue placeholder="Select a form" />
               </SelectTrigger>
               <SelectContent>
-                {mockForms.filter(f => f.status === 'Active').map((form) => (
+                {availableForms.filter(f => f.status === 'Active').map((form) => (
                   <SelectItem key={form.id} value={form.id}>
                     {form.name}
                   </SelectItem>
@@ -124,6 +132,19 @@ export function CreateEditTabDialog({
               value={order}
               onChange={(e) => setOrder(parseInt(e.target.value, 10) || 0)}
               className="col-span-3"
+            />
+          </div>
+          <div className="grid grid-cols-4 items-start gap-4">
+            <Label htmlFor="description" className="text-right pt-2">
+              Description
+            </Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className="col-span-3"
+              placeholder="Optional description for this tab"
+              rows={3}
             />
           </div>
         </div>

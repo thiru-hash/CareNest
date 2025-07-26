@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "../ui/button";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../ui/table";
-import { mockSections } from "@/lib/data";
+import { mockSections, getStoredSections, setStoredSections } from "@/lib/data";
 import { Badge } from "../ui/badge";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { cn } from "@/lib/utils";
@@ -49,17 +49,40 @@ export function SectionManager() {
     };
 
     const handleSaveSection = (savedSection: AppSection) => {
+        console.log('SectionManager: handleSaveSection called with:', savedSection);
+        
         if (sections.some(s => s.id === savedSection.id)) {
+            console.log('SectionManager: Updating existing section');
             // Update existing
-            setSections(prev => prev.map(s => s.id === savedSection.id ? savedSection : s).sort((a, b) => a.order - b.order));
+            const updatedSections = sections.map(s => s.id === savedSection.id ? savedSection : s).sort((a, b) => a.order - b.order);
+            setSections(updatedSections);
+            
+            // Update localStorage to persist changes
+            const storedSections = getStoredSections();
+            const updatedStoredSections = storedSections.map(s => s.id === savedSection.id ? savedSection : s);
+            setStoredSections(updatedStoredSections);
         } else {
+            console.log('SectionManager: Creating new section');
             // Create new
             const newSection = { ...savedSection, id: `sec-${Date.now()}` };
-            setSections(prev => [...prev, newSection].sort((a, b) => a.order - b.order));
+            const updatedSections = [...sections, newSection].sort((a, b) => a.order - b.order);
+            setSections(updatedSections);
+            
+            // Update localStorage to persist changes
+            const storedSections = getStoredSections();
+            const updatedStoredSections = [...storedSections, newSection];
+            setStoredSections(updatedStoredSections);
             
             // Auto-detect new section for terminology
             autoDetectNewSections([newSection]);
         }
+        
+        // Dispatch custom event to update sidebar navigation
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('carenest-sections-updated'));
+        }
+        
+        console.log('SectionManager: Section saved successfully');
     };
           
           return (
