@@ -12,6 +12,7 @@ import { FormBuilder } from "@/components/settings/FormBuilder";
 import { SystemSettings } from "@/components/settings/SystemSettings";
 import { NoticeManagement } from "@/components/settings/NoticeManagement";
 import { DashboardCustomization } from "@/components/settings/DashboardCustomization";
+import { RBACControlDashboard } from "@/components/rbac/RBACControlDashboard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Shield, AlertTriangle, Database, Settings } from 'lucide-react';
@@ -200,7 +201,7 @@ export default function SettingsPage() {
       </Alert>
 
       <Tabs defaultValue="users" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 md:grid-cols-8">
+        <TabsList className="grid w-full grid-cols-3 md:grid-cols-9">
           <TabsTrigger value="users">{getTerm('users')}</TabsTrigger>
           <TabsTrigger value="groups">{getTerm('groups')}</TabsTrigger>
           <TabsTrigger value="roles">{getTerm('roles')}</TabsTrigger>
@@ -208,6 +209,7 @@ export default function SettingsPage() {
           <TabsTrigger value="sections">{getTerm('sections')}</TabsTrigger>
           <TabsTrigger value="forms">{getTerm('forms')}</TabsTrigger>
           <TabsTrigger value="notices">Notices</TabsTrigger>
+          <TabsTrigger value="rbac">RBAC</TabsTrigger>
           <TabsTrigger value="system">System</TabsTrigger>
         </TabsList>
         
@@ -231,6 +233,9 @@ export default function SettingsPage() {
         </TabsContent>
         <TabsContent value="notices">
           <NoticeManagement />
+        </TabsContent>
+        <TabsContent value="rbac">
+          <RBACControlDashboard organizationId="org_1" />
         </TabsContent>
         <TabsContent value="system">
           <SystemSettings />
