@@ -9,6 +9,31 @@ export interface SystemSettings {
   showPayRates: boolean;
   allowStaffEditing: boolean;
   enableDynamicForms: boolean;
+  
+  // Roster-Based Access Control Settings
+  rosterBasedAccessControl: {
+    enabled: boolean;
+    autoGrantAccess: boolean;
+    autoRevokeAccess: boolean;
+    requireClockIn: boolean;
+    allowManualOverride: boolean;
+    auditLogging: boolean;
+    notificationSettings: {
+      onClockIn: boolean;
+      onClockOut: boolean;
+      onAccessGranted: boolean;
+      onAccessRevoked: boolean;
+    };
+  };
+  
+  // Tenant-specific RBAC settings
+  tenantRBAC: {
+    enabled: boolean;
+    strictMode: boolean;
+    gracePeriodMinutes: number;
+    allowedRoles: string[];
+    excludedRoles: string[];
+  };
 }
 
 // Default settings
@@ -22,6 +47,27 @@ export const defaultSettings: SystemSettings = {
   showPayRates: true,
   allowStaffEditing: true,
   enableDynamicForms: true,
+  rosterBasedAccessControl: {
+    enabled: true,
+    autoGrantAccess: true,
+    autoRevokeAccess: true,
+    requireClockIn: true,
+    allowManualOverride: false,
+    auditLogging: true,
+    notificationSettings: {
+      onClockIn: true,
+      onClockOut: true,
+      onAccessGranted: true,
+      onAccessRevoked: true,
+    },
+  },
+  tenantRBAC: {
+    enabled: true,
+    strictMode: false,
+    gracePeriodMinutes: 15,
+    allowedRoles: ['Support Worker', 'Support Manager', 'Roster Admin'],
+    excludedRoles: ['System Admin', 'CEO'],
+  },
 };
 
 // In a real application, these would be stored in a database
@@ -36,14 +82,43 @@ let currentSettings: SystemSettings = {
   showPayRates: true,
   allowStaffEditing: true,
   enableDynamicForms: true,
+  rosterBasedAccessControl: {
+    enabled: true,
+    autoGrantAccess: true,
+    autoRevokeAccess: true,
+    requireClockIn: true,
+    allowManualOverride: false,
+    auditLogging: true,
+    notificationSettings: {
+      onClockIn: true,
+      onClockOut: true,
+      onAccessGranted: true,
+      onAccessRevoked: true,
+    },
+  },
+  tenantRBAC: {
+    enabled: true,
+    strictMode: false,
+    gracePeriodMinutes: 15,
+    allowedRoles: ['Support Worker', 'Support Manager', 'Roster Admin'],
+    excludedRoles: ['System Admin', 'CEO'],
+  },
 };
 
 export function getSystemSettings(): SystemSettings {
   return { ...currentSettings };
 }
 
-export function updateSystemSettings(settings: Partial<SystemSettings>): void {
-  currentSettings = { ...currentSettings, ...settings };
+export function updateSystemSettings(newSettings: Partial<SystemSettings>): void {
+  currentSettings = { ...currentSettings, ...newSettings };
+}
+
+export function getRBACSettings() {
+  return currentSettings.rosterBasedAccessControl;
+}
+
+export function getTenantRBACSettings() {
+  return currentSettings.tenantRBAC;
 }
 
 export function isAutomationEnabled(): boolean {

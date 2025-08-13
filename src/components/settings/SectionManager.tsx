@@ -15,7 +15,11 @@ import { CreateEditSectionDialog } from "./CreateEditSectionDialog";
 import { iconMap } from "@/lib/icon-map";
 import { autoDetectNewSections } from "@/lib/terminology";
 
-export function SectionManager() {
+interface SectionManagerProps {
+  onDatabaseCreation?: (sectionName: string, formData: any) => Promise<void>;
+}
+
+export function SectionManager({ onDatabaseCreation }: SectionManagerProps) {
     const [sections, setSections] = useState<AppSection[]>(mockSections.slice().sort((a,b) => a.order - b.order));
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [currentSection, setCurrentSection] = useState<AppSection | null>(null);

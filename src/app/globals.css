@@ -362,6 +362,109 @@
   }
 }
 
+/* Enhanced TV and Large Screen Support */
+@media (min-width: 1921px) {
+  /* TV and Large Display Optimizations */
+  .container-responsive {
+    @apply max-w-7xl mx-auto;
+  }
+  
+  .heading-1 {
+    @apply text-6xl font-bold;
+  }
+  
+  .heading-2 {
+    @apply text-5xl font-semibold;
+  }
+  
+  .heading-3 {
+    @apply text-4xl font-semibold;
+  }
+  
+  .body-text {
+    @apply text-lg leading-relaxed;
+  }
+  
+  .caption-text {
+    @apply text-base;
+  }
+  
+  /* Enhanced spacing for large screens */
+  .section-padding {
+    @apply px-12 py-16;
+  }
+  
+  .content-padding {
+    @apply px-12 py-8;
+  }
+  
+  /* Larger touch targets for TV interfaces */
+  .btn-primary, .btn-secondary {
+    @apply h-14 px-8 text-lg;
+  }
+  
+  /* Enhanced card spacing */
+  .card {
+    @apply p-8;
+  }
+  
+  /* Better grid layouts for large screens */
+  .grid-responsive {
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-8;
+  }
+}
+
+/* Ultra-wide screen support (for very large displays) */
+@media (min-width: 2560px) {
+  .container-responsive {
+    @apply max-w-7xl mx-auto;
+  }
+  
+  .heading-1 {
+    @apply text-7xl font-bold;
+  }
+  
+  .heading-2 {
+    @apply text-6xl font-semibold;
+  }
+  
+  .heading-3 {
+    @apply text-5xl font-semibold;
+  }
+  
+  .body-text {
+    @apply text-xl leading-relaxed;
+  }
+  
+  .caption-text {
+    @apply text-lg;
+  }
+  
+  /* Even larger spacing for ultra-wide screens */
+  .section-padding {
+    @apply px-16 py-20;
+  }
+  
+  .content-padding {
+    @apply px-16 py-12;
+  }
+  
+  /* Enhanced button sizes for ultra-wide screens */
+  .btn-primary, .btn-secondary {
+    @apply h-16 px-10 text-xl;
+  }
+  
+  /* Larger card padding */
+  .card {
+    @apply p-10;
+  }
+  
+  /* More columns for ultra-wide screens */
+  .grid-responsive {
+    @apply grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-10;
+  }
+}
+
 /* Print styles */
 @media print {
   .print-hidden {

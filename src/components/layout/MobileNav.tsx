@@ -2,159 +2,171 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, X } from 'lucide-react';
-import { SidebarNav } from './SidebarNav';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger } from '@/components/ui/dropdown-menu';
-import { User, Settings, LogOut, LayoutDashboard, Clock, Calendar, Shield, Mail, Key, FileText, UserCheck, CalendarDays } from 'lucide-react';
-import type { Staff } from '@/lib/types';
+import { Badge } from '@/components/ui/badge';
+import { Menu, User, Settings, Shield, Key, Clock, Calendar, CalendarDays, FileText, LogOut } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import type { Staff } from '@/lib/types';
 
 interface MobileNavProps {
-  currentUser: Staff | undefined;
+  currentUser: Staff;
 }
 
 export function MobileNav({ currentUser }: MobileNavProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+
+  // Handle logout
+  const handleLogout = () => {
+    // Clear cookies
+    document.cookie = 'currentUser_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    // Clear localStorage
+    localStorage.clear();
+    // Close mobile nav
+    setIsOpen(false);
+    // Redirect to login page
+    router.push('/');
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="lg:hidden fixed top-4 left-4 z-50 bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm"
-        >
+        <Button variant="ghost" size="icon" className="lg:hidden">
           <Menu className="h-5 w-5" />
+          <span className="sr-only">Toggle navigation menu</span>
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-[280px] sm:w-[320px] p-0">
-        <SheetHeader className="p-4 sm:p-6 border-b border-gray-200">
-          <SheetTitle className="text-lg sm:text-xl font-bold text-gray-900">CareNest</SheetTitle>
-        </SheetHeader>
-        
-        <div className="flex-1 p-4">
-          <SidebarNav />
-        </div>
-        
-        {/* User Profile Section */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex items-center space-x-3 mb-4">
-            <Avatar className="h-10 w-10 flex-shrink-0">
-              <AvatarImage src={currentUser?.avatarUrl} alt={currentUser?.name || 'User'} />
-              <AvatarFallback className="bg-green-100 text-green-800 font-semibold">
-                {currentUser?.name?.split(' ').map(n => n[0]).join('') || 'U'}
-              </AvatarFallback>
+      <SheetContent side="left" className="w-80">
+        <div className="flex flex-col h-full">
+          {/* User Info */}
+          <div className="flex items-center space-x-3 p-4 border-b">
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={currentUser.avatarUrl} alt={currentUser.name} />
+              <AvatarFallback>{currentUser.name.charAt(0)}</AvatarFallback>
             </Avatar>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-900 truncate">
-                User Profile
-              </p>
-              <p className="text-sm font-medium text-gray-900 truncate">
-                {currentUser?.name || 'User'}
-              </p>
-              <p className="text-xs text-gray-500 truncate">
-                {currentUser?.email || 'user@example.com'}
-              </p>
+              <p className="text-sm font-medium truncate">{currentUser.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{currentUser.role}</p>
             </div>
           </div>
-          
-          <div className="space-y-1">
-            {/* General Section */}
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">General</p>
+
+          {/* Navigation Links */}
+          <nav className="flex-1 p-4 space-y-6">
+            {/* Main Navigation */}
+            <div>
+              <p className="
+                text-xs font-semibold text-gray-500 dark:text-gray-400 
+                uppercase tracking-wide mb-3
+              ">
+                Main Navigation
+              </p>
               <div className="space-y-1">
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/dashboard">
-                    <LayoutDashboard className="mr-2 h-4 w-4" />
+                  <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                    <User className="mr-3 h-4 w-4" />
                     <span>Dashboard</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/timesheets">
-                    <Clock className="mr-2 h-4 w-4" />
-                    <span>Timesheet</span>
+                  <Link href="/people" onClick={() => setIsOpen(false)}>
+                    <User className="mr-3 h-4 w-4" />
+                    <span>People</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/roster">
-                    <Calendar className="mr-2 h-4 w-4" />
+                  <Link href="/roster" onClick={() => setIsOpen(false)}>
+                    <Calendar className="mr-3 h-4 w-4" />
                     <span>Roster</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/availability">
-                    <CalendarDays className="mr-2 h-4 w-4" />
-                    <span>My Availability</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/two-factor">
-                    <Shield className="mr-2 h-4 w-4" />
-                    <span>Two-factor Auth.</span>
+                  <Link href="/finance" onClick={() => setIsOpen(false)}>
+                    <FileText className="mr-3 h-4 w-4" />
+                    <span>Finance</span>
                   </Link>
                 </Button>
               </div>
             </div>
 
-            {/* Quick Actions */}
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Quick Actions</p>
+            {/* Time & Attendance */}
+            <div>
+              <p className="
+                text-xs font-semibold text-gray-500 dark:text-gray-400 
+                uppercase tracking-wide mb-3
+              ">
+                Time & Attendance
+              </p>
               <div className="space-y-1">
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/leave-request">
-                    <FileText className="mr-2 h-4 w-4" />
-                    <span>Leave Request</span>
+                  <Link href="/timesheets" onClick={() => setIsOpen(false)}>
+                    <FileText className="mr-3 h-4 w-4" />
+                    <span>My Timesheets</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/inbox">
-                    <Mail className="mr-2 h-4 w-4" />
-                    <span>Inbox</span>
+                  <Link href="/roster" onClick={() => setIsOpen(false)}>
+                    <Calendar className="mr-3 h-4 w-4" />
+                    <span>My Roster</span>
                   </Link>
                 </Button>
                 <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/change-password">
-                    <Key className="mr-2 h-4 w-4" />
+                  <Link href="/availability" onClick={() => setIsOpen(false)}>
+                    <CalendarDays className="mr-3 h-4 w-4" />
+                    <span>My Availability</span>
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            {/* Settings & Security */}
+            <div>
+              <p className="
+                text-xs font-semibold text-gray-500 dark:text-gray-400 
+                uppercase tracking-wide mb-3
+              ">
+                Settings & Security
+              </p>
+              <div className="space-y-1">
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/profile" onClick={() => setIsOpen(false)}>
+                    <User className="mr-3 h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/settings" onClick={() => setIsOpen(false)}>
+                    <Settings className="mr-3 h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/two-factor" onClick={() => setIsOpen(false)}>
+                    <Shield className="mr-3 h-4 w-4" />
+                    <span>Two-factor Auth.</span>
+                  </Link>
+                </Button>
+                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
+                  <Link href="/change-password" onClick={() => setIsOpen(false)}>
+                    <Key className="mr-3 h-4 w-4" />
                     <span>Change Password</span>
                   </Link>
                 </Button>
               </div>
             </div>
+          </nav>
 
-            {/* Profile & Settings */}
-            <div className="mb-3">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Account</p>
-              <div className="space-y-1">
-                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href={`/staff/${currentUser?.id || 'profile'}`}>
-                    <UserCheck className="mr-2 h-4 w-4" />
-                    <span>My Profile</span>
-                  </Link>
-                </Button>
-                <Button asChild variant="ghost" size="sm" className="w-full justify-start">
-                  <Link href="/settings">
-                    <Settings className="mr-2 h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </Button>
-              </div>
-            </div>
-
-            {/* Logout */}
-            <div className="pt-2 border-t border-gray-200">
-              <Button variant="ghost" size="sm" className="w-full justify-start text-red-600">
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </Button>
-            </div>
-          </div>
-          
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="text-xs text-gray-500">
-              Multi-Tenant Demo
-            </div>
+          {/* Logout Button */}
+          <div className="p-4 border-t">
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={handleLogout}
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Log out
+            </Button>
           </div>
         </div>
       </SheetContent>

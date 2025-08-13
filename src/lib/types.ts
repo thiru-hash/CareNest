@@ -197,7 +197,7 @@ export interface Shift {
   staffId?: string;
   clientId?: string;
   propertyId: string;
-  status: 'Open' | 'Assigned' | 'Completed' | 'In Progress';
+  status: 'Open' | 'Assigned' | 'Completed' | 'In Progress' | 'clocked-in' | 'clocked-out';
   // Finance integration fields
   billable: boolean;
   rate: number;

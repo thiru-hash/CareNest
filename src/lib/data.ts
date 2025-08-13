@@ -558,6 +558,30 @@ export const mockShifts: Shift[] = [
 
   // New shift for admin user
   { id: 'shift-admin-cover', title: 'Evening Admin Cover', start: now, end: midnight, staffId: 'staff-admin', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 70, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+
+  // Additional shifts for support workers to demonstrate clock-in/out functionality
+  
+  // Shift starting in 5 minutes (for clock-in testing)
+  { id: 'shift-clockin-test', title: 'Afternoon Support', start: addHours(now, 0.083), end: addHours(now, 4), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  
+  // Currently active shift (for clock-out testing)
+  { id: 'shift-active-test', title: 'Current Support Session', start: subHours(now, 1), end: addHours(now, 2), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'clocked-in', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  
+  // Shift ending soon (for early finish testing)
+  { id: 'shift-early-finish', title: 'Evening Support', start: subHours(now, 2), end: addHours(now, 0.5), staffId: 'staff-2', clientId: 'client-1', propertyId: 'prop-1', status: 'clocked-in', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  
+  // Shift for tomorrow morning
+  { id: 'shift-tomorrow', title: 'Tomorrow Morning Support', start: addDays(addHours(now, 9), 1), end: addDays(addHours(now, 17), 1), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  
+  // Shift for support manager
+  { id: 'shift-manager', title: 'Manager Oversight', start: addHours(now, 1), end: addHours(now, 6), staffId: 'staff-3', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned', billable: true, rate: 65, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  
+  // Additional future shifts for testing
+  { id: 'shift-future-1', title: 'Evening Support', start: addHours(now, 3), end: addHours(now, 8), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  { id: 'shift-future-2', title: 'Night Support', start: addHours(now, 8), end: addHours(now, 16), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  { id: 'shift-future-3', title: 'Morning Support', start: addDays(addHours(now, 9), 1), end: addDays(addHours(now, 17), 1), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  { id: 'shift-future-4', title: 'Afternoon Support', start: addDays(addHours(now, 14), 1), end: addDays(addHours(now, 22), 1), staffId: 'staff-1', clientId: 'client-2', propertyId: 'prop-2', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
+  { id: 'shift-future-5', title: 'Weekend Support', start: addDays(addHours(now, 10), 2), end: addDays(addHours(now, 18), 2), staffId: 'staff-1', clientId: 'client-1', propertyId: 'prop-1', status: 'Assigned', billable: true, rate: 55, serviceType: "Core", isInvoiced: false, isClaimed: false, isPaid: false },
 ];
 
 export const mockComplianceItems: ComplianceItem[] = [
@@ -567,6 +591,13 @@ export const mockComplianceItems: ComplianceItem[] = [
   { id: 'comp-4', title: 'CPR Certification', staffId: 'staff-3', renewalDate: addDays(now, 90), status: 'Compliant' },
   { id: 'comp-5', title: 'Police Vetting', staffId: 'staff-hr', renewalDate: addDays(now, 25), status: 'Expiring Soon' },
   { id: 'comp-6', title: 'First Aid Certificate', staffId: 'staff-admin', renewalDate: addDays(now, 300), status: 'Compliant' },
+  
+  // Additional compliance items for support workers
+  { id: 'comp-7', title: 'Manual Handling Certificate', staffId: 'staff-1', renewalDate: addDays(now, 7), status: 'Expiring Soon' },
+  { id: 'comp-8', title: 'Infection Control Training', staffId: 'staff-1', renewalDate: subDays(now, 2), status: 'Overdue' },
+  { id: 'comp-9', title: 'Medication Administration', staffId: 'staff-1', renewalDate: addDays(now, 180), status: 'Compliant' },
+  { id: 'comp-10', title: 'Safeguarding Training', staffId: 'staff-1', renewalDate: addDays(now, 45), status: 'Compliant' },
+  { id: 'comp-11', title: 'Fire Safety Training', staffId: 'staff-1', renewalDate: addDays(now, 15), status: 'Expiring Soon' },
 ];
 
 export const mockSections: AppSection[] = [

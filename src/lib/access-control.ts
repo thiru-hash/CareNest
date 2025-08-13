@@ -2,78 +2,111 @@
 'use server';
 
 import { mockClients, mockProperties, mockShifts } from './data';
+import { getRBACSettings, getTenantRBACSettings } from './settings';
 import type { Staff, Client } from './types';
 
 /**
- * Gets the IDs of all properties a staff member can access.
- * - Admins & specific high-level roles get all properties.
- * - Support Workers get properties from their currently active shifts.
- * - Other roles get properties from their direct assignments.
- * @param user The current staff member object.
- * @returns A unique array of property IDs the user can access.
+ * Enhanced access control that respects RBAC settings
  */
 export async function getAccessiblePropertyIds(user: Staff): Promise<string[]> {
-    // Admins and certain high-level roles can access all properties
+    const rbacSettings = getRBACSettings();
+    const tenantRBAC = getTenantRBACSettings();
+    
+    // Check if RBAC is enabled for this tenant
+    if (!tenantRBAC.enabled) {
+        return getAllPropertyIds(user);
+    }
+    
+    // Check if user role is excluded from RBAC
+    if (tenantRBAC.excludedRoles.includes(user.role)) {
+        return getAllPropertyIds(user);
+    }
+    
+    // Check if user role is allowed for RBAC
+    if (!tenantRBAC.allowedRoles.includes(user.role)) {
+        return []; // No access if role not allowed
+    }
+    
+    // Apply RBAC logic
+    if (rbacSettings.enabled && user.role === 'Support Worker') {
+        return getRBACPropertyAccess(user);
+    }
+    
+    // Fallback to standard access control
+    return getAllPropertyIds(user);
+}
+
+/**
+ * Gets all property IDs for admin/high-level roles
+ */
+function getAllPropertyIds(user: Staff): string[] {
     const adminRoles: string[] = ['System Admin', 'CEO', 'GM Service', 'Finance Admin', 'Human Resources Manager', 'Roster Admin'];
     if (adminRoles.includes(user.role)) {
         return mockProperties.map(p => p.id);
     }
-
-    // Support Workers get access based on active shifts
-    if (user.role === 'Support Worker') {
-        const now = new Date();
-        const activeShifts = mockShifts.filter(shift => 
-            shift.staffId === user.id &&
-            shift.start <= now &&
-            shift.end >= now
-        );
-        const propertyIdsFromShifts = activeShifts.map(shift => shift.propertyId);
-        
-        // Combine with permanently assigned properties and return unique IDs
-        const permanentPropertyIds = user.propertyIds || [];
-        const allAccessibleIds = [...new Set([...propertyIdsFromShifts, ...permanentPropertyIds])];
-        return allAccessibleIds;
-    }
-
-    // For other users, access is determined by their assigned properties.
-    // This allows for permanent assignments for roles like 'Support Manager'
     return user.propertyIds || [];
 }
 
 /**
- * Gets all clients a user can currently access based on their assigned properties.
- * @param user The current staff member object.
- * @returns An array of Client objects the user can access.
+ * Gets property access based on active shifts (RBAC)
+ */
+function getRBACPropertyAccess(user: Staff): string[] {
+    const rbacSettings = getRBACSettings();
+    const tenantRBAC = getTenantRBACSettings();
+    const now = new Date();
+    
+    // Get active shifts for the user
+    const activeShifts = mockShifts.filter(shift => {
+        if (shift.staffId !== user.id) return false;
+        
+        const shiftStart = new Date(shift.start);
+        const shiftEnd = new Date(shift.end);
+        
+        // Check if shift is currently active
+        const isActive = now >= shiftStart && now <= shiftEnd;
+        
+        // If strict mode is enabled, only return assigned shifts that are clocked in
+        if (rbacSettings.requireClockIn && tenantRBAC.strictMode) {
+            return isActive && shift.status === 'Assigned';
+        }
+        
+        return isActive;
+    });
+    
+    const propertyIdsFromShifts = activeShifts.map(shift => shift.propertyId);
+    
+    // Combine with permanently assigned properties
+    const permanentPropertyIds = user.propertyIds || [];
+    const allAccessibleIds = [...new Set([...propertyIdsFromShifts, ...permanentPropertyIds])];
+    
+    return allAccessibleIds;
+}
+
+/**
+ * Checks if a user can access a specific property based on RBAC
+ */
+export async function canAccessProperty(user: Staff, propertyId: string): Promise<boolean> {
+    const accessibleIds = await getAccessiblePropertyIds(user);
+    return accessibleIds.includes(propertyId);
+}
+
+/**
+ * Checks if a user can access a specific client based on RBAC
+ */
+export async function canAccessClient(user: Staff, clientId: string): Promise<boolean> {
+    const client = mockClients.find(c => c.id === clientId);
+    if (!client) return false;
+    
+    return await canAccessProperty(user, client.propertyId);
+}
+
+/**
+ * Gets accessible clients for a user based on RBAC
  */
 export async function getAccessibleClients(user: Staff): Promise<Client[]> {
     const accessiblePropertyIds = await getAccessiblePropertyIds(user);
     
-    if (accessiblePropertyIds.length === 0 && !adminRoles.includes(user.role)) {
-        return [];
-    }
-    
-    const adminRoles: string[] = ['System Admin', 'CEO', 'GM Service', 'Finance Admin', 'Human Resources Manager', 'Roster Admin'];
-    if (adminRoles.includes(user.role)) {
-      return mockClients;
-    }
-
     return mockClients.filter(client => 
         accessiblePropertyIds.includes(client.propertyId)
     );
-}
-
-/**
- * Checks if a user can access a specific client based on their assigned properties.
- * @param user The current staff member object.
- * @param clientId The ID of the client to check.
- * @returns True if the user has access, false otherwise.
- */
-export async function canAccessClient(user: Staff, clientId: string): Promise<boolean> {
-    const client = mockClients.find(c => c.id === clientId);
-    if (!client) {
-        return false; // Client doesn't exist
-    }
-
-    const accessiblePropertyIds = await getAccessiblePropertyIds(user);
-    return accessiblePropertyIds.includes(client.propertyId);
 }

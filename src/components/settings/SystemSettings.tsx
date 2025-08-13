@@ -85,8 +85,9 @@ export function SystemSettings() {
     return (
         <div className="space-y-6">
             <Tabs defaultValue="general" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
                     <TabsTrigger value="general">General</TabsTrigger>
+                    <TabsTrigger value="rbac">RBAC</TabsTrigger>
                     <TabsTrigger value="terminology">Terminology</TabsTrigger>
                     <TabsTrigger value="twofactor">Two-Factor Auth</TabsTrigger>
                 </TabsList>
@@ -256,6 +257,302 @@ export function SystemSettings() {
                                     Changes take effect immediately for all users.
                                 </AlertDescription>
                             </Alert>
+                        </CardContent>
+                    </Card>
+                </TabsContent>
+
+                <TabsContent value="rbac" className="space-y-6">
+                    {/* RBAC Configuration */}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle className="flex items-center gap-2">
+                                <Shield className="h-5 w-5 text-green-500" />
+                                Roster-Based Access Control
+                            </CardTitle>
+                            <CardDescription>
+                                Configure how staff access is managed based on their shifts and clock-in/out status.
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent className="space-y-6">
+                            {/* RBAC Master Toggle */}
+                            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                                <div>
+                                    <Label htmlFor="rbac-enabled" className="font-semibold text-base">Enable RBAC</Label>
+                                    <p className="text-sm text-muted-foreground">
+                                        When enabled, staff access is automatically granted/revoked based on their shift status
+                                    </p>
+                                </div>
+                                <Switch
+                                    id="rbac-enabled"
+                                    checked={settings.rosterBasedAccessControl?.enabled || false}
+                                    onCheckedChange={(checked) => {
+                                        const newSettings = {
+                                            ...settings,
+                                            rosterBasedAccessControl: {
+                                                ...settings.rosterBasedAccessControl,
+                                                enabled: checked
+                                            }
+                                        };
+                                        updateSettings(newSettings);
+                                    }}
+                                />
+                            </div>
+
+                            {/* RBAC Detailed Settings */}
+                            {settings.rosterBasedAccessControl?.enabled && (
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="flex items-center justify-between p-4 rounded-lg border">
+                                            <div>
+                                                <Label className="font-medium">Auto Grant Access</Label>
+                                                <p className="text-sm text-muted-foreground">Grant access when staff clock in</p>
+                                            </div>
+                                            <Switch
+                                                checked={settings.rosterBasedAccessControl?.autoGrantAccess || false}
+                                                onCheckedChange={(checked) => {
+                                                    const newSettings = {
+                                                        ...settings,
+                                                        rosterBasedAccessControl: {
+                                                            ...settings.rosterBasedAccessControl,
+                                                            autoGrantAccess: checked
+                                                        }
+                                                    };
+                                                    updateSettings(newSettings);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 rounded-lg border">
+                                            <div>
+                                                <Label className="font-medium">Auto Revoke Access</Label>
+                                                <p className="text-sm text-muted-foreground">Revoke access when staff clock out</p>
+                                            </div>
+                                            <Switch
+                                                checked={settings.rosterBasedAccessControl?.autoRevokeAccess || false}
+                                                onCheckedChange={(checked) => {
+                                                    const newSettings = {
+                                                        ...settings,
+                                                        rosterBasedAccessControl: {
+                                                            ...settings.rosterBasedAccessControl,
+                                                            autoRevokeAccess: checked
+                                                        }
+                                                    };
+                                                    updateSettings(newSettings);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 rounded-lg border">
+                                            <div>
+                                                <Label className="font-medium">Require Clock-In</Label>
+                                                <p className="text-sm text-muted-foreground">Only grant access after clock-in</p>
+                                            </div>
+                                            <Switch
+                                                checked={settings.rosterBasedAccessControl?.requireClockIn || false}
+                                                onCheckedChange={(checked) => {
+                                                    const newSettings = {
+                                                        ...settings,
+                                                        rosterBasedAccessControl: {
+                                                            ...settings.rosterBasedAccessControl,
+                                                            requireClockIn: checked
+                                                        }
+                                                    };
+                                                    updateSettings(newSettings);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="flex items-center justify-between p-4 rounded-lg border">
+                                            <div>
+                                                <Label className="font-medium">Audit Logging</Label>
+                                                <p className="text-sm text-muted-foreground">Log all access changes</p>
+                                            </div>
+                                            <Switch
+                                                checked={settings.rosterBasedAccessControl?.auditLogging || false}
+                                                onCheckedChange={(checked) => {
+                                                    const newSettings = {
+                                                        ...settings,
+                                                        rosterBasedAccessControl: {
+                                                            ...settings.rosterBasedAccessControl,
+                                                            auditLogging: checked
+                                                        }
+                                                    };
+                                                    updateSettings(newSettings);
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Notification Settings */}
+                                    <div className="border-t pt-4">
+                                        <h4 className="font-medium mb-3">Notification Settings</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <Label className="text-sm">Clock-In Notifications</Label>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.notificationSettings?.onClockIn || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                notificationSettings: {
+                                                                    ...settings.rosterBasedAccessControl?.notificationSettings,
+                                                                    onClockIn: checked
+                                                                }
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <Label className="text-sm">Clock-Out Notifications</Label>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.notificationSettings?.onClockOut || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                notificationSettings: {
+                                                                    ...settings.rosterBasedAccessControl?.notificationSettings,
+                                                                    onClockOut: checked
+                                                                }
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <Label className="text-sm">Early Finish Notifications</Label>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.notificationSettings?.onEarlyFinish || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                notificationSettings: {
+                                                                    ...settings.rosterBasedAccessControl?.notificationSettings,
+                                                                    onEarlyFinish: checked
+                                                                }
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Clock-Out Settings */}
+                                    <div className="border-t pt-4">
+                                        <h4 className="font-medium mb-3">Clock-Out & Early Finish Settings</h4>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <div>
+                                                    <Label className="text-sm font-medium">Allow Early Finish</Label>
+                                                    <p className="text-xs text-muted-foreground">Allow staff to finish shifts early</p>
+                                                </div>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.allowEarlyFinish || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                allowEarlyFinish: checked
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <div>
+                                                    <Label className="text-sm font-medium">Require Early Finish Reason</Label>
+                                                    <p className="text-xs text-muted-foreground">Staff must provide reason for early finish</p>
+                                                </div>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.requireEarlyFinishReason || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                requireEarlyFinishReason: checked
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <div>
+                                                    <Label className="text-sm font-medium">Auto Clock-Out at Shift End</Label>
+                                                    <p className="text-xs text-muted-foreground">Automatically clock out when shift ends</p>
+                                                </div>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.autoClockOutAtShiftEnd || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                autoClockOutAtShiftEnd: checked
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                            <div className="flex items-center justify-between p-3 rounded-lg border">
+                                                <div>
+                                                    <Label className="text-sm font-medium">Allow Manual Clock-Out</Label>
+                                                    <p className="text-xs text-muted-foreground">Allow staff to manually clock out</p>
+                                                </div>
+                                                <Switch
+                                                    checked={settings.rosterBasedAccessControl?.allowManualClockOut || false}
+                                                    onCheckedChange={(checked) => {
+                                                        const newSettings = {
+                                                            ...settings,
+                                                            rosterBasedAccessControl: {
+                                                                ...settings.rosterBasedAccessControl,
+                                                                allowManualClockOut: checked
+                                                            }
+                                                        };
+                                                        updateSettings(newSettings);
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Early Finish Grace Period */}
+                                        <div className="mt-4 p-3 rounded-lg border">
+                                            <Label className="text-sm font-medium">Early Finish Grace Period (minutes)</Label>
+                                            <p className="text-xs text-muted-foreground mb-2">
+                                                How early staff can finish their shift without requiring approval
+                                            </p>
+                                            <Input
+                                                type="number"
+                                                min="0"
+                                                max="120"
+                                                value={settings.rosterBasedAccessControl?.earlyFinishGracePeriod || 30}
+                                                onChange={(e) => {
+                                                    const newSettings = {
+                                                        ...settings,
+                                                        rosterBasedAccessControl: {
+                                                            ...settings.rosterBasedAccessControl,
+                                                            earlyFinishGracePeriod: parseInt(e.target.value) || 30
+                                                        }
+                                                    };
+                                                    updateSettings(newSettings);
+                                                }}
+                                                className="w-32"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </TabsContent>

@@ -74,7 +74,7 @@ export default function AppLayout({
 
   return (
     <TabProvider>
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex h-screen bg-gray-50 dark:bg-gray-900 overflow-hidden">
         {/* Impersonation Banner */}
         {impersonatedUser && (
           <div className="fixed top-0 left-0 right-0 z-50">
@@ -90,7 +90,7 @@ export default function AppLayout({
           </div>
         )}
 
-        {/* Desktop Sidebar */}
+        {/* Desktop Sidebar - Hidden on mobile, visible on lg+ */}
         <div className="hidden lg:block">
           <DynamicSidebar 
             collapsed={collapsed} 
@@ -99,15 +99,25 @@ export default function AppLayout({
           />
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Main Content Area */}
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Header - Responsive with proper mobile handling */}
           <Header currentUser={displayUser} />
-          <main className={`flex-1 overflow-y-auto p-4 sm:p-6 ${impersonatedUser ? 'pt-20' : ''}`}>
-            {children}
+          
+          {/* Main Content - Responsive padding and overflow handling */}
+          <main className={`
+            flex-1 overflow-y-auto overflow-x-hidden
+            p-3 sm:p-4 md:p-5 lg:p-6 xl:p-8 2xl:p-12
+            ${impersonatedUser ? 'pt-16 sm:pt-20' : ''}
+            bg-gray-50 dark:bg-gray-900
+          `}>
+            <div className="max-w-full mx-auto container-responsive">
+              {children}
+            </div>
           </main>
         </div>
 
-        {/* Mobile Navigation */}
+        {/* Mobile Navigation - Only visible on mobile/tablet */}
         <MobileNav currentUser={displayUser} />
 
         {/* User Impersonation Dialog */}

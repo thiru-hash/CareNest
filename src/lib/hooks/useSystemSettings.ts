@@ -7,10 +7,41 @@ export interface SystemSettings {
   automationEnabled: boolean;
   clientAutomation: boolean;
   globalAutomation: boolean;
-  // Staff Management Settings
   showPayRates: boolean;
   allowStaffEditing: boolean;
   enableDynamicForms: boolean;
+  
+  // Roster-Based Access Control Settings
+  rosterBasedAccessControl: {
+    enabled: boolean;
+    autoGrantAccess: boolean;
+    autoRevokeAccess: boolean;
+    requireClockIn: boolean;
+    allowManualOverride: boolean;
+    auditLogging: boolean;
+    // Clock-off and early finish settings
+    allowEarlyFinish: boolean;
+    requireEarlyFinishReason: boolean;
+    earlyFinishGracePeriod: number; // minutes
+    autoClockOutAtShiftEnd: boolean;
+    allowManualClockOut: boolean;
+    notificationSettings: {
+      onClockIn: boolean;
+      onClockOut: boolean;
+      onEarlyFinish: boolean;
+      onAccessGranted: boolean;
+      onAccessRevoked: boolean;
+    };
+  };
+  
+  // Tenant-specific RBAC settings
+  tenantRBAC: {
+    enabled: boolean;
+    strictMode: boolean;
+    gracePeriodMinutes: number;
+    allowedRoles: string[];
+    excludedRoles: string[];
+  };
 }
 
 const defaultSettings: SystemSettings = {
@@ -23,6 +54,33 @@ const defaultSettings: SystemSettings = {
   showPayRates: true,
   allowStaffEditing: true,
   enableDynamicForms: true,
+  rosterBasedAccessControl: {
+    enabled: true,
+    autoGrantAccess: true,
+    autoRevokeAccess: true,
+    requireClockIn: true,
+    allowManualOverride: false,
+    auditLogging: true,
+    allowEarlyFinish: true,
+    requireEarlyFinishReason: true,
+    earlyFinishGracePeriod: 30, // 30 minutes grace period
+    autoClockOutAtShiftEnd: false,
+    allowManualClockOut: true,
+    notificationSettings: {
+      onClockIn: true,
+      onClockOut: true,
+      onEarlyFinish: true,
+      onAccessGranted: true,
+      onAccessRevoked: true,
+    },
+  },
+  tenantRBAC: {
+    enabled: true,
+    strictMode: false,
+    gracePeriodMinutes: 15,
+    allowedRoles: ['Support Worker', 'Support Manager', 'Roster Admin'],
+    excludedRoles: ['System Admin', 'CEO'],
+  },
 };
 
 export function useSystemSettings() {

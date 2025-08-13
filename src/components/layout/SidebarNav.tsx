@@ -132,38 +132,56 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitch
   return (
     <aside
       className={cn(
-        'h-screen flex flex-col transition-all duration-300 bg-gray-900 dark:bg-gray-950',
+        'h-screen flex flex-col transition-all duration-300 ease-in-out',
+        'bg-gray-900 dark:bg-gray-950 border-r border-gray-800 dark:border-gray-700',
         'relative lg:relative', // relative on desktop
-        collapsed ? 'w-16' : 'w-56',
+        // Responsive width handling for different screen sizes
+        collapsed 
+          ? 'w-14 sm:w-16 lg:w-16 xl:w-16' 
+          : 'w-56 sm:w-64 lg:w-64 xl:w-72 2xl:w-80',
         className
       )}
       {...props}
     >
-      {/* Top: Brand & Toggle */}
-      <div className={cn('flex items-center justify-between px-4 py-4', collapsed ? 'justify-center' : '')}>
+      {/* Top: Brand & Toggle - Responsive design */}
+      <div className={cn(
+        'flex items-center justify-between px-2 sm:px-3 lg:px-4 py-3 sm:py-4',
+        'border-b border-gray-800 dark:border-gray-700',
+        collapsed ? 'justify-center px-1 sm:px-2' : ''
+      )}>
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CN</span>
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="w-7 h-7 sm:w-8 sm:h-8 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <span className="text-white font-bold text-xs sm:text-sm">CN</span>
             </div>
-            <span className="text-lg font-bold text-white">CareNest</span>
+            <span className="text-sm sm:text-base lg:text-lg font-bold text-white truncate">
+              CareNest
+            </span>
           </div>
         )}
         <Button
           variant="ghost"
           size="icon"
-          className={cn('ml-auto text-white hover:bg-gray-800', collapsed ? 'mx-auto' : '')}
+          className={cn(
+            'text-white hover:bg-gray-800 dark:hover:bg-gray-700 transition-colors',
+            'h-8 w-8 sm:h-9 sm:w-9',
+            collapsed ? 'mx-auto' : 'ml-auto'
+          )}
           aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           onClick={() => setCollapsed(!collapsed)}
         >
-          {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
+          ) : (
+            <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
+          )}
         </Button>
       </div>
       
-      {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto">
+      {/* Navigation - Responsive scroll area */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden">
         <ScrollArea className="h-full w-full">
-          <ul className="space-y-1 px-2">
+          <ul className="space-y-1 px-1 sm:px-2 lg:px-3 py-2">
             {sidebarNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = pathname === item.href;
@@ -172,16 +190,24 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitch
                   <Link
                     href={item.href}
                     className={cn(
-                      'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+                      'flex items-center gap-2 sm:gap-3 rounded-lg px-2 sm:px-3 py-2 sm:py-2.5',
+                      'text-sm sm:text-sm font-medium transition-all duration-200',
+                      'hover:bg-gray-800 dark:hover:bg-gray-700',
                       isActive
-                        ? 'bg-green-700 text-white shadow'
-                        : 'text-gray-300 hover:bg-green-800 hover:text-white',
-                      collapsed ? 'justify-center px-2' : ''
+                        ? 'bg-green-700 dark:bg-green-600 text-white shadow-md'
+                        : 'text-gray-300 hover:text-white',
+                      collapsed 
+                        ? 'justify-center px-1 sm:px-2' 
+                        : 'justify-start'
                     )}
                     title={collapsed ? item.title : undefined}
                   >
-                    <Icon className="h-5 w-5" />
-                    {!collapsed && <span className="truncate">{item.title}</span>}
+                    <Icon className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+                    {!collapsed && (
+                      <span className="truncate text-sm sm:text-sm">
+                        {item.title}
+                      </span>
+                    )}
                   </Link>
                 </li>
               );
@@ -190,42 +216,28 @@ export function SidebarNav({ className, items, collapsed, setCollapsed, onSwitch
         </ScrollArea>
       </nav>
       
-      {/* Bottom: Switch User for Admins */}
+      {/* Bottom: Switch User for Admins - Responsive design */}
       {!collapsed && (
-        <div className={cn('px-2 py-4 flex flex-col gap-2')}>
+        <div className={cn(
+          'px-2 sm:px-3 lg:px-4 py-3 sm:py-4',
+          'border-t border-gray-800 dark:border-gray-700'
+        )}>
           <Button
             variant="ghost"
             size="sm"
             className={cn(
-              'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-              'text-gray-300 hover:bg-green-800 hover:text-white',
-              'justify-start w-full'
+              'flex items-center gap-2 sm:gap-3 rounded-lg px-2 sm:px-3 py-2',
+              'text-sm font-medium transition-colors w-full',
+              'text-gray-300 hover:bg-gray-800 dark:hover:bg-gray-700 hover:text-white',
+              'justify-start'
             )}
             onClick={onSwitchUser}
           >
-            <Users className="h-5 w-5" />
-            <span className="truncate">Switch User</span>
+            <UserCheck className="h-4 w-4 sm:h-5 sm:w-5 flex-shrink-0" />
+            <span className="truncate text-sm sm:text-sm">
+              Switch User
+            </span>
           </Button>
-          
-          {/* Debug button for testing navigation updates */}
-          {process.env.NODE_ENV === 'development' && (
-            <Button
-              variant="outline"
-              size="sm"
-              className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                'text-gray-300 hover:bg-green-800 hover:text-white',
-                'justify-start w-full'
-              )}
-              onClick={() => {
-                console.log('Current nav items:', sidebarNavItems);
-                refreshNavItems();
-                console.log('Refreshed nav items:', getSidebarNavItems());
-              }}
-            >
-              <span className="truncate">🔄 Refresh Nav</span>
-            </Button>
-          )}
         </div>
       )}
     </aside>

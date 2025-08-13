@@ -1,24 +1,24 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { mockShifts, mockStaff, mockProperties } from '@/lib/data';
-import { format, isFuture, isPast } from 'date-fns';
-import { Clock, MapPin, Send } from 'lucide-react';
-import type { Staff, Shift, UserRole, Timesheet } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { TimesheetDialog } from '@/components/timesheet/TimesheetDialog';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { mockNotices, mockInvoices, mockPayrollRuns, mockComplianceItems } from '@/lib/data';
-import { Megaphone, AlertTriangle, Info, User, DollarSign, FileWarning, Users, CalendarCheck2, CheckCircle2, ShieldAlert } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import type { Notice } from '@/lib/types';
-import { differenceInDays } from 'date-fns';
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { mockShifts, mockStaff, mockProperties } from "@/lib/data";
+import { format, isFuture, isPast } from "date-fns";
+import { Clock, MapPin, Send } from "lucide-react";
+import type { Staff, Shift, UserRole, Timesheet } from "@/lib/types";
+import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "../ui/textarea";
+import { Label } from "../ui/label";
+import { TimesheetDialog } from "../timesheet/TimesheetDialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { mockNotices, mockInvoices, mockPayrollRuns, mockComplianceItems } from "@/lib/data";
+import { Megaphone, AlertTriangle, Info, User, DollarSign, FileWarning, Users, CalendarCheck2, CheckCircle2, ShieldAlert } from "lucide-react";
+import { cn } from "@/lib/utils";
+import type { Notice } from "@/lib/types";
+import { differenceInDays } from "date-fns";
 
 // UpcomingShifts Component
 export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
@@ -34,10 +34,10 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
 
   const [shiftForTimesheet, setShiftForTimesheet] = useState<Shift | null>(null);
 
-  const privilegedRoles: UserRole[] = ['System Admin', 'Support Manager', 'Roster Admin'];
-  const isPrivilegedUser = privilegedRoles.includes(currentUser.role);
-  
   useEffect(() => {
+    const privilegedRoles: UserRole[] = ['System Admin', 'Support Manager', 'Roster Admin'];
+    const isPrivilegedUser = privilegedRoles.includes(currentUser.role);
+  
     let upcomingShifts: Shift[];
 
     const allUpcomingShifts = mockShifts
@@ -50,13 +50,12 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
       upcomingShifts = allUpcomingShifts.filter(s => s.staffId === currentUser.id || s.status === 'Open');
     }
 
-    // Update state
     setShiftsToShow(upcomingShifts.slice(0, 5));
     setCardTitle(isPrivilegedUser ? 'Upcoming Shifts' : 'My Shifts & Open Shifts');
     setCardDescription(isPrivilegedUser 
       ? 'A view of all upcoming shifts across the organisation.' 
       : 'Your assigned shifts and available open shifts you can pick up.');
-  }, [isPrivilegedUser, currentUser.id]);
+  }, [currentUser]);
 
   const handleClockIn = (shiftId: string) => {
     setClockedInShiftId(shiftId);
@@ -80,6 +79,8 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
     setRequestedShiftIds(prev => [...prev, shift.id]);
     setRequestingShiftId(null);
     setRequestMessage("");
+    // In a real app, the backend would now handle this. If the shift is assigned to someone else,
+    // a notification would be sent to all users who requested it, and it would be removed from their "Open Shifts" view.
   };
 
   const handleRequestClick = (shiftId: string) => {
@@ -93,6 +94,7 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
   }
   
   const canClockIn = (shift: Shift) => {
+    // Allow clocking in if the shift has not ended yet.
     return !isPast(shift.end);
   }
 
@@ -104,6 +106,7 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
     });
     setShiftForTimesheet(null);
   };
+
 
   return (
     <>
@@ -189,22 +192,11 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
                         placeholder="Add a message for the rostering team..."
                         value={requestMessage}
                         onChange={(e) => setRequestMessage(e.target.value)}
-                        rows={2}
                       />
-                      <div className="flex gap-2">
-                        <Button 
-                          onClick={() => handleSendRequest(shift, requestMessage)} 
-                          size="sm"
-                          className="flex-1"
-                        >
-                          Send Request
-                        </Button>
-                        <Button 
-                          onClick={handleCancelRequest} 
-                          variant="outline" 
-                          size="sm"
-                        >
-                          Cancel
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" onClick={handleCancelRequest}>Cancel</Button>
+                        <Button onClick={() => handleSendRequest(shift, requestMessage)}>
+                          <Send className="mr-2" /> Send Request
                         </Button>
                       </div>
                     </div>
@@ -212,17 +204,17 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
                 </div>
               );
             }) : (
-              <p className="text-sm text-muted-foreground text-center py-4">No upcoming shifts found.</p>
+              <p className="text-sm text-muted-foreground text-center py-4">No upcoming shifts to display.</p>
             )}
           </div>
         </CardContent>
       </Card>
-
       {shiftForTimesheet && (
-        <TimesheetDialog
-          shift={shiftForTimesheet}
-          onSave={handleSaveTimesheet}
-          onCancel={() => setShiftForTimesheet(null)}
+        <TimesheetDialog 
+            shift={shiftForTimesheet}
+            isOpen={!!shiftForTimesheet}
+            setIsOpen={(isOpen) => !isOpen && setShiftForTimesheet(null)}
+            onSave={handleSaveTimesheet}
         />
       )}
     </>
@@ -230,40 +222,37 @@ export function UpcomingShifts({ currentUser }: { currentUser: Staff }) {
 }
 
 // NoticeBoard Component
+const noticeConfig: Record<Notice['type'], { icon: React.ElementType, color: string }> = {
+    Urgent: { icon: Megaphone, color: 'border-destructive' },
+    Warning: { icon: AlertTriangle, color: 'border-yellow-500' },
+    Info: { icon: Info, color: 'border-primary' },
+};
+
 export function NoticeBoard() {
-  const publishedNotices = mockNotices
-    .filter(n => n.status === 'Published')
-    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-    .slice(0, 3);
+  const publishedNotices = mockNotices.filter(n => n.status === 'Published').sort((a,b) => b.createdAt.getTime() - a.createdAt.getTime());
+  const allStaff = [...mockStaff];
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Megaphone className="h-5 w-5" />
-          Notice Board
-        </CardTitle>
-        <CardDescription>Latest announcements and updates from the team.</CardDescription>
+        <CardTitle>Notice Board</CardTitle>
+        <CardDescription>Important announcements and updates for all staff.</CardDescription>
       </CardHeader>
       <CardContent>
         {publishedNotices.length > 0 ? (
           <Accordion type="single" collapsible className="w-full">
-            {publishedNotices.map((notice) => {
-              const author = mockStaff.find(s => s.id === notice.authorId);
-              const typeConfig = {
-                Info: { icon: Info, color: 'text-blue-500' },
-                Warning: { icon: AlertTriangle, color: 'text-yellow-500' },
-                Urgent: { icon: AlertTriangle, color: 'text-red-500' }
-              }[notice.type];
-              const Icon = typeConfig.icon;
+            {publishedNotices.map((notice, index) => {
+              const config = noticeConfig[notice.type];
+              const Icon = config.icon;
+              const author = allStaff.find(s => s.id === notice.authorId);
 
               return (
                 <AccordionItem key={notice.id} value={notice.id}>
                   <AccordionTrigger className="hover:no-underline">
-                    <div className="flex items-start gap-3 text-left">
-                      <Icon className={cn("h-5 w-5 mt-0.5", typeConfig.color)} />
-                      <div className="flex-1">
-                        <div className="font-semibold">{notice.title}</div>
+                    <div className="flex items-center gap-4 w-full">
+                      <Icon className={cn("h-6 w-6", config.color.replace('border-', 'text-'))} />
+                      <div className="flex-1 text-left">
+                        <p className="font-semibold">{notice.title}</p>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                           <Avatar className="h-5 w-5">
                              <AvatarImage src={author?.avatarUrl} alt={author?.name} />
